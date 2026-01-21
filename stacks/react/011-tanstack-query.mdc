@@ -1,0 +1,184 @@
+---
+description: 'TanStack Query patterns - useQuery, useMutation, caching, invalidation'
+globs: ['src/**/hooks/**/*.ts', 'src/**/api/**/*.ts', 'src/**/*query*.ts', 'src/**/*Query*.tsx']
+alwaysApply: false
+---
+
+# TanStack Query Patterns
+
+## Core Rules
+
+1. **Query key factory** - centralize in `src/shared/api/keys.ts`
+2. **Orval-generated hooks** - use generated API hooks
+3. **Optimistic updates** - for mutations with UI feedback
+4. **Proper invalidation** - invalidate related queries after mutation
+
+## Query Keys
+
+```typescript
+// src/shared/api/keys.ts
+export const queryKeys = {
+  root: {
+    cargoRequests: ['cargoRequests'] as const,
+    users: ['users'] as const,
+  },
+  cargoRequests: {
+    all: () => [...queryKeys.root.cargoRequests, 'all'] as const,
+    list: (filters?: Filters) => [...queryKeys.cargoRequests.all(), filters] as const,
+    detail: (id: string) => [...queryKeys.root.cargoRequests, id] as const,
+  },
+}
+
+// Usage
+const { data } = useQuery({
+  queryKey: queryKeys.cargoRequests.list(filters),
+  queryFn: () => getCargoRequests(filters),
+})
+```
+
+## Generated Hooks (Orval)
+
+```typescript
+// ✅ Use Orval-generated hooks
+import { useGetCargoRequestsList } from '@/shared/api/generated'
+
+const { data, isLoading } = useGetCargoRequestsList({ status: 'active' })
+
+// ❌ Never manually create API calls
+const fetchData = async () => {
+  /* ... */
+}
+```
+
+## Mutations
+
+```typescript
+const mutation = useMutation({
+  mutationFn: updateCargoRequest,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.root.cargoRequests })
+    message.success('Updated')
+  },
+  onError: (error) => {
+    notification.error({ message: error.message })
+  },
+})
+```
+
+## Optimistic Updates
+
+```typescript
+const mutation = useMutation({
+  mutationFn: toggleFavorite,
+  onMutate: async (newValue) => {
+    await queryClient.cancelQueries({ queryKey })
+    const previous = queryClient.getQueryData(queryKey)
+    queryClient.setQueryData(queryKey, (old) => ({ ...old, favorite: newValue }))
+    return { previous }
+  },
+  onError: (err, newValue, context) => {
+    queryClient.setQueryData(queryKey, context.previous)
+  },
+  onSettled: () => {
+    queryClient.invalidateQueries({ queryKey })
+  },
+})
+```
+
+## Cache Config
+
+```typescript
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 min fresh
+      gcTime: 10 * 60 * 1000, // 10 min in memory
+      refetchOnWindowFocus: false,
+      retry: 2,
+    },
+  },
+})
+```
+
+## Query Patterns Decision Tree
+
+```mermaid
+flowchart TD
+    Start([Need Server Data?]) --> Type{Query Type?}
+    Type -->|List with filters| List["useQuery + placeholderData<br/>keepPreviousData"]
+    Type -->|Single item| Detail["useQuery + staleTime"]
+    Type -->|Create/Update/Delete| Mut["useMutation"]
+
+    List --> Keys["Query Key Factory<br/>queryKeys.entity.list(filters)"]
+    Detail --> Keys
+
+    Mut --> Opt{Needs Optimistic UI?}
+    Opt -->|Yes| OptUp["onMutate → setQueryData<br/>onError → rollback<br/>onSettled → invalidate"]
+    Opt -->|No| Simple["onSuccess → invalidate"]
+
+    style Start fill:#e1f5e1
+    style Keys fill:#e1f0ff
+    style OptUp fill:#fff4e1
+```
+
+## queryOptions Helper (Shared Config)
+
+```typescript
+import { queryOptions, keepPreviousData } from '@tanstack/react-query'
+
+// Shared query configuration - reuse in components AND prefetch
+export const cargoListOptions = (filters: Filters) =>
+  queryOptions({
+    queryKey: queryKeys.cargoRequests.list(filters),
+    queryFn: () => getCargoList(filters),
+    staleTime: 5 * 60 * 1000,
+    placeholderData: keepPreviousData,
+  })
+
+// Usage in component
+const { data } = useQuery(cargoListOptions(filters))
+
+// Prefetch on hover/focus
+await queryClient.prefetchQuery(cargoListOptions(filters))
+```
+
+## Select for Data Transformation
+
+```typescript
+// ✅ Use select instead of useMemo for derived data
+const { data: activeItems } = useQuery({
+  ...cargoListOptions(filters),
+  select: (data) => data.filter((item) => item.isActive),
+})
+
+// ❌ Don't use useMemo for query data transformation
+const activeItems = useMemo(() => data?.filter((item) => item.isActive), [data])
+```
+
+## When to Use What
+
+| Scenario                | Pattern                               | Example                    |
+| ----------------------- | ------------------------------------- | -------------------------- |
+| Fetch list with filters | `useQuery` + `placeholderData`        | User table with pagination |
+| Fetch single item       | `useQuery` + short `staleTime`        | User profile page          |
+| Create/Update/Delete    | `useMutation` + `invalidateQueries`   | Form submission            |
+| Immediate UI feedback   | `useMutation` + `onMutate` optimistic | Toggle favorite            |
+| Background refresh      | `refetchInterval`                     | Live dashboard             |
+| Conditional fetch       | `enabled: !!condition`                | Dependent queries          |
+| Prefetch on interaction | `prefetchQuery`                       | Hover/focus prefetch       |
+
+## Common Mistakes
+
+| Mistake                 | Fix                       |
+| ----------------------- | ------------------------- |
+| Manual query keys       | Use queryKeys factory     |
+| Forgot invalidation     | Invalidate in onSuccess   |
+| No loading state        | Use isLoading/isPending   |
+| Refetch on every render | Set proper staleTime      |
+| useMemo for query data  | Use `select` option       |
+| Duplicate query configs | Use `queryOptions` helper |
+
+## Related
+
+- @010-react-patterns - React component patterns
+- @012-zustand - State management patterns

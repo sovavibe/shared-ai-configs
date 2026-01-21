@@ -1,0 +1,65 @@
+---
+description: 'Tech stack, FSD architecture, key patterns, commands'
+version: '1.0.0'
+lastUpdated: '2026-01-20'
+alwaysApply: true
+---
+
+# Tech Stack & Architecture
+
+## Tech Stack
+
+| Layer   | Tech                                             |
+| ------- | ------------------------------------------------ | --- | ----- | ------ |
+| Build   | Vite 5.4 + React 18.3 + TypeScript 5.5           |
+| UI      | Ant Design 5.22 + styled-components + MUI tables |
+| State   | TanStack Query 5 (server) + Zustand 5 (local)    |
+| API     | Orval 7 (codegen) + Axios + MSW 2 (mocks)        |
+| Auth    | Azure AD OAuth 2.0                               |
+| Scripts | Node.js 20+                                      | Zod | yargs | Vitest |
+
+## Architecture (FSD)
+
+```
+src/
+├── app/       # Entry, providers, router
+├── pages/     # Route pages
+├── widgets/   # Cross-page UI
+├── shared/    # Reusable (api/, ui/, utils/)
+└── mocks/     # MSW handlers (dev only)
+```
+
+**Import Rule**: pages → widgets → shared (never reverse)
+
+## Key Patterns
+
+- **Component**: `interface Props` → `FC<Props>` → `styled.div`
+- **TanStack**: `useQuery` → `{ data, isLoading }`
+- **Type Guard**: `const isUser = (x: unknown): x is User => typeof x === 'object' && x !== null && 'id' in x`
+
+## Code Quality
+
+Keep code small, focused, readable. Specific limits enforced by ESLint.
+
+## Commands
+
+```bash
+# Development
+npm run dev              # Start (port 5173)
+npm run build            # TypeScript + production
+npm run lint             # ESLint
+npm run test             # Vitest
+
+# API & Mocks
+npm run codegen          # Generate from OpenAPI
+npm run mocks:check      # Verify MSW handlers
+
+# Quality
+npm run quality:gates    # All gates (pre-merge)
+
+# Task Management (Beads)
+bd ready --json              # Check ready work
+bd update <id> --status=in_progress  # Claim task
+bd close <id>                # Complete task
+bd sync --flush-only         # Export to JSONL
+```

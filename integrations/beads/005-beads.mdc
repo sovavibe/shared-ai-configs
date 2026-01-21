@@ -1,0 +1,156 @@
+---
+description: 'Beads issue tracking - local task management and git sync'
+version: '1.0.0'
+lastUpdated: '2026-01-20'
+alwaysApply: true
+---
+
+# Beads Issue Tracking
+
+## Core Rules
+
+- Track ALL work in bd (never use markdown TODOs)
+- `bd ready` → find available work
+- `bd sync --flush-only` at end of session
+
+## Environment Setup
+
+**`BD_ENABLED=1`** в `.env.development.local` включает интеграцию.
+
+| BD_ENABLED     | Поведение                             |
+| -------------- | ------------------------------------- |
+| `1`            | AI автоматически синхронизирует beads |
+| `0` / не задан | beads невидим, файл не меняется       |
+
+## AI-Assisted Sync (ОБЯЗАТЕЛЬНО)
+
+**AI должен автоматически выполнять:**
+
+1. **Старт сессии:**
+
+   ```bash
+   bd ready && bd blocked
+   ```
+
+2. **Создание задач:**
+
+   ```bash
+   bd create --title="Description" --type=task --priority=2
+   ```
+
+3. **Завершение работы:**
+
+   ```bash
+   bd close <id1> <id2> ...
+   bd sync --flush-only
+   ```
+
+4. **Перед коммитом:**
+   ```bash
+   bd sync --flush-only  # ОБЯЗАТЕЛЬНО перед git commit
+   ```
+
+## Core Principle
+
+**Jira** = sync with team ("what I'm doing")
+**Beads** = local management ("how I'm doing")
+
+| System    | Purpose                                     |
+| --------- | ------------------------------------------- |
+| **Jira**  | Team synchronization (high-level tracking)  |
+| **Beads** | Local implementation (decomposition, steps) |
+
+## 3 Scenarios
+
+| Scenario             | Jira            | Beads                     |
+| -------------------- | --------------- | ------------------------- |
+| **MR (code review)** | Task for review | Epic + tickets per thread |
+| **Feature/Bug**      | Task            | Epic + subtasks           |
+| **Local initiative** | ❌ None         | Epic or Task              |
+
+## MR Workflow
+
+```
+Jira Task: "Review MR-321" (for team)
+  └─► Beads Epic: "Epic: Review MR-321" (locally)
+        ├─► Beads Task: "Fix type error" (thread #42)
+        ├─► Beads Epic: "Implement API" (thread #43, complex)
+        │     ├─► "Setup endpoints"
+        │     └─► "Add tests"
+        └─► Beads Task: "Fix typo" (thread #44)
+```
+
+**Key rules:**
+
+- Simple thread (1 action) → Beads Task
+- Complex thread (2+ actions) → Beads Epic + subtasks
+
+## Feature/Bug Workflow
+
+```
+Jira Task: "Implement user auth" (for team)
+  └─► Beads Epic: "Epic: Implement user auth" (locally)
+        ├─► "Setup DB schema"
+        ├─► "Create API endpoints"
+        └─► "Add tests"
+```
+
+## Local Initiative Workflow
+
+```
+Beads Epic: "Refactor utils" (no Jira)
+  ├─► "Extract common functions"
+  ├─► "Add type guards"
+  └─► "Update tests"
+```
+
+## Quick Commands
+
+```bash
+bd ready                              # Show ready work
+bd create "Task" -p 1                 # Create task
+bd create "Epic" --type=epic -p 1     # Create epic
+bd update <id> --status=in_progress   # Claim work
+bd close <id>                         # Complete
+bd dep add <issue> <depends-on>       # Add dependency
+bd sync                               # Sync with git
+```
+
+## Workflow
+
+1. `bd ready` → check available work
+2. `bd update <id> --status=in_progress` → claim
+3. Do the work
+4. `bd close <id>` → complete
+5. `bd sync` → push changes
+
+## Mandatory Fields
+
+**All Beads tasks:**
+
+```
+Jira: VP-XXX (or N/A for local)
+Status: To Do
+Type: MR Review | Feature | Bug | Local Initiative
+```
+
+**For MR threads (additional):**
+
+```
+GitLab Discussion ID: 42
+File: src/file.ts:123
+```
+
+## Critical Rules
+
+| DO                                  | DON'T                          |
+| ----------------------------------- | ------------------------------ |
+| Jira Task → Beads Epic              | Create Jira Epic for Beads     |
+| MR threads → separate tickets       | Mix threads in one ticket      |
+| Store reports in Beads descriptions | Create separate Markdown files |
+
+## References
+
+- `@create-tasks.md` - Create tasks scenarios
+- `@start-work.md` - Start work workflow
+- `@111-context-management` - Four Pillars workflow

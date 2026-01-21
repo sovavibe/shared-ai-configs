@@ -1,0 +1,172 @@
+---
+description: 'Documentation principles: Beads for reports, rules = current product state'
+version: '2.0.0'
+lastUpdated: '2026-01-16'
+globs: ['**/*.md', '**/*.mdc', '.cursor/**/*']
+---
+
+# Documentation Principles
+
+## Key Principle
+
+**Documentation describes CURRENT product state, not change history.**
+
+## What Where to Store
+
+| Type                        | Where to Store                                         | Why                                                       |
+| --------------------------- | ------------------------------------------------------ | --------------------------------------------------------- |
+| Reports, research, analysis | **Beads task description** (`bd update --description`) | Doesn't clutter repository, structured, full resumability |
+| Current product state       | `docs/*.md`                                            | Current documentation                                     |
+| Rules for AI                | `.cursor/rules/*.mdc`                                  | Agent instructions                                        |
+| Architecture decisions      | `docs/architecture/adr/*.md`                           | Decision history (changelog)                              |
+| Tasks and progress          | **Beads (bd)** + Jira                                  | Work tracking                                             |
+
+## ❌ NEVER Create
+
+- Markdown reports after each task
+- `*-REPORT.md`, `*-ANALYSIS.md`, `*-REVIEW.md` files
+- Duplicate documentation
+- Files with change history (except ADR)
+
+## ✅ ALWAYS Use
+
+### Beads for Temporary Artifacts
+
+```bash
+# Research/analysis → Beads task description
+bd update <id> --description="## Research: VP-XXX
+
+### Findings
+- Finding 1: description
+- Finding 2: description
+
+### Recommendation
+Action item
+"
+```
+
+### Documentation = Current State
+
+```markdown
+# docs/PRODUCT-OVERVIEW.md — What exists now
+
+# docs/DOMAIN.md — Business logic now
+
+# docs/API-MAP.md — API now
+
+# .cursor/rules/\*.mdc — Rules now
+```
+
+**Update documentation when product changes, don't create new files.**
+
+## ADR — Only Changelog
+
+**Architecture Decision Records** — history of architectural decisions:
+
+```
+docs/architecture/adr/
+├── 0001-use-tanstack-query.md
+├── 0002-adopt-fsd-architecture.md
+└── 0003-migrate-to-vite.md
+```
+
+**ADR Format**:
+
+- Context (why decision needed)
+- Decision (what chosen)
+- Consequences (what it means)
+- Date
+
+**ADR does NOT replace**: reports, research, analysis → they go to Beads task descriptions.
+
+## Documentation Structure
+
+```
+docs/
+├── PROJECT.md          # Project overview (current)
+├── DOMAIN.md           # Business domain (current)
+├── DEVELOPMENT.md      # How to develop (current)
+├── API-MAP.md          # API endpoints (current)
+├── architecture/
+│   └── adr/            # Decision history (changelog)
+└── runbooks/           # Operational procedures
+
+.cursor/
+├── rules/              # Rules for AI (current)
+└── prompts/            # Prompts (current)
+
+Beads task descriptions:  # Temporary artifacts (all in task descriptions)
+├── Research findings    # Research stored in task description
+├── Review notes         # Reviews stored in task description
+├── Analysis results     # Analysis stored in task description
+└── Investigation notes  # Investigations stored in task description
+```
+
+## Update Principles
+
+### Documentation (docs/, .cursor/)
+
+| When            | Action                    |
+| --------------- | ------------------------- |
+| Feature added   | Update existing file      |
+| Feature removed | Remove from documentation |
+| API changed     | Update API-MAP.md         |
+| Rule outdated   | Delete or update .mdc     |
+
+**DO NOT create**: new files for each change.
+
+### Beads Task Descriptions
+
+| When              | Action                                                                 |
+| ----------------- | ---------------------------------------------------------------------- |
+| Research started  | Update task description with research (`bd update <id> --description`) |
+| Research complete | Update task description, mark complete                                 |
+| Review done       | Update task description with review notes                              |
+| Task closed       | All context preserved in task description (full resumability)          |
+
+## AI Workflow
+
+### When Working on Task
+
+```typescript
+// 1. Research → Beads task description (bd update <id> --description)
+// 2. Implementation → code
+// 3. Documentation → update existing files
+// 4. DO NOT create report in repository!
+```
+
+### When Completing Task
+
+```typescript
+// ✅ Correct: update Jira
+CallMcpTool({
+  server: 'user-MCP_DOCKER',
+  toolName: 'jira_add_comment',
+  arguments: {
+    issueKey: 'VP-XXX',
+    body: 'Task completed. Details in Beads task description.',
+  },
+})
+
+// ❌ Wrong: create docs/reports/VP-XXX-REPORT.md
+```
+
+## Validation
+
+```bash
+# Find violations
+find docs -name "*REPORT*" -o -name "*ANALYSIS*" -o -name "*REVIEW*"
+
+# Should return empty result
+```
+
+## Exceptions
+
+**Allowed to create markdown files**:
+
+1. **On explicit user request**: "Create report in file..."
+2. **ADR**: Architectural decisions
+3. **README**: For new modules/libraries
+4. **Runbooks**: Operational procedures
+
+**Everything else → Beads task description (`bd update <id> --description`).**

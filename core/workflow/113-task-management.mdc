@@ -1,0 +1,100 @@
+---
+description: 'Task Management - Beads workflow and GitLab MR processing'
+version: '1.0.0'
+lastUpdated: '2026-01-20'
+alwaysApply: false
+---
+
+# Task Management: Beads First
+
+**CRITICAL**: Track ALL work in Beads, never markdown TODOs or comment-based lists.
+
+| Rule            | Action                                                    |
+| --------------- | --------------------------------------------------------- |
+| Start work      | `bd ready --json` → `bd update <id> --status=in_progress` |
+| Create Epic     | `bd create "Epic: Title" --type=epic -p 1`                |
+| Decompose tasks | 2-3 simple, 3-5 medium, 5-10 large                        |
+| End session     | `bd close <id>` → `bd sync --flush-only` → `git push`     |
+
+**Structure**: Jira (VP-100) → Beads Epic → Beads Tasks (atomic units)
+
+## Task Type Decision Tree
+
+```mermaid
+flowchart TD
+    Start([Create Jira Task/Subtask]) --> Immediate[IMMEDIATELY Determine Type<br/>Same step, not later]
+
+    Immediate --> HasSubtasks{Has Jira<br/>Subtasks?}
+
+    HasSubtasks -->|Yes| CreateParent[Create Parent Epic<br/>for grouping]
+    CreateParent --> ProcessSubtasks[For each Subtask<br/>determine type]
+
+    HasSubtasks -->|No| Complexity{Task<br/>Complexity?}
+
+    Complexity -->|Atomic<br/>1 action| CreateTask[Create Beads Task<br/>bd create "VP-XXX: title"<br/>Link to Jira]
+    Complexity -->|Complex<br/>2+ steps| CreateEpic[Create Beads Epic<br/>+ subtasks<br/>bd create "Epic: VP-XXX"<br/>Link to Jira]
+
+    ProcessSubtasks --> SubComplexity{Subtask<br/>Complexity?}
+
+    SubComplexity -->|Atomic<br/>1 action| CreateSubTask[Create Beads Task<br/>deps: Parent Epic<br/>Link Discussion ID]
+    SubComplexity -->|Complex<br/>2+ steps| CreateChildEpic[Create Child Epic<br/>+ subtasks<br/>deps: Parent Epic<br/>Link Discussion ID]
+
+    CreateTask --> Store
+    CreateEpic --> Store
+    CreateSubTask --> Store
+    CreateChildEpic --> Store
+
+    Store[Store mapping in<br/>Beads description:<br/>- Jira key<br/>- Discussion ID<br/>- File/Line<br/>- Status]
+
+    Store --> Query[Query Beads:<br/>bd list --json<br/>jq select by Jira/Discussion]
+
+    Query --> End([Beads tracks everything])
+
+    style Start fill:#e1f5e1
+    style End fill:#ffe1e1
+    style Immediate fill:#fff4e1
+    style Complexity fill:#ffe1f0
+    style SubComplexity fill:#ffe1f0
+    style CreateTask fill:#e1f0ff
+    style CreateEpic fill:#e1ffe1
+    style CreateSubTask fill:#e1f0ff
+    style CreateChildEpic fill:#e1ffe1
+    style Store fill:#f0e1ff
+```
+
+## GitLab MR Processing
+
+### Command Templates
+
+```bash
+# Parent Epic (Jira Task with Subtasks)
+PARENT_EPIC=$(bd create "Epic: VP-XXX - MR-{N} Round {N}" --type=epic -p 1 --json | jq -r '.id')
+
+# Atomic Task (1 action)
+TASK=$(bd create "VP-300: [title]" -p 1 --json | jq -r '.id')
+bd update $TASK --description="Jira: VP-300
+Status: To Do"
+
+# Complex Task (2+ steps) → Epic + Tasks
+EPIC=$(bd create "Epic: VP-300: [title]" --type=epic -p 1 --json | jq -r '.id')
+TASK1=$(bd create "VP-300: Step 1" --deps epic:$EPIC -p 1 --json | jq -r '.id')
+
+# Subtask with Discussion ID
+bd update $TASK --description="Jira: VP-ZZZ
+GitLab Discussion ID: {discussion_id}
+File: {file_path}:{line}
+Status: To Do"
+
+# Find by Jira key
+bd list --json | jq '.[] | select(.description | contains("VP-XXX"))'
+```
+
+### Rules
+
+| NEVER                                   | ALWAYS                             |
+| --------------------------------------- | ---------------------------------- |
+| `mr{N}-discussion-to-jira-mapping.json` | Store mapping in Beads description |
+| Create Beads later                      | Create IMMEDIATELY with Jira       |
+| Temporary mapping files                 | Query Beads: `bd list --json`      |
+
+See: @005-beads.mdc

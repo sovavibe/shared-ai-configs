@@ -1,0 +1,104 @@
+---
+description: 'Rules navigation - flat structure with numeric prefixes'
+alwaysApply: true
+---
+
+# Rules Index
+
+## Structure
+
+| Range   | Category      | alwaysApply   |
+| ------- | ------------- | ------------- |
+| 001-009 | **Core**      | true          |
+| 010-049 | **Context**   | false (globs) |
+| 100-149 | **On-Demand** | false         |
+| 150+    | **Reference** | false         |
+
+## Core (001-009) - Always Loaded
+
+| #   | Rule              | Purpose             |
+| --- | ----------------- | ------------------- |
+| 001 | `@001-persona`    | Role, constraints   |
+| 002 | `@002-tech-stack` | Stack, architecture |
+| 004 | `@004-quality`    | Quality gates       |
+| 005 | `@005-beads`      | Issue tracking      |
+
+## Context (010-049) - Auto by Globs
+
+| #   | Rule                      | Globs               |
+| --- | ------------------------- | ------------------- |
+| 011 | `@011-tanstack-query`     | `src/**/*.tsx`      |
+| 012 | `@012-zustand`            | `src/**/store/**`   |
+| 020 | `@020-architecture`       | `src/app/**`        |
+| 021 | `@021-core-principles`    | `src/**/*.ts`       |
+| 030 | `@030-styling`            | `**/*styled*`       |
+| 031 | `@031-ant-design`         | `src/**/*.tsx`      |
+| 042 | `@042-english-only`       | `**/*.ts`           |
+| 043 | `@043-existing-solutions` | `src/**/*`          |
+
+## On-Demand (100-149) - Manual @mention
+
+### MCP & Tools (100-109)
+
+| #   | Rule                       | Purpose            |
+| --- | -------------------------- | ------------------ |
+| 100 | `@100-hindsight`           | Memory, patterns   |
+| 104 | `@104-mcp-troubleshooting` | MCP setup & errors |
+| 105 | `@105-tool-selection`      | Tool decision tree |
+
+### Workflow (110-129)
+
+| #   | Rule                       | Purpose             |
+| --- | -------------------------- | ------------------- |
+| 110 | `@110-ai-workflow`         | Agent vs Chat       |
+| 111 | `@111-context-management`  | Four Pillars        |
+| 113 | `@113-task-management`     | Task decomposition  |
+| 114 | `@114-git-workflow`        | Git conventions     |
+| 115 | `@115-pr-review`           | PR standards        |
+| 117 | `@117-communication-style` | Response format     |
+| 118 | `@118-documentation`       | Doc rules           |
+| 119 | `@119-suppressions`        | ESLint disable      |
+| 120 | `@120-functional-patterns` | Node.js patterns    |
+| 122 | `@122-nodejs-scripts`      | Script patterns     |
+| 123 | `@123-mermaid-diagrams`    | Diagram standards   |
+
+### Rules 124-129 (2026 Advanced Patterns)
+
+| #   | Rule                        | Purpose                        |
+| --- | --------------------------- | ------------------------------ |
+| 124 | `@124-sdd-patterns`         | Specification-Driven Development |
+| 125 | `@125-verification-swarms`   | 3-agent review pattern         |
+| 126 | `@126-semantic-search`       | Semantic code search           |
+| 127 | `@127-token-optimization`    | 60-70% token reduction         |
+| 128 | `@128-skills-patterns`       | Skills hot-reload composition  |
+| 129 | `@129-cursor-2.2-patterns`   | Cursor 2.2 & Claude Code 2.1   |
+
+### Performance & Security (130-149)
+
+| #   | Rule                     | Purpose              |
+| --- | ------------------------ | -------------------- |
+| 130 | `@130-performance`       | General optimization |
+| 131 | `@131-react-performance` | React-specific       |
+| 140 | `@140-security`          | Security guidelines  |
+| 145 | `@145-error-recovery`    | Error recovery guide |
+
+## Reference (150+) - Special Purpose
+
+| #   | Rule                       | Purpose        |
+| --- | -------------------------- | -------------- |
+| 200 | `@200-implement-from-plan` | Plan execution |
+
+## Token Budget
+
+| Layer         | Rules | Tokens | Notes           |
+| ------------- | ----- | ------ | --------------- |
+| Core          | 5     | ~650   | Always loaded   |
+| Context (1-2) | 2-4   | ~900   | By file globs   |
+| On-demand (1) | 1     | ~400   | Manual @mention |
+| **Advanced**  | **1** | **~350** | **2026 patterns (124-129)** |
+| **Session**   | **~9** | **~2,300** | **+18% for advanced features** |
+
+**Notes:**
+- Advanced rules (124-129) loaded on-demand for specific workflows
+- Token increase offset by token optimization rule (Rule 127)
+- Net token reduction via Tool Search and progressive loading strategies

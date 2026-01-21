@@ -1,0 +1,373 @@
+---
+description: 'Semantic Search: Beyond grep/regex to understanding code patterns and relationships'
+alwaysApply: false
+---
+
+# Semantic Code Search Patterns
+
+> **Philosophy**: Move beyond grep/regex to understand code intent and relationships.
+> Find patterns by MEANING, not text matching.
+
+## Why Semantic Search Matters
+
+### Text Search (Grep) Problems
+
+❌ Case sensitivity failures
+❌ Partial matches return noise
+❌ Can't understand relationships
+❌ One search ≠ complete picture
+❌ Manual pattern correlation needed
+
+**Example**: Searching for `useState` finds 50+ unrelated files
+
+### Semantic Search Solution
+
+✅ Understand intent (find all state management)
+✅ Find related patterns automatically
+✅ Skip false positives
+✅ One query = comprehensive result
+✅ Relationships shown clearly
+
+**Example**: "How is user state managed?" → Shows useState + Zustand stores + context
+
+## Semantic Search in Cursor
+
+### Using @Codebase (Semantic)
+
+```
+@Codebase "How is error handling done in API calls?"
+
+Returns:
+- try-catch patterns
+- Error boundaries
+- React Query error handlers
+- Toast notifications
+- All related by semantic meaning
+```
+
+**Compare to grep:**
+```bash
+grep -r "catch\|error\|Error" src/  # 1000+ matches, noisy
+```
+
+### Query Patterns for Common Tasks
+
+#### Pattern Recognition
+
+```
+@Codebase "Show me all authentication flows"
+→ Login component
+  → useAuth hook
+  → API call pattern
+  → Token storage
+  → Route guards
+  → All semantically connected
+```
+
+#### Architecture Questions
+
+```
+@Codebase "How is state shared between pages?"
+→ Zustand store usage
+  → Context providers
+  → Prop drilling patterns
+  → API state management
+```
+
+#### Performance Issues
+
+```
+@Codebase "Where are expensive computations?"
+→ useMemo patterns
+  → useCallback handlers
+  → Component memoization
+  → React Query caching
+```
+
+#### Security Concerns
+
+```
+@Codebase "How is sensitive data handled?"
+→ LocalStorage usage
+  → Environment variable patterns
+  → API header construction
+  → Token management
+```
+
+## @Codebase vs @file vs Grep
+
+### When to Use Each
+
+| Task | Use | Why |
+|------|-----|-----|
+| Understand pattern | @Codebase (semantic) | Finds all related code |
+| Check specific file | @file | Direct file access |
+| Find exact string | grep | Text matching |
+| Understanding architecture | @Codebase | See relationships |
+| Verify naming | grep | Literal match |
+| Find examples | @Codebase | Find similar patterns |
+| Count occurrences | grep -c | Fast count |
+
+### Decision Tree
+
+```
+Need to find code?
+├── Understand the pattern/intent?
+│   └── @Codebase (semantic search)
+├── Already know the file?
+│   └── @file (direct access)
+├── Find exact text string?
+│   └── grep (regex search)
+└── Find similar patterns?
+    └── @Codebase (examples)
+```
+
+## Query Strategy
+
+### Bad: Too Specific
+
+```
+@Codebase "Where is const userName = getUserName() called?"
+← Finds only exact match
+```
+
+### Good: Intent-Focused
+
+```
+@Codebase "How is user information loaded when app starts?"
+← Finds initialization patterns, hooks, API calls, all related
+```
+
+### Better: Problem-Oriented
+
+```
+@Codebase "Show me all places where user data might be stale after logout"
+← Understands semantic relationships, cache invalidation patterns
+```
+
+## Semantic Query Examples
+
+### API Integration Patterns
+
+```
+@Codebase "How do we fetch data from the API?"
+
+Results:
+- useQuery patterns (React Query)
+- Fetch/axios setup
+- Error handling
+- Loading states
+- Token injection
+- All in one search
+```
+
+### State Management Patterns
+
+```
+@Codebase "Where is app state stored?"
+
+Results:
+- Zustand store definitions
+- Context providers
+- Local component state
+- Redux patterns (if used)
+- All state sources visible
+```
+
+### Component Composition
+
+```
+@Codebase "How are form components structured?"
+
+Results:
+- Form wrapper components
+- Input field patterns
+- Validation logic
+- Submission handlers
+- Related utilities
+- All connected patterns
+```
+
+### Testing Patterns
+
+```
+@Codebase "How do we test async operations?"
+
+Results:
+- Mock API responses
+- waitFor() patterns
+- act() usage
+- Assertion patterns
+- Test setup/teardown
+```
+
+## Comparing Similar Patterns
+
+### Single File Approach (Too Limited)
+
+```
+@file src/pages/UserProfile/index.tsx
+← Shows only this file
+← Missing related components, hooks, utilities
+```
+
+### Semantic Approach (Complete Picture)
+
+```
+@Codebase "How is user profile page built?"
+
+Returns:
+- UserProfile page
+- useUserProfile hook
+- ProfileHeader component
+- ProfileStats widget
+- API calls
+- State management
+- Error handling
+- All parts visible
+```
+
+## Semantic Search for Refactoring
+
+### Find Refactoring Candidates
+
+```
+@Codebase "Show me repeated error handling patterns"
+→ Identifies candidates for error handling utility
+```
+
+```
+@Codebase "Where are similar component patterns repeated?"
+→ Find opportunities to extract shared components
+```
+
+```
+@Codebase "How is form validation done in different places?"
+→ Identify inconsistent patterns, refactoring targets
+```
+
+### Plan Architecture Changes
+
+```
+@Codebase "All places where UserContext is used"
+→ Understand refactoring scope
+→ Plan migration to Zustand
+```
+
+## Combining Searches
+
+### Multi-Layer Investigation
+
+```
+Step 1: @Codebase "High-level architecture"
+        ↓ Understand structure
+
+Step 2: @Codebase "How is authentication enforced?"
+        ↓ Find specific pattern
+
+Step 3: @file src/shared/auth/hooks.ts
+        ↓ Read detailed implementation
+
+Step 4: grep "RefreshToken" src/
+        ↓ Find all usages
+```
+
+## Integration with Other Tools
+
+### Semantic Search + Beads
+
+```bash
+# Create task based on semantic findings
+bd create "Refactor: Extract error handler utility" \
+  --description="Found in: @Codebase 'error handling patterns'"
+```
+
+### Semantic Search + /review
+
+```
+Use @Codebase to understand patterns before reviewing
+@Codebase "How are components typically tested?"
+→ Compare PR against established patterns
+```
+
+### Semantic Search + /plan
+
+```
+Use @Codebase to understand existing architecture
+@Codebase "Current state management in [feature area]"
+→ Plan implementation against existing patterns
+```
+
+## Semantic Search Limitations & Workarounds
+
+### Limitation: Vague Results
+
+**Problem**: Query too general
+```
+@Codebase "show me React code"  ← 10,000+ results
+```
+
+**Solution**: Be specific about intent
+```
+@Codebase "How do we handle API errors in components?"  ← Focused
+```
+
+### Limitation: Missing Context
+
+**Problem**: Need to see specific file
+```
+@Codebase "error handling"  ← Don't know exact location
+```
+
+**Solution**: Combine with @file
+```
+@Codebase "error handling patterns"  ← Find patterns
+@file src/shared/ui/ErrorBoundary.tsx  ← Then inspect specific file
+```
+
+### Limitation: Language Barriers
+
+**Problem**: Query in wrong language
+```
+@Codebase "как обрабатывать ошибки"  ← Russian
+```
+
+**Solution**: Use English for code searches
+```
+@Codebase "how to handle errors in API"  ← English
+```
+
+## Best Practices
+
+### DO:
+- ✅ Ask about INTENT ("How is X done?")
+- ✅ Focus on PATTERNS ("Show me all auth flows")
+- ✅ Combine searches (semantic + specific file)
+- ✅ Use for architecture understanding
+- ✅ Find refactoring targets
+
+### DON'T:
+- ❌ Use for exact text matching (use grep)
+- ❌ Ask questions like "Where is 'userId' defined?"
+- ❌ Expect regex patterns to work
+- ❌ Use for counting occurrences (use grep -c)
+- ❌ Search without context
+
+## Related Rules
+
+- @105-tool-selection.mdc - When to use which tool
+- @110-ai-workflow.mdc - MCP-first approach
+- @021-core-principles.mdc - Code patterns and architecture
+
+## Quick Reference
+
+```
+Understanding code → @Codebase (semantic)
+Viewing file → @file (direct)
+Finding text → grep (regex)
+Learning patterns → @Codebase + @file combo
+Refactoring scope → @Codebase investigation
+Architecture decisions → @Codebase analysis
+```
+
+Remember: Semantic search understands meaning. Use it to answer "How does X work?" Not "Where is string Y?"

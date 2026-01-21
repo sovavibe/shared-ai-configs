@@ -1,0 +1,131 @@
+---
+description: 'FSD architecture, layered patterns, SOLID principles, dependency injection'
+globs: ['src/app/**/*.ts', 'src/app/**/*.tsx', 'src/pages/**/*.tsx']
+alwaysApply: false
+---
+
+# Architecture Guidelines
+
+## Overview
+
+Architecture guidelines and patterns for this project.
+
+## Core Architecture Principles
+
+### FSD (Feature-Sliced Design)
+
+```
+src/
+├── app/       # Entry, providers, router
+├── pages/     # Route pages
+├── widgets/   # Cross-page UI
+├── shared/    # Reusable (api/, ui/, utils/)
+└── entities/  # Domain entities
+```
+
+### Layered Architecture
+
+```
+Presentation Layer
+├── Components
+├── Pages
+└── Widgets
+
+Business Logic Layer
+├── Services
+├── Use Cases
+└── Repositories
+
+Data Layer
+├── API Clients
+├── Data Sources
+└── Models
+```
+
+## Design Patterns
+
+### Dependency Injection
+
+```ts
+class Service {
+  constructor(private repository: Repository) {}
+}
+
+// Usage
+const service = new Service(new Repository())
+```
+
+### Repository Pattern
+
+```ts
+interface Repository {
+  getById(id: string): Promise<Entity>
+  save(entity: Entity): Promise<Entity>
+}
+
+class EntityRepository implements Repository {
+  getById(id: string): Promise<Entity> {
+    // Implementation
+  }
+
+  save(entity: Entity): Promise<Entity> {
+    // Implementation
+  }
+}
+```
+
+### Service Layer
+
+```ts
+class UserService {
+  constructor(private userRepository: UserRepository) {}
+
+  async getUser(id: string): Promise<User> {
+    return this.userRepository.getById(id)
+  }
+}
+```
+
+## Best Practices
+
+### Modularity
+
+- Keep modules focused on single responsibility
+- Minimize dependencies between modules
+- Use clear interfaces
+- Follow SOLID principles
+
+### Scalability
+
+- Design for future growth
+- Use abstractions
+- Avoid tight coupling
+- Plan for extensibility
+
+### Maintainability
+
+- Write clear documentation
+- Use consistent patterns
+- Keep code readable
+- Follow coding standards
+
+## Technology Stack Integration
+
+### Frontend
+
+- **React 18**: Component-based UI
+- **TypeScript**: Type safety
+- **Vite**: Build tool
+- **Ant Design**: UI components
+
+### Backend Integration
+
+- **API Client**: Orval generated clients
+- **State Management**: TanStack Query, Zustand
+- **Authentication**: Azure AD OAuth 2.0
+
+## Related
+
+- @002-tech-stack - Technology stack details
+- @010-react-patterns - React patterns that follow architecture
+- @004-quality - Quality rules that enforce architecture compliance

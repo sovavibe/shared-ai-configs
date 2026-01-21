@@ -1,0 +1,152 @@
+# .ai-project.yaml - Project-specific AI configuration
+# Copy this file to your project root and customize
+# Version: 1.0.0
+
+# ═══════════════════════════════════════════════════════════════
+# PROJECT METADATA
+# ═══════════════════════════════════════════════════════════════
+project:
+  name: "Customer Portal UI"
+  description: "Enterprise React app with FSD architecture"
+  role: "Senior Frontend Developer"
+  language: "Russian"  # Language for docs/plans (English for code comments)
+
+# ═══════════════════════════════════════════════════════════════
+# TECH STACK
+# ═══════════════════════════════════════════════════════════════
+stack:
+  type: "react"  # react | node | java | python
+
+  framework:
+    name: "React"
+    version: "18.3"
+
+  build:
+    tool: "Vite"
+    version: "5.4"
+
+  language:
+    name: "TypeScript"
+    version: "5.5"
+
+  ui:
+    library: "Ant Design"
+    version: "5.22"
+    styling: "styled-components"
+
+  state:
+    server: "TanStack Query 5"
+    client: "Zustand 5"
+
+  api:
+    codegen: "Orval 7"
+    client: "Axios"
+    mocks: "MSW 2"
+
+  auth: "Azure AD OAuth 2.0"
+  runtime: "Node.js 20+"
+  linter: "ESLint"
+
+# ═══════════════════════════════════════════════════════════════
+# ARCHITECTURE
+# ═══════════════════════════════════════════════════════════════
+architecture:
+  type: "FSD"  # FSD | Clean | Layered | Modular
+  structure: |
+    src/
+    ├── app/       # Entry, providers, router
+    ├── pages/     # Route pages
+    ├── widgets/   # Cross-page UI
+    ├── shared/    # Reusable (api/, ui/, utils/)
+    └── mocks/     # MSW handlers (dev only)
+
+  import_rule: "pages → widgets → shared (never reverse)"
+
+# ═══════════════════════════════════════════════════════════════
+# INTEGRATIONS
+# ═══════════════════════════════════════════════════════════════
+integrations:
+  vcs:
+    type: "gitlab"  # gitlab | github | bitbucket
+    project_id: 456
+    group: "my-group"
+    main_branch: "main"
+
+  issues:
+    type: "jira"  # jira | linear | github-issues | beads-only
+    key: "VP"
+    board_id: 123
+    instance: "https://jira.company.com"
+
+  task_tracking:
+    type: "beads"
+    enabled: true
+    key_prefix: "VP-"
+
+  mcp_servers:
+    - "hindsight-alice"
+    - "allpepper-memory-bank"
+    - "MCP_DOCKER"
+    - "pal"
+    - "Snyk"
+    - "zread"
+    - "Figma"
+    - "claude-in-chrome"
+
+# ═══════════════════════════════════════════════════════════════
+# COMMANDS
+# ═══════════════════════════════════════════════════════════════
+commands:
+  dev: "npm run dev"
+  build: "npm run build"
+  lint: "npm run lint"
+  test: "npm run test"
+  codegen: "npm run codegen"
+  quality_gates: "npm run quality:gates"
+
+  # Task tracking commands (if beads enabled)
+  task_ready: "bd ready"
+  task_update: "bd update"
+  task_close: "bd close"
+  task_sync: "bd sync --flush-only"
+
+# ═══════════════════════════════════════════════════════════════
+# PATHS
+# ═══════════════════════════════════════════════════════════════
+paths:
+  codegen_output: "src/shared/api/generated/"
+  env_config: ".env.development.local"
+  cursor_rules: ".cursor/rules/"
+  claude_docs: ".claude/"
+  context_handoff: ".claude/context-handoff/current.md"
+
+# ═══════════════════════════════════════════════════════════════
+# IDE SETUP
+# ═══════════════════════════════════════════════════════════════
+ide:
+  primary: "Cursor"
+  secondary: "Claude Code"
+  dual_mode: true
+
+# ═══════════════════════════════════════════════════════════════
+# OPTIONS
+# ═══════════════════════════════════════════════════════════════
+options:
+  dev_server_port: 5173
+  model_switching: "/model sonnet"
+  orchestration: true
+  sdd_enabled: true
+  token_optimization: "60-70%"
+
+  skip_rules:
+    enhancement: "Plan → Implement → Review"
+    bugfix: "Plan → Implement"
+    simple_fix: "Implement only"
+
+# ═══════════════════════════════════════════════════════════════
+# SHARED-AI-CONFIGS SOURCE
+# ═══════════════════════════════════════════════════════════════
+shared_configs:
+  source: "~/work/shared-ai-configs"  # or git URL
+  method: "symlink"  # symlink | copy | generate
+  auto_update: true

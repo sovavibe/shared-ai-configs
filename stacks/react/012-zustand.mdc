@@ -1,0 +1,125 @@
+---
+description: 'Zustand store patterns'
+globs: ['src/**/store/**/*.ts', 'src/**/stores/**/*.ts']
+alwaysApply: false
+---
+
+# Zustand Patterns
+
+## Core Rules
+
+1. **One store per domain** - auth-store, ui-store, not app-store
+2. **Always use devtools** - for debugging
+3. **Selectors with shallow** - prevent unnecessary re-renders
+4. **Persist only essential** - user preferences, not derived state
+
+## Store Structure
+
+```typescript
+interface AuthState {
+  user: User | null
+  isAuthenticated: boolean
+  login: (credentials: Credentials) => Promise<void>
+  logout: () => void
+}
+
+export const useAuthStore = create<AuthState>()(
+  devtools(
+    persist(
+      (set) => ({
+        user: null,
+        isAuthenticated: false,
+        login: async (credentials) => {
+          const user = await api.login(credentials)
+          set({ user, isAuthenticated: true })
+        },
+        logout: () => set({ user: null, isAuthenticated: false }),
+      }),
+      { name: 'auth-storage' },
+    ),
+  ),
+)
+```
+
+## Selectors
+
+```typescript
+// ✅ Selector with shallow - prevents re-renders
+const { user, isAuthenticated } = useAuthStore(
+  useShallow((state) => ({ user: state.user, isAuthenticated: state.isAuthenticated })),
+)
+
+// ✅ Single value - no shallow needed
+const user = useAuthStore((state) => state.user)
+
+// ❌ Never use full state
+const state = useAuthStore()
+```
+
+## Middleware Stack
+
+```typescript
+create<State>()(
+  devtools(
+    persist(
+      immer((set) => ({ ... })),
+      { name: 'storage-key' }
+    )
+  )
+)
+```
+
+**Order matters**: devtools → persist → immer → (set)
+
+## File Organization
+
+```
+src/stores/
+├── auth/
+│   ├── index.ts       # Barrel export
+│   ├── auth-store.ts  # Store
+│   └── selectors.ts   # Selectors
+└── index.ts           # Global export
+```
+
+## Actions
+
+```typescript
+// ✅ Actions inside store
+const useStore = create<State>((set, get) => ({
+  items: [],
+  addItem: (item) => set((state) => ({ items: [...state.items, item] })),
+  clearItems: () => set({ items: [] }),
+}))
+
+// ❌ Never mutate outside
+useStore.setState({ items: newItems }) // Bad
+```
+
+## Async Actions
+
+```typescript
+login: async (credentials) => {
+  set({ isLoading: true })
+  try {
+    const user = await api.login(credentials)
+    set({ user, isAuthenticated: true, isLoading: false })
+  } catch (error) {
+    set({ error: error.message, isLoading: false })
+  }
+}
+```
+
+## Common Mistakes
+
+| Mistake                 | Fix                  |
+| ----------------------- | -------------------- |
+| Full state subscription | Use selectors        |
+| Derived state in store  | Compute in selectors |
+| Async in render         | Use actions          |
+| Giant store             | Split by domain      |
+
+## Related
+
+- @010-react-patterns - React component patterns
+- @011-tanstack-query - Server state management

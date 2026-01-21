@@ -1,0 +1,83 @@
+---
+description: 'PR review: TypeScript, security, React patterns, code quality'
+version: '2.1.0'
+lastUpdated: '2026-01-15'
+alwaysApply: false
+---
+
+# PR Review Standards
+
+**See also**: `.cursor/commands/core/review.md` - Full MR review workflow with abstract categories
+
+This file provides quick reference standards. For complete review workflow, use the prompt.
+
+## 🔴 Critical (Block PR)
+
+| Issue                  | Rule                          |
+| ---------------------- | ----------------------------- |
+| `any` types            | Use `unknown` + type guards   |
+| Hardcoded secrets      | Use env variables             |
+| Tokens in localStorage | Use sessionStorage/memory     |
+| Unsanitized HTML       | Avoid dangerouslySetInnerHTML |
+| Hooks in conditions    | Always at top level           |
+| Index as key           | Use unique IDs                |
+| console.log/debugger   | Remove before commit          |
+
+## 🟡 Warnings (Should Fix)
+
+| Issue                | Fix                  |
+| -------------------- | -------------------- |
+| Missing JSDoc        | Add for exports      |
+| No memoization       | Add useMemo/memo     |
+| Component >150 lines | Split into smaller   |
+| Missing tests        | Add for new features |
+| Props >5             | Extract to object    |
+
+## 🟢 Info (Nice to Have)
+
+- Lazy loading for heavy components
+- ARIA labels for accessibility
+- Additional documentation
+
+## PR Checklist
+
+```markdown
+## Critical
+
+- [ ] No `any` types
+- [ ] No hardcoded secrets
+- [ ] No console.log/debugger
+- [ ] No hooks in conditions
+
+## Automated
+
+- [ ] `npm run lint` passes
+- [ ] `npm run build` succeeds
+- [ ] Tests pass
+```
+
+## Comment Templates
+
+```markdown
+🔴 **BLOCKING**: [Issue]
+**Problem**: [Why]
+**Solution**: [How to fix]
+
+🟡 **Warning**: [Issue]
+Consider [suggestion].
+
+💡 **Suggestion**: [Optional improvement]
+```
+
+## Top 10 Issues
+
+1. any types
+2. Missing error handling
+3. No loading states
+4. console.log left in
+5. Hardcoded values
+6. Missing JSDoc
+7. Props drilling
+8. Huge components
+9. No tests
+10. Index as key

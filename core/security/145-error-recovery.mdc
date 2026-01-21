@@ -1,0 +1,249 @@
+---
+description: 'Error recovery strategies for common failure scenarios'
+version: '1.0.0'
+lastUpdated: '2026-01-19'
+alwaysApply: false
+---
+
+# Error Recovery Guide
+
+## Quality Gate Failures
+
+### ESLint Errors
+
+```bash
+# 1. Try auto-fix first
+npm run lint -- --fix
+
+# 2. Review changes
+git diff
+
+# 3. Manual fix remaining issues
+# Check error messages, fix one by one
+
+# 4. Re-run lint
+npm run lint
+```
+
+**Common Issues:**
+
+| Error                         | Fix                         |
+| ----------------------------- | --------------------------- |
+| `no-explicit-any`             | Use `unknown` + type guard  |
+| `no-unused-vars`              | Remove or prefix with `_`   |
+| `react-hooks/exhaustive-deps` | Add missing deps or justify |
+| `import/order`                | Let auto-fix handle         |
+
+### TypeScript Errors
+
+```bash
+# 1. Run typecheck
+npm run typecheck
+
+# 2. Read error carefully
+# TS errors are precise - follow the message
+```
+
+**Common Fixes:**
+
+| Error                                    | Solution                                  |
+| ---------------------------------------- | ----------------------------------------- |
+| `Type 'X' is not assignable to 'Y'`      | Check types match, add conversion         |
+| `Property 'x' does not exist`            | Add to interface or use optional chaining |
+| `Object is possibly 'undefined'`         | Add null check or `?.`                    |
+| `Argument of type 'X' is not assignable` | Check function signature                  |
+
+**NEVER:** Use `as` to silence errors. Fix the actual type issue.
+
+### Test Failures
+
+```bash
+# 1. Run failing tests
+npm run test -- --run
+
+# 2. Read failure output
+# Shows expected vs received
+
+# 3. Determine cause:
+#    - Test is wrong: update test
+#    - Code is wrong: fix implementation
+#    - Both need update: fix both
+
+# 4. Re-run
+npm run test -- --run
+```
+
+**NEVER:** Comment out failing tests or use `.skip`.
+
+### Build Failures
+
+```bash
+# 1. Run build
+npm run build
+
+# 2. Check console output
+# Usually shows file and line number
+
+# 3. Common causes:
+#    - Import error: check path, case sensitivity
+#    - Type error: run typecheck first
+#    - Missing dependency: npm install
+```
+
+## Git Recovery
+
+### Push Rejected (Non-Fast-Forward)
+
+```bash
+# 1. Fetch latest
+git fetch origin
+
+# 2. Rebase on remote
+git pull --rebase origin <branch>
+
+# 3. Resolve conflicts if any
+# Edit conflicted files, then:
+git add <resolved-files>
+git rebase --continue
+
+# 4. Run quality gates
+npm run quality:gates
+
+# 5. Push
+git push
+```
+
+### Accidental Commit (Not Pushed)
+
+```bash
+# Undo last commit, keep changes staged
+git reset --soft HEAD~1
+
+# Or undo and unstage
+git reset HEAD~1
+
+# Or completely discard
+git reset --hard HEAD~1
+```
+
+### Accidental Commit (Already Pushed)
+
+```bash
+# Create revert commit (safe)
+git revert HEAD
+git push
+
+# NEVER force push on shared branches
+```
+
+### Wrong Branch
+
+```bash
+# If not committed yet
+git stash
+git checkout correct-branch
+git stash pop
+
+# If committed to wrong branch
+git checkout correct-branch
+git cherry-pick <commit-hash>
+git checkout wrong-branch
+git reset --hard HEAD~1
+```
+
+## MCP Tool Failures
+
+### Hindsight Not Responding
+
+**Fallback:**
+
+1. Search codebase for patterns: `Grep: "pattern"`
+2. Check code comments for decisions
+3. Note in Beads task to retry later
+
+### Context7 Unavailable
+
+**Fallback:**
+
+1. Use WebSearch for library docs
+2. Read local `node_modules` source
+3. Check library GitHub README
+
+### Jira Connection Failed
+
+**Continue work:**
+
+1. Use Beads for local tracking
+2. Note Jira sync needed
+3. Manual update when connection restored
+
+## Beads Recovery
+
+### Sync Failed
+
+```bash
+# 1. Check status
+bd sync --status
+
+# 2. If conflicts, resolve manually
+bd list --status=all
+
+# 3. Force sync if needed
+bd sync --force
+```
+
+### Lost Task Context
+
+```bash
+# 1. Check what's open
+bd list --status=in_progress
+
+# 2. Get full context
+bd show <id> --json
+
+# 3. If task lost, recreate
+bd create --title="[Recovered] Task description"
+```
+
+## Session Recovery
+
+### Lost Context Mid-Session
+
+1. Check Beads: `bd list --status=in_progress`
+2. Check git: `git status`, `git log -5`
+3. Check Hindsight: `recall("last session")`
+4. Review recent files: `ls -lt src/ | head -20`
+
+### Quality Gates Keep Failing
+
+```bash
+# 1. Identify the blocker
+npm run lint          # ESLint
+npm run typecheck     # TypeScript
+npm run test -- --run # Tests
+
+# 2. Fix in order:
+#    TypeScript first (types affect everything)
+#    ESLint second (style issues)
+#    Tests last (verify behavior)
+
+# 3. After each fix, re-run gates
+npm run quality:gates
+```
+
+## When to Ask for Help
+
+Escalate if:
+
+- Same error persists after 3 attempts
+- Error message is unclear
+- Requires permissions you don't have
+- Affects shared infrastructure
+- Security-related issue
+
+Document the issue:
+
+1. Error message (full text)
+2. Steps to reproduce
+3. What you've tried
+4. Current state

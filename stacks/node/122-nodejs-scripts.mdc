@@ -1,0 +1,136 @@
+---
+description: 'Node.js scripts: logging, validation, CLI, error handling, testing'
+version: '2.2.0'
+lastUpdated: '2026-01-16'
+globs:
+  - 'scripts/**/*.ts'
+alwaysApply: false
+---
+
+# Node.js Scripts Standards
+
+**Stack**: Node.js 20+ | TypeScript 5.5 | ESM | Zod | yargs | Vitest
+
+**Best Practices from Cursor Directory** (https://cursor.directory/rules):
+
+## Rules
+
+| ❌ Never              | ✅ Always                 |
+| --------------------- | ------------------------- |
+| `console.log`         | `logger.info()` (Winston) |
+| `userLoggerInterface` | `logger` (unified)        |
+| Direct `process.env`  | Zod-validated config      |
+| Manual `loadEnvFiles` | Use `shared/config.ts`    |
+| Manual `process.argv` | yargs                     |
+| Generic `Error`       | Custom error classes      |
+| `let` keyword         | `const` only              |
+| Mutations             | Immutable updates         |
+| `forEach` with push   | `map/filter/reduce`       |
+
+## Code Limits
+
+| Metric     | Max       |
+| ---------- | --------- |
+| File       | 300 lines |
+| Function   | 30 lines  |
+| Complexity | 10        |
+| Nesting    | 3 levels  |
+| Params     | 4         |
+
+## TypeScript Best Practices (from Cursor Directory)
+
+- **Avoid `any` type**: Always declare types for function parameters and return values
+- **Use `import type`**: Prefer `import type` when only using something as a type
+- **Schema validation**: Use Zod for validating inputs/data shapes (already in use)
+- **Single export per file**: Files should export only one thing for clarity
+- **Small functions**: Functions should be small, single-purpose; avoid deeply nested logic
+
+## Patterns
+
+```typescript
+// Logging: Use unified Winston logger from shared
+import { logger } from '../shared/logger.js'
+
+// Default: readable text format (all scripts)
+logger.info('Message') // Shows readable text
+logger.error('Error', error, { context: 'details' }) // Always shown
+
+// For structured JSON output (debugging), set LOG_FORMAT=json:
+// LOG_FORMAT=json npm run script
+// Or use DEBUG=true for verbose output
+
+// File logging: Use Winston's built-in rotation (no manual archiving!)
+// Set LOG_TO_FILE=true to enable
+// Winston automatically handles rotation via maxsize and maxFiles options
+// No need for custom archiving logic - Winston does it internally
+
+// Data output: Use logger.data for JSON data piping (not logging)
+logger.data.json(data) // Pretty JSON to stdout
+logger.data.jsonCompact(data) // Minified JSON
+logger.data.text('plain text') // Plain text to stdout
+
+// Config & Env: loadEnvFiles is automatic on shared/config import
+import { getGitLabConfig } from '../shared/config.js'
+const config = getGitLabConfig() // Throws if invalid
+
+// Error handling
+try {
+  await action()
+} catch (error) {
+  if (error instanceof ValidationError) {
+    logger.error('Validation failed', error)
+  }
+  process.exit(1)
+}
+```
+
+## Functional Programming
+
+```typescript
+// ❌ Mutation
+const results: T[] = []
+items.forEach((item) => results.push(process(item)))
+
+// ✅ Functional
+const results = items.filter(valid).map(process)
+
+// ❌ Object mutation
+const groups: Record<string, T[]> = {}
+items.forEach((item) => {
+  groups[key].push(item)
+})
+
+// ✅ Reduce
+const groups = items.reduce(
+  (acc, item) => ({
+    ...acc,
+    [key]: [...(acc[key] ?? []), item],
+  }),
+  {},
+)
+```
+
+## Testing
+
+```typescript
+// Use vi.stubEnv for env vars
+vi.stubEnv('TOKEN', 'test-value')
+
+// Naming: should <expected> when <condition>
+;('should throw ValidationError when token is missing')
+
+// No magic numbers
+const EXPECTED_COUNT = 5
+expect(results).toHaveLength(EXPECTED_COUNT)
+```
+
+## File Organization (from Cursor Directory)
+
+- **Group by feature/domain**: Organize scripts by purpose (e.g., `scripts/gitlab/`, `scripts/cursor/`, `scripts/quality/`)
+- **One export per file**: Maintain clarity with single exports
+- **Reflect project structure**: Folder structure should mirror logical organization
+
+## References
+
+- Cursor Directory: https://cursor.directory/rules/node
+- Cursor Directory TypeScript: https://cursor.directory/rules/typescript

@@ -1,0 +1,154 @@
+---
+description: 'Specification-Driven Development (SDD) patterns - executable specs as binding contracts'
+alwaysApply: false
+---
+
+# @124 SDD Patterns
+
+## When to Apply
+
+- Before writing ANY code for new features
+- Complex requirements needing clarification
+- Multi-agent workflows (Perles orchestration)
+- Anything more complex than a quick fix
+
+## Pattern 1: Specification File Format
+
+**Location**: `docs/specs/feature-name.spec.md`
+
+**Structure**:
+```markdown
+# Feature Spec: [Name]
+
+## Overview
+- **Purpose**: What problem does this solve?
+- **Scope**: What's included/excluded?
+- **Owner**: Who's responsible?
+
+## Requirements (Executable)
+
+### R1: [Requirement]
+- **Given**: Initial state
+- **When**: Action occurs
+- **Then**: Expected result
+- **Acceptance Criteria**: How to verify
+
+### R2: ...
+
+## Technical Design
+- **Architecture**: How it connects to system
+- **API Changes**: New endpoints/types
+- **Data Flow**: How data moves
+- **Error Handling**: Failure scenarios
+
+## Testing Strategy
+- **Unit Tests**: Component level
+- **Integration Tests**: API level
+- **E2E Tests**: User workflows
+
+## Acceptance Checklist
+- [ ] Requirements satisfied
+- [ ] Tests passing (unit + integration + e2e)
+- [ ] Code review approved
+- [ ] Snyk scan clean
+- [ ] Documentation updated
+```
+
+## Pattern 2: Specification as Contract
+
+**Process**:
+1. Write spec BEFORE code
+2. Pass spec to implementation agent
+3. Agent writes code to satisfy spec
+4. Verification: Does code satisfy spec?
+
+**Tool**: Use Perles "from-spec" workflow
+```bash
+# Create spec file
+echo "# Feature Spec: [Name]" > docs/specs/feature.spec.md
+# Add requirements and acceptance criteria
+
+# Run Perles from spec
+bd update VP-123 --labels="from-spec"
+perles  # → Select "Specification-Driven Implementation"
+```
+
+## Pattern 3: Verification Flow
+
+```
+Spec Written → Code Generated → Verification:
+  ✓ All requirements met?
+  ✓ All acceptance criteria satisfied?
+  ✓ Error cases handled?
+  ✓ Tests passing?
+  → If NO: Update code or spec, re-verify
+  → If YES: Merge to main
+```
+
+## Examples
+
+### Example: Add Pagination to Table
+
+**Spec** (docs/specs/table-pagination.spec.md):
+```markdown
+# Feature Spec: Table Pagination
+
+## R1: User can navigate pages
+- Given: Table with >20 items
+- When: User clicks next page button
+- Then: Table shows items 21-40, UI updates
+
+## R2: URL reflects current page
+- Given: User on page 2
+- When: Page loads
+- Then: URL contains ?page=2
+
+## R3: Page persists on refresh
+- Given: User on page 3
+- When: User refreshes page
+- Then: Page 3 is loaded automatically
+```
+
+**Implementation**:
+- Code reads spec file
+- Implements pagination logic
+- Tests verify all R1, R2, R3 requirements
+
+## Integration with Perles
+
+**Perles "Specification-Driven" workflow**:
+1. Coordinator reads spec
+2. Plans implementation tasks
+3. Coder implements to spec
+4. Verifier checks spec satisfaction
+5. If incomplete: returns to Coder
+6. If complete: merges
+
+**Usage**:
+```bash
+bd create --title="Feature: User Onboarding" --type=feature
+# Add requirements to spec
+bd update VP-123 --labels="from-spec"
+perles  # Select "Specification-Driven"
+```
+
+## Benefits
+
+| Aspect | Before SDD | With SDD |
+|--------|-----------|----------|
+| Requirements clarity | Verbal discussions | Executable specs |
+| Code review cycle | 3-4 iterations | 1-2 iterations (spec-driven) |
+| Rework rate | 40% | <10% (spec is contract) |
+| Multi-agent coordination | Manual sync | Automatic (all read same spec) |
+| Testing coverage | Post-hoc | Built into spec |
+
+## When NOT to Use
+
+- Quick bug fixes (< 30 minutes)
+- Simple UI tweaks
+- Documentation updates
+- Anything already clearly specified
+
+---
+
+**Enforce this rule**: All features must start with spec file creation.

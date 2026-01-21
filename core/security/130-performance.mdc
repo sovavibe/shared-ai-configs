@@ -1,0 +1,159 @@
+---
+description: 'Performance optimization: Web Vitals, code splitting, memoization'
+alwaysApply: false
+---
+
+# Performance Optimization
+
+## Overview
+
+Performance guidelines and optimization techniques.
+
+## Performance Metrics
+
+| Metric                         | Target  | Measurement       |
+| ------------------------------ | ------- | ----------------- |
+| LCP (Largest Contentful Paint) | < 2.5s  | Web Vitals        |
+| FCP (First Contentful Paint)   | < 1.8s  | Web Vitals        |
+| TTI (Time to Interactive)      | < 3.8s  | Web Vitals        |
+| Bundle Size                    | < 1MB   | Build analysis    |
+| Memory Usage                   | < 100MB | Browser dev tools |
+
+## Optimization Techniques
+
+### Code Splitting
+
+```tsx
+const HeavyComponent = lazy(() => import('./HeavyComponent'))
+
+// Usage with Suspense
+;<Suspense fallback={<Loading />}>
+  <HeavyComponent />
+</Suspense>
+```
+
+### Memoization
+
+```tsx
+const memoizedFunction = useMemo(() => {
+  // Expensive computation
+}, [dependencies])
+
+const memoizedValue = useMemo(() => value, [value])
+```
+
+### Virtualization
+
+For virtualizing long lists, install `react-window`:
+
+```bash
+npm install react-window @types/react-window
+```
+
+Then use:
+
+```tsx
+import { FixedSizeList as List } from 'react-window'
+;<List height={500} itemCount={1000} itemSize={35} width={300}>
+  {({ index, style }) => <div style={style}>Row {index}</div>}
+</List>
+```
+
+### Lazy Loading
+
+```tsx
+const ImageComponent = ({ src, alt }) => {
+  const [load, setLoad] = useState(false)
+
+  useEffect(() => {
+    const img = new Image()
+    img.src = src
+    img.onload = () => setLoad(true)
+  }, [src])
+
+  if (!load) {
+    return <div>Loading...</div>
+  }
+
+  return <img src={src} alt={alt} />
+}
+```
+
+## Performance Analysis
+
+### Bundle Analysis
+
+```bash
+# Analyze bundle size with vite-bundle-visualizer
+npx vite-bundle-visualizer
+
+# Alternative: Use source-map-explorer
+npm run build && npx source-map-explorer 'dist/**/*.js'
+```
+
+### Profiling
+
+```tsx
+// Use React DevTools Profiler
+import { Profiler } from 'react'
+;<Profiler id="MyComponent" onRender={onRender}>
+  <MyComponent />
+</Profiler>
+```
+
+### Memory Leak Detection
+
+```tsx
+// Monitor memory usage
+window.addEventListener('memorypressure', () => {
+  console.log('Memory pressure detected')
+})
+```
+
+## Best Practices
+
+### Frontend Performance
+
+- Implement code splitting
+- Use lazy loading
+- Optimize images
+- Minimize re-renders
+- Use efficient data structures
+
+### Backend Performance
+
+- Implement caching
+- Optimize database queries
+- Use connection pooling
+- Monitor API performance
+
+### Build Performance
+
+- Optimize build process
+- Use caching
+- Parallelize builds
+- Minimize dependencies
+
+## Performance Commands
+
+```bash
+# Analyze bundle size
+npx vite-bundle-visualizer
+
+# Profile React components
+npm run dev
+# Then use React DevTools Profiler (Chrome DevTools)
+
+# Check build performance
+npm run build
+# Review terminal output for build times
+
+# Measure Core Web Vitals
+# Use Chrome DevTools Lighthouse or web-vitals library
+```
+
+## Related
+
+- @004-quality - Quality rules that include performance
+- @010-react-patterns - React patterns for performance
+- @040-testing - Performance testing patterns

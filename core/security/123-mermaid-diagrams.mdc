@@ -1,0 +1,102 @@
+---
+description: 'Mermaid diagram standards for documentation'
+version: '1.0.0'
+lastUpdated: '2026-01-20'
+globs: ['**/*.md', '**/*.mdc']
+---
+
+# Mermaid Diagrams
+
+## Why Use Diagrams
+
+- Diagrams save tokens - 1 diagram = 100+ words of explanation
+- Visual context helps AI understand architecture faster
+- Theme-agnostic diagrams work in light/dark modes
+
+## Standards
+
+### DO: Use Standard Styling
+
+```mermaid
+flowchart LR
+    A[Input] --> B[Process] --> C[Output]
+```
+
+### DON'T: Custom Colors
+
+```mermaid
+flowchart LR
+    A[Input] --> B[Process] --> C[Output]
+    style A fill:#e1f5fe  ← AVOID
+    style B fill:#fff3e0  ← AVOID
+```
+
+**Why**: Custom `fill:` colors break in dark theme.
+
+## Diagram Types
+
+| Type              | Use For                    | Syntax            |
+| ----------------- | -------------------------- | ----------------- |
+| `flowchart`       | Processes, workflows       | `flowchart TD/LR` |
+| `sequenceDiagram` | API flows, interactions    | `sequenceDiagram` |
+| `graph`           | Dependencies, architecture | `graph TB/LR`     |
+| `stateDiagram-v2` | State machines             | `stateDiagram-v2` |
+
+## When to Add Diagrams
+
+Add diagram if documentation describes:
+
+- Multi-step process (3+ steps)
+- Data flow between components
+- Architecture layers/dependencies
+- Decision trees
+- State transitions
+
+## Templates
+
+### Process Flow
+
+```mermaid
+flowchart LR
+    A["Step 1"] --> B["Step 2"] --> C["Step 3"]
+```
+
+### Architecture Layers
+
+```mermaid
+graph TB
+    subgraph "Layer 1"
+        A[Component A]
+    end
+    subgraph "Layer 2"
+        B[Component B]
+    end
+    A --> B
+```
+
+### Decision Tree
+
+```mermaid
+flowchart TD
+    A{Decision?} -->|Yes| B[Action 1]
+    A -->|No| C[Action 2]
+```
+
+### Sequence
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant S as System
+    U->>S: Request
+    S-->>U: Response
+```
+
+## Checklist
+
+Before committing diagrams:
+
+- [ ] No `style X fill:#...` lines
+- [ ] No `classDef` with colors
+- [ ] Uses `subgraph` for grouping (not colors)
+- [ ] Works in both light/dark themes

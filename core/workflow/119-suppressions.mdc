@@ -1,0 +1,151 @@
+---
+description: 'Suppression policy: refactor first, suppress only when justified'
+version: '2.2.0'
+lastUpdated: '2026-01-15'
+globs: ['src/**/*.{ts,tsx}', 'scripts/**/*.ts']
+alwaysApply: false
+---
+
+# ESLint Suppressions Policy
+
+## Iron Rule
+
+1. **REFACTOR FIRST (99%)**, suppress ONLY with WHY explanation (1%).
+2. **INDIVIDUAL SUPPRESSIONS**: Each suppression must be specific to a rule and location.
+3. **MANDATORY WHY, TODO & TASK**: Every suppression MUST include:
+   - Clear justification (`-- WHY:`)
+   - Brief explanation why refactoring is not feasible now
+   - **TODO** with Jira task reference (`VP-XXX`) for future fixing
+
+## Unified Format
+
+### Inline Suppressions (in code)
+
+**Format**:
+
+```
+// eslint-disable-next-line <rule> -- WHY: <reason>. TODO(VP-XXX): <fix_description>
+```
+
+**Components** (ALL REQUIRED):
+
+| Component           | Description                    | Example                              |
+| ------------------- | ------------------------------ | ------------------------------------ |
+| `<rule>`            | Specific ESLint rule name      | `@typescript-eslint/no-explicit-any` |
+| `WHY:`              | Clear reason from allowed list | `WHY: MSW handler types require any` |
+| `TODO(VP-XXX):`     | Jira task reference            | `TODO(VP-345): Fix MSW types`        |
+| `<fix_description>` | What needs to be done          | `Update MSW to v3`                   |
+
+**Example**:
+
+```typescript
+// ✅ GOOD: Complete format
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- WHY: MSW handler types require any. TODO(VP-345): Update MSW to v3
+
+// ❌ BAD: Missing TODO
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- WHY: MSW handler types
+
+// ❌ BAD: Missing WHY
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+// ❌ BAD: Blanket disable
+// eslint-disable-next-line
+```
+
+### Config Suppressions (in .eslintrc.cjs)
+
+**Format**:
+
+```javascript
+'<rule>': 'off', // WHY: <reason>. TODO(VP-XXX): <fix_description>
+```
+
+**Requirements**:
+
+1. Each rule MUST have its own inline comment
+2. Suppressions MUST be isolated to specific directories via `overrides`
+3. Comment MUST include `WHY:` and `TODO(VP-XXX):`
+
+**Example**:
+
+```javascript
+// ✅ GOOD: Isolated to specific directory with complete format
+{
+  files: ['scripts/gitlab/**/*.ts'],
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'off', // WHY: GitBeaker types are poorly resolved. TODO(VP-345): Create type definitions
+    '@typescript-eslint/no-unsafe-assignment': 'off', // WHY: External library types incorrect. TODO(VP-345): Fix types
+  }
+}
+
+// ❌ BAD: No isolation (applies to all files)
+rules: {
+  '@typescript-eslint/no-explicit-any': 'off', // Applies globally
+}
+
+// ❌ BAD: Missing TODO
+rules: {
+  '@typescript-eslint/no-explicit-any': 'off', // WHY: Some reason
+}
+
+// ❌ BAD: No comment at all
+rules: {
+  '@typescript-eslint/no-explicit-any': 'off',
+}
+```
+
+## Decision Tree
+
+```
+Lint warning? → Can refactor? → YES → DO IT
+                               → NO → eslint-disable + WHY + TODO
+                               → UNSURE → ASK USER!
+```
+
+## Refactor Actions (Always First)
+
+| Warning        | Action                                                        |
+| -------------- | ------------------------------------------------------------- |
+| MagicNumber    | `const MAX = 5;`                                              |
+| UnusedVariable | Remove, or use `_` prefix (`_unusedParam`) if required by API |
+| Complexity     | Split method                                                  |
+| any type       | `unknown` + type guard                                        |
+| Missing types  | Add explicit types                                            |
+| Long function  | Extract helpers                                               |
+| Deep nesting   | Use early returns                                             |
+
+## Valid Reasons (Allowed WHY values)
+
+| Reason                 | When to use                          | Example TODO                             |
+| ---------------------- | ------------------------------------ | ---------------------------------------- |
+| **External API**       | Untyped response, no types available | `TODO(VP-XXX): Add API types`            |
+| **Library limitation** | Library doesn't support strict types | `TODO(VP-XXX): Update library`           |
+| **Legacy migration**   | Migration in progress                | `TODO(VP-XXX): Complete migration`       |
+| **Performance**        | Measured bottleneck                  | `TODO(VP-XXX): Optimize after profiling` |
+| **Framework contract** | Required by yargs/zod/MSW/etc.       | `TODO(VP-XXX): Wait for library update`  |
+
+## Banned
+
+- Blanket `// eslint-disable` (must specify rule)
+- Bulk suppressions in config without per-rule comments
+- Missing `WHY:` explanation
+- Missing `TODO(VP-XXX):` reference
+- Vague reasons: "fix later", "temporary", "doesn't work otherwise"
+- Suppressing without trying to refactor first
+- Global rule disabling without directory isolation
+
+## Checklist (Before Suppress)
+
+- [ ] Tried refactoring first?
+- [ ] WHY reason is from allowed list?
+- [ ] Format is `-- WHY: <reason>. TODO(VP-XXX): <fix>`?
+- [ ] Specific rule, not blanket disable?
+- [ ] Jira task exists for fixing this?
+- [ ] Config suppressions are directory-isolated?
+
+**If ANY is NO → DON'T suppress, REFACTOR!**
+
+## Related Files
+
+- @004-quality.mdc - Code quality standards
+- @021-core-principles.mdc - Core principles

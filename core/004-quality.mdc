@@ -1,0 +1,49 @@
+---
+description: 'Code quality gates, TypeScript safety, ESLint rules'
+alwaysApply: true
+---
+
+# Code Quality & TypeScript Safety
+
+## Critical Rules
+
+### TypeScript
+
+- **Strict Mode**: Always enabled
+- **No `any`**: Use `unknown` + type guards
+- **Immutable**: `[...arr, x]`, `{...obj, x: y}`
+
+### Code
+
+- **No** `console.log`, `debugger`, `var`, inline `style={}`
+- **Always** functional components, JSDoc, English comments
+- **Never** bypass quality gates (`--no-verify`)
+
+### Security
+
+- **No hardcoded secrets** (API keys, tokens, passwords)
+- **Sanitize** user HTML with DOMPurify
+- **Validate** all user inputs
+
+## Quality Commands
+
+```bash
+npm run quality:gates   # All checks (BEFORE commit)
+npm run lint           # ESLint
+npm run build          # TypeScript
+npm run test           # Vitest
+npm run codegen        # API generation
+```
+
+## Workflow
+
+1. Write code → 2. Run `npm run quality:gates` → 3. Fix issues → 4. Commit
+
+## Fix Priority
+
+1. TypeScript errors (blocking)
+2. ESLint errors (blocking)
+3. Test failures (blocking)
+4. ESLint warnings (should fix)
+
+**Details**: See @004-quality.mdc

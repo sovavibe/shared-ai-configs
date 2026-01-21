@@ -1,0 +1,511 @@
+---
+description: 'React performance optimization: Vercel-inspired rules ranked by impact'
+version: '1.0.0'
+lastUpdated: '2026-01-16'
+globs: ['src/**/*.{ts,tsx}', 'vite.config.ts', 'src/app/router/**/*.tsx']
+alwaysApply: false
+---
+
+# React Performance Optimization Rules
+
+Based on Vercel React Best Practices - 45 rules across 8 categories, prioritized by impact.
+
+## 🔴 CRITICAL: Eliminating Waterfalls
+
+Waterfalls are the #1 performance killer. Each sequential await adds full network latency.
+
+### Promise.all() for Independent Operations
+
+**Impact: CRITICAL (2-10× improvement)**
+
+```typescript
+// ❌ BAD - Sequential (3x slower)
+const user = await fetchUser()
+const posts = await fetchPosts()
+const comments = await fetchComments()
+
+// ✅ GOOD - Parallel
+const [user, posts, comments] = await Promise.all([fetchUser(), fetchPosts(), fetchComments()])
+```
+
+**TanStack Query - automatic parallelization:**
+
+```typescript
+// ✅ GOOD - Independent queries run in parallel
+const { data: user } = useQuery({ queryKey: ['user', userId], queryFn: () => getUser(userId) })
+const { data: posts } = useQuery({ queryKey: ['posts', userId], queryFn: () => getUserPosts(userId) })
+const { data: comments } = useQuery({ queryKey: ['comments', userId], queryFn: () => getUserComments(userId) })
+```
+
+### Defer Await Until Needed
+
+```typescript
+// ❌ BAD - blocks both branches
+async function handleRequest(userId: string, skipProcessing: boolean) {
+  const userData = await fetchUserData(userId)
+  if (skipProcessing) return { skipped: true }
+  return processUserData(userData)
+}
+
+// ✅ GOOD - only blocks when needed
+async function handleRequest(userId: string, skipProcessing: boolean) {
+  if (skipProcessing) return { skipped: true }
+  const userData = await fetchUserData(userId)
+  return processUserData(userData)
+}
+```
+
+### Parallel Dependent Queries
+
+```typescript
+// ✅ GOOD - parallel with conditional enabled
+const { data: user } = useQuery({ queryKey: ['user', userId], queryFn: () => getUser(userId) })
+const { data: posts } = useQuery({
+  queryKey: ['posts', userId],
+  queryFn: () => getUserPosts(userId),
+  enabled: Boolean(user),
+})
+
+// ❌ BAD - sequential waterfall
+useEffect(() => {
+  if (user) fetchUserPosts(user.id) // Runs after first completes
+}, [user])
+```
+
+### Prefetching for Anticipated Data
+
+```typescript
+const handleRowHover = (routeId: string) => {
+  queryClient.prefetchQuery({
+    queryKey: ['route-details', routeId],
+    queryFn: () => getRouteDetails(routeId),
+  })
+}
+```
+
+## 🔴 CRITICAL: Bundle Size Optimization
+
+### Lazy Load All Route Components
+
+```typescript
+// ✅ REQUIRED
+import { lazy, Suspense } from 'react'
+const CargoRequestsPage = lazy(() => import('pages/cargo-requests'))
+const DashboardPage = lazy(() => import('pages/dashboard'))
+
+const Router = () => (
+  <Suspense fallback={<Spin />}>
+    <Routes>
+      <Route path="/cargo" element={<CargoRequestsPage />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
+    </Routes>
+  </Suspense>
+)
+```
+
+### Dynamic Imports for Heavy Components
+
+```typescript
+// ✅ GOOD
+const HeavyChart = lazy(() => import('shared/ui/HeavyChart'))
+<Suspense fallback={<Spin />}><HeavyChart data={data} /></Suspense>
+
+// ❌ BAD
+import { HeavyChart } from 'shared/ui/HeavyChart' // Loaded immediately
+```
+
+### Avoid Barrel File Imports
+
+**Impact: CRITICAL (200-800ms import cost)**
+
+```typescript
+// ❌ BAD - imports entire library (1,583 modules)
+import { Check, X, Menu } from 'lucide-react'
+
+// ✅ GOOD - direct imports (3 modules)
+import Check from 'lucide-react/dist/esm/icons/check'
+import X from 'lucide-react/dist/esm/icons/x'
+import Menu from 'lucide-react/dist/esm/icons/menu'
+```
+
+**Libraries affected:** `lucide-react`, `@mui/material`, `@mui/icons-material`, `@tabler/icons-react`, `react-icons`, `@headlessui/react`, `@radix-ui/react-*`, `lodash`, `ramda`, `date-fns`.
+
+### Defer Non-Critical Third-Party Libraries
+
+```typescript
+// ✅ GOOD - loads after hydration
+const Analytics = lazy(() => import('@vercel/analytics/react').then(m => m.Analytics))
+<Suspense fallback={null}><Analytics /></Suspense>
+
+// ❌ BAD - blocks initial bundle
+import { Analytics } from '@vercel/analytics/react'
+```
+
+### Conditional Module Loading
+
+```typescript
+// ✅ GOOD - load only when feature enabled
+useEffect(() => {
+  if (enabled && !frames && typeof window !== 'undefined') {
+    import('./animation-frames.js').then((mod) => setFrames(mod.frames))
+  }
+}, [enabled, frames])
+```
+
+### Preload Based on User Intent
+
+```typescript
+// ✅ GOOD - preload on hover/focus
+const preload = () => {
+  if (typeof window !== 'undefined') {
+    void import('./monaco-editor')
+  }
+}
+
+<button onMouseEnter={preload} onFocus={preload} onClick={onClick}>
+  Open Editor
+</button>
+```
+
+## 🟡 HIGH: Re-render Optimization
+
+### Extract to Memoized Components
+
+```typescript
+// ❌ BAD - computes even when loading
+function Profile({ user, loading }: Props) {
+  const avatar = useMemo(() => <Avatar id={computeAvatarId(user)} />, [user])
+  if (loading) return <Skeleton />
+  return <div>{avatar}</div>
+}
+
+// ✅ GOOD - skips computation when loading
+const UserAvatar = memo(({ user }: { user: User }) => {
+  const id = useMemo(() => computeAvatarId(user), [user])
+  return <Avatar id={id} />
+})
+
+function Profile({ user, loading }: Props) {
+  if (loading) return <Skeleton />
+  return <div><UserAvatar user={user} /></div>
+}
+```
+
+### Defer State Reads to Usage Point
+
+```typescript
+// ❌ BAD - subscribes to all changes
+function ShareButton({ chatId }: { chatId: string }) {
+  const searchParams = useSearchParams()
+  const handleShare = () => shareChat(chatId, { ref: searchParams.get('ref') })
+  return <button onClick={handleShare}>Share</button>
+}
+
+// ✅ GOOD - reads on demand
+function ShareButton({ chatId }: { chatId: string }) {
+  const handleShare = () => {
+    const ref = new URLSearchParams(window.location.search).get('ref')
+    shareChat(chatId, { ref })
+  }
+  return <button onClick={handleShare}>Share</button>
+}
+```
+
+### Functional setState Updates
+
+```typescript
+// ❌ BAD - requires state dependency
+const addItems = useCallback(
+  (newItems: Item[]) => {
+    setItems([...items, ...newItems])
+  },
+  [items],
+) // Recreated on every items change
+
+// ✅ GOOD - stable callback
+const addItems = useCallback((newItems: Item[]) => {
+  setItems((curr) => [...curr, ...newItems])
+}, []) // No dependencies needed
+```
+
+### Lazy State Initialization
+
+```typescript
+// ❌ BAD - runs on every render
+const [searchIndex, setSearchIndex] = useState(buildSearchIndex(items))
+
+// ✅ GOOD - runs only once
+const [searchIndex, setSearchIndex] = useState(() => buildSearchIndex(items))
+```
+
+### Transitions for Non-Urgent Updates
+
+```typescript
+// ❌ BAD - blocks UI
+const handler = () => setScrollY(window.scrollY)
+
+// ✅ GOOD - non-blocking
+import { startTransition } from 'react'
+const handler = () => startTransition(() => setScrollY(window.scrollY))
+```
+
+### Subscribe to Derived State
+
+```typescript
+// ❌ BAD - re-renders on every pixel change
+const width = useWindowWidth() // updates continuously
+const isMobile = width < 768
+
+// ✅ GOOD - re-renders only when boolean changes
+const isMobile = useMediaQuery('(max-width: 767px)')
+```
+
+### Narrow Effect Dependencies
+
+```typescript
+// ❌ BAD - re-runs on any user field change
+useEffect(() => {
+  console.log(user.id)
+}, [user])
+
+// ✅ GOOD - re-runs only when id changes
+useEffect(() => {
+  console.log(user.id)
+}, [user.id])
+```
+
+## 🟡 HIGH: Rendering Performance
+
+### Virtualize Large Lists
+
+```typescript
+// ✅ GOOD - virtual scroll (100+ items)
+<MaterialReactTable
+  columns={columns}
+  data={largeDataset}
+  enableVirtualization
+  virtualizerProps={{ overscan: 20 }}
+/>
+
+// ❌ BAD - renders all rows
+<Table dataSource={largeDataset} />
+```
+
+### CSS content-visibility for Long Lists
+
+```css
+.message-item {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 80px;
+}
+```
+
+For 1000 messages, browser skips layout/paint for ~990 off-screen items (10× faster).
+
+### Batch DOM CSS Changes
+
+```typescript
+// ❌ BAD - multiple reflows
+element.style.width = '100px'
+element.style.height = '200px'
+element.style.backgroundColor = 'blue'
+
+// ✅ GOOD - single reflow
+element.classList.add('highlighted-box')
+// OR
+element.style.cssText = 'width: 100px; height: 200px; background-color: blue;'
+```
+
+### Hoist Static JSX Elements
+
+```typescript
+// ❌ BAD - recreates every render
+function Container() {
+  return <div>{loading && <LoadingSkeleton />}</div>
+}
+
+// ✅ GOOD - reuses same element
+const loadingSkeleton = <div className="animate-pulse h-20 bg-gray-200" />
+function Container() {
+  return <div>{loading && loadingSkeleton}</div>
+}
+```
+
+### Explicit Conditional Rendering
+
+```typescript
+// ❌ BAD - renders "0" when count is 0
+{count && <span className="badge">{count}</span>}
+
+// ✅ GOOD
+{count > 0 ? <span className="badge">{count}</span> : null}
+```
+
+## 🟡 HIGH: Avoid Over-Fetching
+
+### Fetch Only Required Fields
+
+```typescript
+// ✅ GOOD
+const { data: user } = useQuery({
+  queryKey: ['user', userId],
+  queryFn: () => getUser(userId, { fields: ['id', 'name', 'email'] }),
+})
+
+// ❌ BAD - fetches 50+ fields, uses 3
+const { data: user } = useQuery({
+  queryKey: ['user', userId],
+  queryFn: () => getUser(userId),
+})
+```
+
+### Server-Side Pagination
+
+```typescript
+// ✅ GOOD - fetches only 20 items
+const { data } = useQuery({
+  queryKey: ['items', pagination],
+  queryFn: () => getItems(pagination),
+})
+
+// ❌ BAD - fetches 10,000+ items
+const { data: allItems } = useQuery({
+  queryKey: ['items', 'all'],
+  queryFn: () => getAllItems(),
+})
+```
+
+## 🟢 LOW-MEDIUM: JavaScript Performance
+
+### Set/Map for O(1) Lookups
+
+```typescript
+// ❌ BAD - O(n) per check
+const allowedIds = ['a', 'b', 'c']
+items.filter((item) => allowedIds.includes(item.id))
+
+// ✅ GOOD - O(1) per check
+const allowedIds = new Set(['a', 'b', 'c'])
+items.filter((item) => allowedIds.has(item.id))
+```
+
+### Build Index Maps for Repeated Lookups
+
+```typescript
+// ❌ BAD - O(n) per lookup
+orders.map((order) => ({
+  ...order,
+  user: users.find((u) => u.id === order.userId),
+}))
+
+// ✅ GOOD - O(1) per lookup
+const userById = new Map(users.map((u) => [u.id, u]))
+orders.map((order) => ({
+  ...order,
+  user: userById.get(order.userId),
+}))
+```
+
+### Use toSorted() Instead of sort()
+
+```typescript
+// ❌ BAD - mutates array
+const sorted = useMemo(() => users.sort((a, b) => a.name.localeCompare(b.name)), [users])
+
+// ✅ GOOD - creates new array
+const sorted = useMemo(() => users.toSorted((a, b) => a.name.localeCompare(b.name)), [users])
+```
+
+### Loop for Min/Max Instead of Sort
+
+```typescript
+// ❌ BAD - O(n log n)
+const sorted = [...projects].sort((a, b) => b.updatedAt - a.updatedAt)
+return sorted[0]
+
+// ✅ GOOD - O(n)
+let latest = projects[0]
+for (let i = 1; i < projects.length; i++) {
+  if (projects[i].updatedAt > latest.updatedAt) latest = projects[i]
+}
+return latest
+```
+
+### Stable Object References
+
+```typescript
+// ✅ GOOD - memoized config
+const tableOptions = useMemo(() => ({
+  enableRowSelection: true,
+  enableColumnFilters: true,
+}), [])
+
+<MaterialReactTable options={tableOptions} />
+
+// ❌ BAD - new object every render
+<MaterialReactTable options={{ enableRowSelection: true }} />
+```
+
+### Cache Storage API Calls
+
+```typescript
+// ❌ BAD - reads storage on every call
+function getTheme() {
+  return localStorage.getItem('theme') ?? 'light'
+}
+
+// ✅ GOOD - Map cache
+const storageCache = new Map<string, string | null>()
+function getLocalStorage(key: string) {
+  if (!storageCache.has(key)) {
+    storageCache.set(key, localStorage.getItem(key))
+  }
+  return storageCache.get(key)
+}
+```
+
+### Combine Multiple Array Iterations
+
+```typescript
+// ❌ BAD - 3 iterations
+const admins = users.filter((u) => u.isAdmin)
+const testers = users.filter((u) => u.isTester)
+const inactive = users.filter((u) => !u.isActive)
+
+// ✅ GOOD - 1 iteration
+const admins: User[] = []
+const testers: User[] = []
+const inactive: User[] = []
+for (const user of users) {
+  if (user.isAdmin) admins.push(user)
+  if (user.isTester) testers.push(user)
+  if (!user.isActive) inactive.push(user)
+}
+```
+
+## Code Review Checklist
+
+- [ ] All route components lazy loaded
+- [ ] Heavy components dynamically imported
+- [ ] No barrel file imports (direct imports)
+- [ ] No sequential independent awaits (use Promise.all)
+- [ ] Independent queries use parallel useQuery
+- [ ] Large lists (100+ items) use virtualization or content-visibility
+- [ ] DOM CSS changes batched (classes or cssText)
+- [ ] Fetching only required fields
+- [ ] Server-side pagination for large datasets
+- [ ] Stable object references for memoized components
+- [ ] Expensive computations memoized
+- [ ] Functional setState for state-dependent updates
+- [ ] Lazy state initialization for expensive values
+- [ ] Narrow effect dependencies (primitives, not objects)
+- [ ] Subscribe to derived booleans, not continuous values
+
+## Performance Budgets
+
+| Metric       | Target  | Warning   | Critical |
+| ------------ | ------- | --------- | -------- |
+| Main bundle  | < 200KB | 200-300KB | > 300KB  |
+| Vendor chunk | < 150KB | 150-200KB | > 200KB  |
+| Route chunk  | < 100KB | 100-150KB | > 150KB  |
+| Initial JS   | < 300KB | 300-400KB | > 400KB  |

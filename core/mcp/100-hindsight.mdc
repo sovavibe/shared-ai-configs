@@ -1,0 +1,107 @@
+---
+description: 'Hindsight MCP: multi-bank memory, recall/reflect/retain'
+version: '1.0.0'
+lastUpdated: '2026-01-20'
+alwaysApply: false
+---
+
+# Hindsight MCP
+
+## Core Principle
+
+Use Hindsight for reflection and learning. Multi-bank architecture for organized memory.
+
+## Banks
+
+| Bank          | Purpose                       | Example                                     |
+| ------------- | ----------------------------- | ------------------------------------------- |
+| `patterns`    | Coding patterns, architecture | "React Query with optimistic updates"       |
+| `lessons`     | Lessons learned, post-mortems | "any types cause cascading errors"          |
+| `session`     | Current session context       | "Working on MR #322"                        |
+| `reflections` | Deep analysis, synthesis      | "Key pattern: Discussions API vs Notes API" |
+| `alice`       | General long-term memory      | "I prefer functional components"            |
+
+**Rule:** Always specify `bank_id`. Proper selection keeps banks small (~100 facts).
+
+## Tools
+
+| Tool      | When                      | Speed |
+| --------- | ------------------------- | ----- |
+| `recall`  | Need specific facts (70%) | ~1s   |
+| `reflect` | Need synthesis (30%)      | ~1-5s |
+| `retain`  | Store new memory          | ~1s   |
+
+### Recall (Facts)
+
+```
+CallMcpTool({
+  server: "user-hindsight-alice",
+  toolName: "recall",
+  arguments: {
+    bank_id: 'patterns',
+    query: 'Code review patterns',
+    max_tokens: 2048
+  }
+})
+```
+
+### Reflect (Synthesis)
+
+```
+CallMcpTool({
+  server: "user-hindsight-alice",
+  toolName: "reflect",
+  arguments: {
+    bank_id: 'reflections',
+    query: 'What patterns emerge from recent work?',
+    budget: 'mid'  // low/mid/high - all work
+  }
+})
+```
+
+### Retain (Store)
+
+```
+CallMcpTool({
+  server: "user-hindsight-alice",
+  toolName: "retain",
+  arguments: {
+    bank_id: 'lessons',
+    content: 'Key insight from this task',
+    context: 'work',
+    async_processing: true
+  }
+})
+```
+
+## Decision Tree
+
+```
+Need specific facts?
+├─ YES → recall (fast, reliable)
+└─ NO → Need synthesis?
+    ├─ Need fast + analysis → recall + local processing
+    └─ Need deep synthesis → reflect
+```
+
+## Best Practices
+
+1. **Always specify bank_id** - prevents wrong storage
+2. **Targeted queries** - "React Query patterns" not "all patterns"
+3. **Set max_tokens** - 2048-4096 for control
+4. **Use async_processing: true** - for heavy operations
+5. **Store immediately** - after decisions are made
+
+## Workflow Integration
+
+**After task:**
+
+1. `recall` facts from session bank
+2. `retain` key learnings to lessons bank
+3. `reflect` for pattern analysis (optional)
+
+**Code review:**
+
+1. Conduct review
+2. `retain` results to session
+3. `recall` patterns for future reviews

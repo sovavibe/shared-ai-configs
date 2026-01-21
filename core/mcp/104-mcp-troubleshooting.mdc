@@ -1,0 +1,167 @@
+---
+description: 'MCP setup verification and troubleshooting guide'
+version: '1.0.0'
+lastUpdated: '2026-01-19'
+alwaysApply: false
+---
+
+# MCP Troubleshooting Guide
+
+## Setup Verification
+
+### Check MCP Status in Cursor
+
+1. Open Settings > MCP
+2. Verify servers show green status
+3. If red/yellow - check configuration
+
+### Required Servers
+
+| Server                  | Purpose            | Required Tools                          |
+| ----------------------- | ------------------ | --------------------------------------- |
+| `MCP_DOCKER`            | Library docs, Jira | `resolve-library-id`, `jira_search`     |
+| `hindsight-alice`       | Long-term memory   | `recall`, `retain`, `reflect`           |
+| `allpepper-memory-bank` | Project memory     | `memory_bank_read`, `memory_bank_write` |
+| `Figma`                 | Design integration | `get_design_context`                    |
+| `Snyk`                  | Security scanning  | `snyk_code_scan`                        |
+
+### Test Each Server
+
+```
+# Context7 - library docs
+resolve-library-id("react")
+get-library-docs("/facebook/react", topic="hooks")
+
+# Hindsight - memory
+recall("session patterns")
+retain("Test memory entry", context="test")
+
+# Jira - team sync
+jira_get_all_projects()
+jira_search("project = VP ORDER BY updated DESC")
+```
+
+## Common Issues
+
+### "Server not responding"
+
+**Symptoms:** Tool calls timeout or return error
+
+**Solutions:**
+
+1. Check Docker is running: `docker ps`
+2. Restart MCP container: `docker restart mcp-docker`
+3. Check logs: `docker logs mcp-docker`
+4. Verify network connectivity
+
+### "Tool not found"
+
+**Symptoms:** "Unknown tool" error
+
+**Solutions:**
+
+1. Verify tool name spelling (case-sensitive)
+2. Check server has tool enabled in config
+3. Restart Cursor IDE
+4. Re-enable server in MCP settings
+
+### "Rate limit exceeded"
+
+**Symptoms:** 429 errors, throttling messages
+
+**Solutions:**
+
+1. Wait 60 seconds before retry
+2. Reduce query frequency
+3. Cache results when possible
+4. Use batch operations instead of individual calls
+
+### "Authentication failed"
+
+**Symptoms:** 401/403 errors
+
+**Solutions:**
+
+1. Check API keys in `.env` or MCP config
+2. Verify tokens not expired
+3. Re-authenticate: check MCP server docs
+4. Confirm correct permissions/scopes
+
+### "Connection refused"
+
+**Symptoms:** ECONNREFUSED errors
+
+**Solutions:**
+
+1. Check server is running
+2. Verify port configuration
+3. Check firewall settings
+4. Ensure localhost resolution works
+
+## Fallback Strategies
+
+When MCP tools unavailable, use alternatives:
+
+| MCP Tool      | Fallback Strategy                               |
+| ------------- | ----------------------------------------------- |
+| **Context7**  | WebSearch for library docs, read `node_modules` |
+| **Hindsight** | Grep codebase for patterns, check comments      |
+| **Jira**      | Use Beads only, manual sync later               |
+| **Figma**     | Ask user for screenshots                        |
+| **Snyk**      | Run `npm audit` locally                         |
+
+## Configuration Reference
+
+### MCP Config Location
+
+- Cursor: `~/.cursor/mcp.json`
+- Claude Code: `~/.claude/mcp.json`
+
+### Sample Configuration
+
+```json
+{
+  "servers": {
+    "MCP_DOCKER": {
+      "command": "docker",
+      "args": ["run", "--rm", "mcp-docker:latest"],
+      "env": {
+        "JIRA_URL": "${JIRA_URL}",
+        "JIRA_TOKEN": "${JIRA_TOKEN}"
+      }
+    },
+    "hindsight-alice": {
+      "command": "npx",
+      "args": ["hindsight-alice"],
+      "env": {
+        "BANK_ID": "front-project"
+      }
+    }
+  }
+}
+```
+
+## Diagnostic Commands
+
+```bash
+# Check Docker MCP containers
+docker ps | grep mcp
+
+# View MCP logs
+docker logs -f mcp-docker
+
+# Test network connectivity
+curl -I http://localhost:3000/health
+
+# Check environment variables
+printenv | grep -E "(JIRA|MCP|API)"
+```
+
+## When to Escalate
+
+Contact DevOps if:
+
+- Server configuration changes needed
+- New MCP server installation required
+- Persistent authentication issues
+- Network/firewall changes needed

@@ -1,0 +1,97 @@
+---
+description: 'Git workflow: conventional commits, branch naming, PR guidelines'
+version: '2.1.0'
+lastUpdated: '2026-01-15'
+alwaysApply: false
+---
+
+# Git Workflow
+
+## Commit Format
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+Refs: VP-XXX
+```
+
+**🔴 CRITICAL**: ALL commits MUST be in English.
+
+## Types
+
+| Type       | Description      | Example                           |
+| ---------- | ---------------- | --------------------------------- |
+| `feat`     | New feature      | `feat(cargo): add bulk import`    |
+| `fix`      | Bug fix          | `fix(table): resolve sorting`     |
+| `refactor` | Code improvement | `refactor(api): optimize queries` |
+| `docs`     | Documentation    | `docs(readme): update setup`      |
+| `chore`    | Maintenance      | `chore(deps): update deps`        |
+| `test`     | Tests            | `test(auth): add login tests`     |
+
+## Subject Rules
+
+- Imperative mood: "add" not "added"
+- Lowercase first letter
+- No period at end
+- Max 72 characters
+
+## Branch Naming
+
+```bash
+feat/VP-123-cargo-bulk-import
+fix/VP-456-table-sorting
+hotfix/VP-999-critical-bug
+```
+
+## PR Guidelines
+
+**Title**: `feat(cargo): add bulk import [VP-123]`
+
+**GitLab Templates**: Use templates from `.gitlab/merge_request_templates/`:
+
+- `code-review.md` - For code review MRs
+- `conventional-commit.md` - For standard commits
+- `stage-based.md` - For staged/chained MRs
+
+**Prompts**: Use prompts from `.cursor/prompts/`:
+
+- `review-mr.md` - Full MR code review
+- `gitlab-update-mr-description.md` - Update MR description
+- `mr-comments-workflow.md` - Process MR comments
+
+**GitLab Comment Policy (Anti-Spam)**:
+
+- ✅ **Inline thread reply**: Post ONLY after code is fixed, verified, and Jira task is closed
+- ✅ **General comment**: Post ONLY final report when ALL tasks are completed
+- ❌ **NEVER** post intermediate progress updates, partial completions, or status updates
+- See: `@mr-comments-workflow.md` for full policy
+
+**Checklist**:
+
+- [ ] `npm run lint` passes
+- [ ] `npm run build` succeeds
+- [ ] Tests added
+- [ ] Small PR (<400 lines)
+- [ ] MR description updated (use `gitlab-update-mr-description.md` prompt)
+
+## 🚫 NEVER Bypass Quality Gates
+
+```bash
+# ❌ FORBIDDEN
+git push --no-verify
+HUSKY=0 git push
+git commit --no-verify
+```
+
+**If push fails**: Fix ALL errors, run `npm run quality:gates`, then push.
+
+## Common Commands
+
+```bash
+git commit --amend           # Fix last commit
+git rebase -i HEAD~3         # Squash commits
+git stash push -m "WIP"      # Stash changes
+git log --oneline --graph    # View history
+```

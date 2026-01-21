@@ -1,0 +1,76 @@
+---
+description: 'English-only code policy - all code/comments in English, Russian allowed in chat'
+globs: ['src/**/*.ts', 'src/**/*.tsx', '**/*.md']
+alwaysApply: false
+---
+
+# English Only (Code Repository)
+
+**See also**: @021-core-principles.mdc (English Only Policy)
+
+ALL code/comments/config/docs in repository MUST be English
+
+## Required (Repository/Codebase)
+
+- **Code**: vars/funcs/classes/constants/types/interfaces
+- **Comments**: inline/JSDoc/TODO/FIXME
+- **Config**: comments/descriptions/errors
+- **Commits**: title/desc/branches
+- **Docs**: README/API/examples
+
+## Exceptions
+
+**User-facing text**: UI labels, messages → English in code, localization if needed later.
+
+```typescript
+// ✅ GOOD: English messages
+notification.error({ message: 'Request failed' })
+
+// ❌ BAD: Hardcoded Russian
+notification.error({ message: 'Ошибка запроса' })
+```
+
+## Chat Communication
+
+### Russian language is allowed in chat conversations with AI
+
+- User can communicate in Russian
+- AI can respond in Russian
+- Code examples and suggestions must still be in English
+
+## Enforcement
+
+- Code review process
+- Pre-commit hooks
+- AI code generation rules
+
+## AI Instructions
+
+- ✓ **Chat**: Respond in Russian if user writes in Russian
+- ✓ **Code**: ALL code/comments/docs MUST be English
+- ✓ Translate non-English code to English
+- ✓ Suggest English names for identifiers
+- ✗ NEVER generate/suggest non-English identifiers/comments in code
+
+## Examples
+
+```typescript
+// ❌ BAD
+const пользователь = { имя: 'Иван' }
+// Комментарий на русском
+function получитьДанные() {}
+
+// ✅ GOOD
+const user = { name: 'Ivan' }
+// Comment in English
+function getUserData() {}
+```
+
+## Jira Integration
+
+**Exception**: Jira tickets can use Russian for:
+
+- Summary (title)
+- Description
+
+But code references and technical details should still be in English.

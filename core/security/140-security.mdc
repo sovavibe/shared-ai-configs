@@ -1,0 +1,141 @@
+---
+description: 'Security: Azure AD OAuth, RBAC, input validation, API security'
+version: '1.0.0'
+lastUpdated: '2026-01-20'
+alwaysApply: false
+---
+
+# Security Guidelines
+
+## Overview
+
+Security guidelines and best practices for this project.
+
+## Authentication & Authorization
+
+### Azure AD OAuth 2.0
+
+```tsx
+// Authentication setup
+const authConfig = {
+  clientId: process.env.REACT_APP_CLIENT_ID,
+  authority: process.env.REACT_APP_AUTHORITY,
+  redirectUri: window.location.origin,
+}
+
+// Usage
+const login = async () => {
+  await msalInstance.loginRedirect(authConfig)
+}
+```
+
+### Role-Based Access Control
+
+```ts
+interface User {
+  id: string
+  roles: string[]
+}
+
+function hasPermission(user: User, requiredRole: string): boolean {
+  return user.roles.includes(requiredRole)
+}
+```
+
+## Data Security
+
+### Input Validation
+
+```ts
+function validateInput(input: unknown): boolean {
+  // Validate input data
+  return typeof input === 'object' && input !== null
+}
+```
+
+### Sanitization
+
+```tsx
+import DOMPurify from 'dompurify'
+
+function sanitizeHTML(html: string): string {
+  return DOMPurify.sanitize(html)
+}
+```
+
+## API Security
+
+### API Client Security
+
+```ts
+const apiClient = axios.create({
+  baseURL: process.env.REACT_APP_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  },
+})
+```
+
+### Error Handling
+
+```ts
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      // Handle specific error cases
+    }
+    return Promise.reject(error)
+  },
+)
+```
+
+## Best Practices
+
+### Secret Management
+
+- Never hardcode secrets
+- Use environment variables
+- Implement secret rotation
+- Use secure storage
+
+### Data Protection
+
+- Encrypt sensitive data
+- Use HTTPS
+- Implement CORS
+- Validate all inputs
+
+### Authentication
+
+- Use OAuth 2.0
+- Implement token refresh
+- Handle token expiration
+- Secure session management
+
+### Authorization
+
+- Implement RBAC
+- Use claims-based auth
+- Audit access logs
+- Review permissions regularly
+
+## Security Commands
+
+```bash
+# Run security scans
+npm run security:scan
+
+# Check dependencies for vulnerabilities
+npm run security:audit
+
+# Test authentication flows
+npm run security:test-auth
+```
+
+## Related
+
+- @004-quality - Quality rules that include security
+- @020-architecture - Architecture patterns for security
+- @040-testing - Security testing patterns

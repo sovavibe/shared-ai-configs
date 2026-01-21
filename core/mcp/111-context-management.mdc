@@ -1,0 +1,177 @@
+---
+description: 'Context management: Beads + Hindsight + Jira + Context7 - Four pillars integration'
+version: '5.0.0'
+lastUpdated: '2026-01-16'
+alwaysApply: false
+---
+
+# Context Management: Four Pillars
+
+## Core Principle
+
+**Context is most valuable resource. Never lose it.**
+
+Use four pillars systematically:
+
+- **Beads**: Task context + temporary artifacts (steps, dependencies, research, analysis, reports) - Local CLI
+- **Hindsight**: Long-term memory (patterns, lessons, reflections) - `user-hindsight-alice` MCP
+- **Jira**: Team context (high-level tasks) - `user-MCP_DOCKER` MCP
+- **Context7**: Library docs (API references, used daily) - `MCP_DOCKER` MCP
+
+## 📊 Token Budget Allocations
+
+| Source        | Tokens     | Priority     | Loading Strategy                                                                               |
+| ------------- | ---------- | ------------ | ---------------------------------------------------------------------------------------------- |
+| **Beads**     | 2-5k       | 🔴 Critical  | Always load first, check ready/in-progress, includes all research/reports in task descriptions |
+| **Hindsight** | 5-10k      | 🟡 Important | 2-3 targeted queries with max_tokens limit (2048-4096), optimized for small/medium banks       |
+| **Jira**      | 3-8k       | 🟢 Optional  | Load only when specifically mentioned or needed for team coordination                          |
+| **Context7**  | 5-10k      | 🟢 Optional  | Load when researching libraries (used daily, high priority when needed)                        |
+| **Total**     | **15-28k** |              | Load systematically, progressive expansion                                                     |
+
+**Key Optimization:** Hindsight uses only 5-10k tokens (vs 15-40k in previous version) - **~67% token reduction!** Targeted queries with max_tokens limits are much more efficient.
+
+## ⚙️ Standard Context Loading Protocol
+
+### Phase 1: Beads (MANDATORY)
+
+```bash
+# Always start with Beads
+bd ready --json                    # Ready work
+bd list --status=in_progress       # Find interrupted work
+bd show <id> --json                # Get full task context (includes research, analysis, progress in description)
+```
+
+**ALWAYS** check Beads first - task context, dependencies, blockers, research, analysis, and progress are all stored in task descriptions.
+
+**For RESUMING work:**
+
+```bash
+# Find interrupted task
+bd list --status=in_progress
+
+# Get full context from task description
+bd show <id> --json
+# Task description contains:
+# - What was done
+# - Current progress
+# - Research findings
+# - Analysis results
+# - Next steps
+# → Full context recovery!
+```
+
+### Phase 2: Hindsight (IMPORTANT)
+
+**Load patterns:** 2-3 targeted queries based on work type with max_tokens limit (2048-4096).
+
+**By Work Type:**
+
+- **New feature**: Architecture + domain patterns
+- **Bug fix**: Debugging + testing patterns
+- **Optimization**: Optimization + performance patterns
+- **Refactor**: Refactor + code quality patterns
+- **Review**: Code review patterns
+
+**Token budget:** 5-10k tokens (targeted, efficient queries).
+
+**ALWAYS** specify correct `bank_id` (patterns/lessons/session/alice/reflections) when storing/recalling.
+
+### Phase 3: Jira (OPTIONAL)
+
+Load only when specifically mentioned or needed for team coordination.
+
+### Phase 4: Context7 (OPTIONAL)
+
+Load when researching libraries (used daily, high priority when needed). Use `resolve-library-id` first to get exact library ID.
+
+## 🔄 Progressive Loading Strategy
+
+**Start minimal, expand as needed:**
+
+1. Beads → Check ready/in-progress, get full context from task description (includes research, analysis, progress)
+2. Hindsight → Load 2-3 targeted pattern sets based on work type
+3. Jira → Load only if team task coordination needed
+4. Context7 → Load only if researching libraries
+5. **STOP & Evaluate**: If context >80%, save state and resume with clean context
+
+**Total target:** 15-28k tokens (<80% capacity, reduced from 20-38k - **25% improvement**)
+
+**Success metrics:**
+
+- Total context: 15-40k tokens
+- Relevance: 80%+ useful content
+- Loading time: <30 seconds
+- Overflow rate: <10%
+
+## 🎯 Priority System
+
+| Priority         | Action | When to Skip                             |
+| ---------------- | ------ | ---------------------------------------- |
+| **🔴 Critical**  | Load   | Never skip (Beads)                       |
+| **🟡 Important** | Load   | Skip only if explicitly told (Hindsight) |
+| **🟢 Optional**  | Load   | Skip if not needed (Jira, Context7)      |
+
+**Rule:** Always load Critical (Beads). Skip Optional unless user requests. Optimize Important (Hindsight) with targeted queries.
+
+## ⚠️ Context Overflow (>80%)
+
+**STOP immediately** if context exceeds 80% capacity.
+
+**Retroactive cycle:**
+
+1. Save state to all systems:
+   - **Beads**: Update task description with current progress, research, analysis (`bd update <id> --description`)
+   - **Hindsight**: Store patterns/lessons if extracted (`retain` or `reflect`)
+   - **Jira**: Update task status/comments if team task (`jira_update_issue`)
+2. Create retroactive summary in Beads task description:
+
+   ```markdown
+   ## Context Overflow - Resuming Point
+
+   - Done: [1-2 sentences]
+   - Next: [Specific action]
+   - Context: [Minimal essential info]
+   ```
+
+3. Prune unnecessary context:
+
+   - Close completed tasks
+   - Remove unused context
+   - Keep only essential information
+
+4. Resume with clean context (<80% tokens):
+   ```bash
+   bd list --status=in_progress    # Find interrupted task
+   bd show <id> --json             # Get full context from description
+   # → Full context recovery!
+   ```
+
+## ✅ Best Practices
+
+1. **Store all temporary artifacts in Beads**: Research, analysis, progress, reports → all in task description (`bd update <id> --description`)
+2. **Targeted Hindsight queries** (2-3 sets, not "all patterns"): More efficient, focused
+3. **Max_tokens limits**: Always set (2048-4096) to control response size
+4. **Progressive expansion**: Start minimal, add only what's needed
+5. **Always specify bank_id**: Prevents storing to wrong bank in Hindsight
+6. **Total context monitoring**: Keep total under 28k tokens (80% capacity, reduced from 38k)
+7. **Use correct storage for each type**:
+   - Temporary artifacts (research, analysis, reports) → Beads task description
+   - Long-term patterns/experience → Hindsight MCP (`retain`, `reflect`)
+   - Team tasks → Jira MCP (`jira_update_issue`)
+8. **Full context recovery**: All progress in Beads task description → `bd show <id> --json` for instant resume
+
+## 📚 Related Documentation
+
+- `.cursor/rules/100-hindsight.mdc` - Complete Hindsight MCP usage guide
+- `.cursor/rules/005-beads.mdc` - Beads workflow and task management
+- `.cursor/rules/101-jira.mdc` - Jira MCP integration
+
+## 🎯 Token Optimization Results
+
+**Key changes:**
+
+- All temporary artifacts now stored in Beads task descriptions
+- Simplified context loading from 5 phases to 4 phases
+- Improved resumability: Full context recovery via `bd show <id> --json`
+- All tools actively used and documented
+- Consistent storage decision tree across all rules

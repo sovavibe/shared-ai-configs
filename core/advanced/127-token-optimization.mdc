@@ -1,0 +1,108 @@
+---
+description: 'Token optimization - 60-70% reduction target via progressive loading'
+alwaysApply: false
+---
+
+# @127 Token Optimization
+
+## Baseline vs Target
+
+| Aspect | Before | Target | Method |
+|--------|--------|--------|--------|
+| Session overhead | 11-19K tokens | 3-5K tokens | Progressive loading |
+| MCP discovery | 8K tokens | <2K tokens | Tool Search feature |
+| Rules loaded | 3-4K tokens | 1-2K tokens | Glob-based auto-load |
+| **Total context budget** | **~20-30K** | **~5-8K** | **60-70% reduction** |
+
+## Strategy 1: Glob-Based Auto-Loading
+
+**Problem**: All 41 rules loaded even if only 1-2 apply to current file
+
+**Solution**: Load rules matching file type
+
+```yaml
+# .cursor/rules/INDEX.mdc updates:
+010-049:  # Context rules - auto-load by glob
+  - glob: "src/**/*.tsx"
+    rules: [@011-tanstack-query, @031-ant-design]
+  - glob: "src/**/store/**"
+    rules: [@012-zustand]
+  - glob: "**/*styled*"
+    rules: [@030-styling]
+```
+
+**Result**: Load only 2-4 rules per file (instead of 41)
+**Savings**: 3-4K tokens per session
+
+## Strategy 2: MCP Tool Search
+
+**Problem**: All MCPs preloaded in mcp.json (51K tokens)
+
+**Solution**: Use Tool Search to dynamically load only needed tools
+
+```bash
+# Instead of loading all MCPs:
+# Load only what you need
+# Tool Search: "@GitHub @Context7 @Snyk"
+```
+
+**Result**: Load only 3-5 MCPs (instead of 10+)
+**Savings**: 6-8K tokens per session
+
+## Strategy 3: Progressive Loading
+
+**Pattern**:
+1. Core context loads (essential only) - 2-3K
+2. File-specific rules load on @mention - auto
+3. On-demand MCPs load when needed - auto
+
+**Benefits**:
+- Fast session start
+- Automatic expansion
+- No manual tool switching
+
+## Strategy 4: Decision Tree Compression
+
+**Before** (Explanation format - 150+ tokens):
+```
+When implementing authentication, consider:
+- Session-based: Store token in session...
+- JWT: Create JWT payload...
+- OAuth: Use provider...
+- Recommendation: Use JWT because [explanation]
+```
+
+**After** (Decision table - 20 tokens, 87% savings):
+```markdown
+| Method | When | Pros | Cons |
+|--------|------|------|------|
+| JWT | Stateless APIs | Fast, scalable | Complex revocation |
+| Session | Traditional | Simple, secure | Server state |
+| OAuth | Third-party | Delegated auth | Dependency |
+
+**Choose**: JWT for REST APIs, Session for traditional web
+```
+
+## Implementation Checklist
+
+- [ ] Audit current rules → identify unused (remove)
+- [ ] Add glob-based auto-loading to INDEX.mdc
+- [ ] Test file-specific rule loading
+- [ ] Set up Tool Search for MCPs
+- [ ] Convert decision explanations to tables
+- [ ] Measure token usage (baseline → target)
+
+## Verification
+
+```bash
+# Before optimization:
+# Session starts, 11-19K overhead
+
+# After optimization:
+# Session starts, 3-5K overhead
+# 60-70% reduction achieved ✓
+```
+
+---
+
+**Enforce this rule**: Always measure token usage, target 3-5K overhead per session.

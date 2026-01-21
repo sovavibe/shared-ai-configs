@@ -1,0 +1,140 @@
+---
+description: 'Functional programming patterns for Node.js scripts (immutable, no mutations)'
+version: '1.0.0'
+lastUpdated: '2026-01-16'
+---
+
+# Functional Patterns for Scripts
+
+**Use for all script development to eliminate mutations and follow immutability principle.**
+
+## 🎯 Core Principle
+
+**NEVER mutate variables or objects. ALWAYS use functional patterns.**
+
+## 📋 Patterns
+
+### Pattern 1: Counter Updates (IMMUTABLE)
+
+**❌ BAD (Mutable):**
+\`\`\`typescript
+summary.passed++
+summary.failed++
+summary.warnings++
+\`\`\`
+
+**✅ GOOD (Functional, Immutable):**
+
+#### Option 1: Reduce with Mapper Function
+
+\`\`\`typescript
+const updateSummary = (check: CheckResult, summary: Summary): Summary => {
+const counter = check.status === 'pass' ? 'passed' : check.status === 'fail' ? 'failed' : 'warnings'
+return { ...summary, [counter]: summary[counter] + 1 }
+}
+
+const summary = checks.reduce(updateSummary, { passed: 0, failed: 0, warnings: 0 })
+\`\`\`
+
+#### Option 2: Map/Filter for Category Counts
+
+\`\`\`typescript
+const summary = {
+passed: checks.filter(c => c.status === 'pass').length,
+failed: checks.filter(c => c.status === 'fail').length,
+warnings: checks.filter(c => c.status === 'warn').length,
+}
+\`\`\`
+
+#### Option 3: Function Composition
+
+\`\`\`typescript
+const createCounter = (field: 'passed' | 'failed' | 'warnings') =>
+(acc: Summary, check: CheckResult): Summary => ({
+...acc,
+[field]: acc[field] + (check.status === field ? 1 : 0),
+})
+
+const summary = checks.reduce(createCounter('passed'), { passed: 0, failed: 0, warnings: 0 })
+\`\`\`
+
+### Pattern 2: Array Accumulation
+
+**❌ BAD (Mutation with push):**
+\`\`\`typescript
+const results: CheckResult[] = []
+for (const item of items) {
+results.push(processItem(item))
+}
+\`\`\`
+
+**✅ GOOD (Functional with map):**
+\`\`\`typescript
+const results = items.map(processItem)
+\`\`\`
+
+**✅ GOOD (Functional with reduce):**
+\`\`\`typescript
+const results = items.reduce<CheckResult[]>((acc, item) => [...acc, processItem(item)], [])
+\`\`\`
+
+### Pattern 3: Array Filtering
+
+**❌ BAD (Mutation with manual loop):**
+\`\`\`typescript
+const activeItems: Item[] = []
+for (const item of items) {
+if (item.active) {
+activeItems.push(item)
+}
+}
+\`\`\`
+
+**✅ GOOD (Functional with filter):**
+\`\`\`typescript
+const activeItems = items.filter(item => item.active)
+\`\`\`
+
+### Pattern 4: Object Updates
+
+**❌ BAD (Mutation):**
+\`\`\`typescript
+const config = { enabled: false }
+config.enabled = true
+\`\`\`
+
+**✅ GOOD (Immutable with spread):**
+\`\`\`typescript
+const config = { enabled: false }
+const updatedConfig = { ...config, enabled: true }
+\`\`\`
+
+### Pattern 5: Sorting (Immutable)
+
+**❌ BAD (Mutation in place):**
+\`\`\`typescript
+const items = [3, 1, 2]
+items.sort((a, b) => a - b) // Mutates original array
+\`\`\`
+
+**✅ GOOD (Immutable with spread):**
+\`\`\`typescript
+const items = [3, 1, 2]
+const sortedItems = [...items].sort((a, b) => a - b)
+\`\`\`
+
+## 🔗 Related Rules
+
+- `.cursor/rules/021-core-principles.mdc` - Immutability rules
+- `.cursor/rules/004-quality.mdc` - Code limits and best practices
+
+## ✅ Verification Checklist
+
+For all new script code:
+
+- [ ] No variable mutations (push, pop, shift, unshift, splice)
+- [ ] No object mutations (obj.key = value)
+- [ ] No array in-place modifications (sort, reverse)
+- [ ] Use functional patterns: map, filter, reduce
+- [ ] Use spread operator for copies: [...arr], {...obj}
+- [ ] Test with immutable data structures

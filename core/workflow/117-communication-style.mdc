@@ -1,0 +1,113 @@
+---
+description: 'AI communication style: direct code, no reports, response detail levels'
+version: '2.3.0'
+lastUpdated: '2026-01-16'
+alwaysApply: false
+---
+
+# Communication Style Rules
+
+## Core Principle
+
+**🔴 CRITICAL**: For all work requests and tasks:
+
+1. **ALWAYS create Beads task** first
+2. **ALWAYS create Markdown reports** in Beads with all details
+3. Communicate in chat AND store reports in Beads
+
+## DO
+
+| Action                  | Example                                       |
+| ----------------------- | --------------------------------------------- |
+| Report what was done    | "✅ Fixed bug in `UserForm.tsx`, added tests" |
+| Provide recommendations | "💡 Consider extracting to hook"              |
+| Ask questions           | "❓ Separate component or existing?"          |
+| Show code changes       | Before/after snippets                         |
+
+## DON'T
+
+| ❌ Never                           | Reason                        |
+| ---------------------------------- | ----------------------------- |
+| Create `*-REPORT.md` in repository | Store in Beads instead        |
+| Generate `ANALYSIS-*.md` in repo   | Store in Beads instead        |
+| Create `SUMMARY.md` in repo        | Store in Beads instead        |
+| Start work without Beads task      | Always create task first      |
+| Skip reports in Beads              | Always document work in Beads |
+
+## When Documentation IS Appropriate
+
+1. **Explicitly requested** by user
+2. **Complex analysis** requiring detailed review
+3. **Reference materials** for reuse
+4. **Workflow documentation** for preservation
+
+## Context Storage
+
+**🔴 CRITICAL**: Store all temporary artifacts in Beads task descriptions. NEVER create markdown files for reports.
+
+**Where to store information:**
+
+| Type                      | Storage                | Tool/Command                              | When to Use                                                                       |
+| ------------------------- | ---------------------- | ----------------------------------------- | --------------------------------------------------------------------------------- |
+| **Work reports**          | Beads task description | `bd update <id> --description`            | ALL work reports, analysis, progress (Markdown format)                            |
+| **Research & analysis**   | Beads task description | `bd update <id> --description`            | Temporary artifacts, research results, analysis reports (all in task description) |
+| **Reflections**           | Hindsight MCP          | `reflect`                                 | Deep analysis, reasoning, patterns                                                |
+| **Experience & memories** | Hindsight MCP          | `retain`                                  | Long-term memory, lessons learned, opinions, patterns                             |
+| **Team tasks**            | Jira MCP               | `jira_create_issue` / `jira_update_issue` | High-level context, team coordination                                             |
+| **Quick updates**         | Chat                   | Direct message                            | Quick updates, questions                                                          |
+
+**❌ NEVER create**:
+
+- `*-REPORT.md` in repository
+- `*-ANALYSIS.md` in repository
+
+**✅ ALWAYS use**:
+
+- Research/analysis/reports → Beads task description (`bd update <id> --description`)
+- Reflections → Hindsight MCP (`user-hindsight-alice`, `reflect`)
+- Experience/memories/patterns → Hindsight MCP (`user-hindsight-alice`, `retain`)
+- Team tasks → Jira MCP (`user-MCP_DOCKER`)
+
+**Workflow for Context Storage**:
+
+```bash
+# 1. Create task
+bd create "Work description" --type=task -p 1
+
+# 2. Store work report/research/analysis in Beads task description
+bd update <id> --description="$(cat /tmp/report.md)"
+# Or append to existing description
+bd update <id> --description="$(cat current-description.md research-findings.md)"
+
+# 3. Store reflection in Hindsight MCP (if deep analysis needed)
+CallMcpTool({
+  server: "user-hindsight-alice",
+  toolName: "reflect",
+  arguments: { query: "What patterns emerged?", bank_id: "patterns", budget: "low", max_tokens: 2048 }
+})
+
+# 4. Store experience/memories/patterns in Hindsight MCP (if extracted)
+CallMcpTool({
+  server: "user-hindsight-alice",
+  toolName: "retain",
+  arguments: { bank_id: "patterns", content: "Lesson learned...", context: "work", async_processing: true }
+})
+```
+
+## Response Format
+
+```
+✅ Completed: [what was done]
+💡 Note: [recommendation if any]
+```
+
+**Bad**: "Created report: docs/fixes/task-123.md"
+**Good**: "Fixed TypeScript error, updated signature, tests pass."
+
+## Workflow Integration
+
+| Event         | Action                         |
+| ------------- | ------------------------------ |
+| Session start | "Found 2 ready tasks"          |
+| Task complete | "Task bd-42 completed"         |
+| Code changes  | "Updated 5 files, lint passes" |

@@ -1,0 +1,91 @@
+---
+description: Implement features from Beads plans created in Claude Code
+globs: ['**/*']
+alwaysApply: false
+---
+
+# /implement - Execute Plan from Beads
+
+When user says `/implement beads-XXX` or "implement beads-XXX":
+
+## 1. Load the Plan
+
+```bash
+bd show beads-XXX
+```
+
+Read the plan carefully. It contains:
+
+- Summary and architecture decisions
+- Step-by-step implementation guide
+- Files to create/modify
+- Acceptance criteria
+
+## 2. Check Context (Optional)
+
+```bash
+# Check hindsight for additional context
+mcp__hindsight-alice__recall "beads-XXX plan context"
+```
+
+## 3. Start Implementation
+
+```bash
+# Mark as in progress
+bd update beads-XXX --status=in_progress
+```
+
+## 4. Follow the Plan
+
+For each step in "Implementation Steps":
+
+1. Read the step description
+2. Implement exactly as specified
+3. Check off mentally as you complete
+
+**Guidelines:**
+
+- Follow the architecture decision from the plan
+- Create/modify files as listed in the plan
+- Don't deviate from the plan without asking
+- If blocked, note it and continue with other steps
+
+## 5. Verify Acceptance Criteria
+
+Before closing, verify ALL acceptance criteria are met:
+
+- [ ] Run tests if applicable
+- [ ] Check that all files were created/modified
+- [ ] Verify the feature works as described
+
+## 6. Complete
+
+```bash
+# Close the bead
+bd close beads-XXX --reason="Implemented as planned"
+
+# Sync (MANDATORY before commit)
+bd sync --flush-only
+```
+
+## 7. Report Back
+
+Output summary:
+
+```
+✅ Implemented: beads-XXX
+📁 Files changed: [list]
+🧪 Tests: [pass/fail/none]
+📝 Notes: [any deviations or issues]
+```
+
+---
+
+## Quick Reference
+
+| Command                               | Purpose                                 |
+| ------------------------------------- | --------------------------------------- |
+| `bd show <id>`                        | View plan details                       |
+| `bd update <id> --status=in_progress` | Mark as started                         |
+| `bd close <id>`                       | Mark as complete                        |
+| `bd sync --flush-only`                | Sync with git (MANDATORY before commit) |

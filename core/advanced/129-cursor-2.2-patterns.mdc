@@ -1,0 +1,372 @@
+---
+description: 'Cursor 2.2 Patterns: Cloud Agents, Shadow Workspace, Tab++ for collaborative development'
+alwaysApply: false
+---
+
+# Cursor 2.2 & Claude Code 2.1 Patterns
+
+> **New Features**: Cloud Agents, Shadow Workspace, Tab++ patterns.
+> Enhanced collaborative development and IDE synchronization.
+
+## Three New Capabilities
+
+### 1. Cloud Agents (Multi-IDE Coordination)
+
+**What it does:**
+- Agents run in cloud, not locally
+- Coordinate work between Cursor and Claude Code
+- Persistent state across IDE switches
+- Shared agent memory
+
+**When to use:**
+- Complex multi-IDE workflows
+- Teams needing synchronized agents
+- Long-running background tasks
+
+**Pattern:**
+
+```
+Claude Code (Analyze)
+    ↓
+Cloud Agent receives analysis
+    ↓
+Cursor (Implement)
+    ↓
+Cloud Agent stores implementation state
+    ↓
+Claude Code (Review)
+    ↓
+Cloud Agent validates across IDEs
+```
+
+**Benefit**: Agent understands full context across IDE switches
+
+### 2. Shadow Workspace (Non-Destructive Exploration)
+
+**What it does:**
+- Try code changes without modifying actual files
+- Workspace mirror for safe experimentation
+- Rollback changes instantly
+- Test refactorings before committing
+
+**When to use:**
+- Experimenting with large refactorings
+- Testing multiple approaches
+- Safe pattern exploration
+- Risk-free debugging
+
+**Pattern:**
+
+```
+1. Create shadow workspace
+   cursor> /shadow-start
+
+2. Try refactoring approach A
+   (modifies shadow copy only)
+
+3. Like it? → Apply to real files
+   cursor> /shadow-apply
+
+4. Don't like it? → Rollback instantly
+   cursor> /shadow-discard
+
+5. Start over without git history pollution
+```
+
+**Benefit**: Experiment freely, commit only winning approaches
+
+### 3. Tab++ (Enhanced Multi-Tab Workflow)
+
+**What it does:**
+- Pin important tabs
+- Tab groups for context switching
+- Quick-search across open tabs
+- Tab synchronization between IDEs
+
+**When to use:**
+- Many related files open
+- Switching between architectural layers
+- Team collaboration (shared tab layout)
+- Context switching between features
+
+**Pattern:**
+
+```
+React Components Tab Group
+├─ src/pages/UserProfile.tsx (pinned)
+├─ src/widgets/ProfileCard.tsx (pinned)
+├─ src/shared/ui/Avatar.tsx
+└─ UserProfile.test.tsx
+
+State Management Tab Group
+├─ src/shared/stores/userStore.ts (pinned)
+├─ src/shared/stores/authStore.ts
+└─ stores.test.ts
+
+Utils Tab Group
+├─ src/shared/utils/date.ts
+└─ src/shared/utils/validation.ts
+
+Quick switch: Ctrl+Tab → Filter by tab group
+```
+
+**Benefit**: Organized context, faster file navigation
+
+## Cursor 2.2 Features
+
+### Agent Modes
+
+```
+| Mode | Use | Speed |
+|------|-----|-------|
+| Local Agent | Single IDE, fast iteration | Fastest |
+| Cloud Agent | Multi-IDE, persistent state | Medium |
+| Hybrid | Local primary, cloud backup | Balanced |
+```
+
+**When to use Cloud Agents:**
+- Using both Cursor and Claude Code
+- Need persistent agent memory
+- Teams collaborating
+- Long-running analysis tasks
+
+### Shadow Workspace Features
+
+```
+/shadow-start       # Create shadow copy
+/shadow-try <idea>  # Try code change
+/shadow-apply       # Apply to real files
+/shadow-discard     # Rollback
+/shadow-diff        # See differences
+/shadow-compare     # Compare approaches
+```
+
+**Best practices:**
+- Use before large refactorings
+- Compare multiple approaches side-by-side
+- Commit only approved changes
+- Keep experimental history in shadow
+
+### Tab++ Features
+
+```
+Pinning:
+- Pin important files for quick access
+- Pinned tabs stay visible during scrolling
+
+Tab Groups:
+- Group related files (e.g., "Auth", "UI", "API")
+- Switch groups instantly (Cmd+.)
+
+Smart Search:
+- Search across open tabs (Cmd+/)
+- Jump to file instantly
+- See context in preview
+
+Sync Between IDEs:
+- Save tab layout to account
+- Open same files in other IDE
+- Maintain context across tools
+```
+
+## Implementation Patterns
+
+### Pattern 1: Shadow Workspace for Refactoring
+
+```
+Goal: Refactor UserStore from context to Zustand
+
+Step 1: Start shadow
+cursor> /shadow-start refactor/zustand-migration
+
+Step 2: Try approach A (direct rewrite)
+- Rewrite stores
+- Update imports
+- Run tests
+- See 20% of tests fail
+
+Step 3: Compare
+cursor> /shadow-diff
+Shows: Too many breaking changes
+
+Step 4: Try approach B (gradual migration)
+cursor> /shadow-discard
+cursor> /shadow-try approach-b
+- Create Zustand store
+- Keep context as wrapper
+- Gradual migration
+- All tests pass!
+
+Step 5: Apply winning approach
+cursor> /shadow-apply approach-b
+
+Step 6: Commit clean
+git commit -m "refactor: migrate auth to Zustand (gradual approach)"
+```
+
+### Pattern 2: Cloud Agent Coordination
+
+```
+Workflow: Complex feature across both IDEs
+
+Claude Code (Analysis Phase):
+1. /analyze requirements
+2. Cloud Agent stores findings
+3. Creates beads task
+
+Cloud Agent:
+- Persistent state: "Feature analysis complete"
+- Context available to both IDEs
+- No info loss on switch
+
+Cursor (Implementation Phase):
+1. Opens same beads task
+2. Cloud Agent provides analysis context
+3. /implement with full context
+4. Agent remembers refactor patterns
+5. Applies consistent approach
+
+Cloud Agent:
+- Notices patterns used in Claude Code
+- Suggests similar patterns for Cursor
+- Cross-IDE consistency
+
+Claude Code (Review Phase):
+1. Cloud Agent provides implementation context
+2. /review with full architecture understanding
+3. Validates against original spec
+```
+
+### Pattern 3: Tab++ for Large Features
+
+```
+Dashboard Feature Tab Group
+├─ src/pages/Dashboard.tsx (pinned - main page)
+├─ src/widgets/DashboardHeader.tsx (pinned - key widget)
+├─ src/widgets/StatsCard.tsx
+├─ src/widgets/Chart.tsx
+└─ src/widgets/Table.tsx
+
+Stores Tab Group
+├─ src/shared/stores/dashboardStore.ts (pinned)
+├─ useChartData.ts
+└─ useDashboardLayout.ts
+
+Styling Tab Group
+├─ dashboard.styles.ts
+├─ chart.styles.ts
+└─ table.styles.ts
+
+Navigation: Cmd+. → Select "Dashboard Feature" tab group
+Instant context switch without searching files
+```
+
+## Cursor 2.2 Best Practices
+
+### DO:
+- ✅ Use Cloud Agents for multi-IDE workflows
+- ✅ Use Shadow Workspace for large refactorings
+- ✅ Pin critical files for quick access
+- ✅ Organize tabs into groups
+- ✅ Commit only shadow-applied changes
+- ✅ Keep agent context across IDEs
+
+### DON'T:
+- ❌ Use local agent for Claude Code coordination
+- ❌ Commit shadow workspace changes directly
+- ❌ Keep 50+ tabs open (use groups instead)
+- ❌ Ignore agent state synchronization
+- ❌ Lose context during IDE switches
+- ❌ Manually recreate tab layouts
+
+## IDE Switch with Cursor 2.2
+
+**Old way (Context loss)**:
+```
+Cursor: Implement feature A
+IDE switch: Close Cursor
+Claude Code: Review feature A
+← Lost Cursor context, agent state
+```
+
+**New way (Full context)**:
+```
+Cursor: Implement feature A
+Cloud Agent: Stores state + learnings
+IDE switch: Close Cursor
+Claude Code: Open same files
+Cloud Agent: Provides Cursor context
+← Full context, patterns shared
+```
+
+## Migration from Cursor 1.x to 2.2
+
+```
+Phase 1: Adopt Cloud Agents
+- Switch local → cloud agents
+- Enable persistent state
+- Test multi-IDE workflows
+
+Phase 2: Use Shadow Workspace
+- Migrate large refactorings to shadow
+- Build confidence with rollback capability
+- Reduce git history pollution
+
+Phase 3: Organize with Tab++
+- Group related files
+- Pin critical components
+- Use smart search
+```
+
+## Real Example: Auth System Refactor
+
+```
+Goal: Migrate from Context API to Zustand across all IDEs
+
+Step 1: Claude Code Analysis
+/analyze "Current auth context usage and migration path"
+↓ Cloud Agent stores: "Analysis complete, 12 files affected"
+
+Step 2: Cursor Shadow Exploration
+/shadow-start auth-zustand-migration
+Try approach A: Direct rewrite
+↓ Tests fail, too many breaking changes
+/shadow-discard
+
+Try approach B: Gradual wrapper
+↓ Tests pass! Using Zustand internally
+/shadow-apply auth-zustand-migration
+
+Step 3: Claude Code Review
+Cloud Agent provides:
+- Cursor's successful approach (gradual wrapper)
+- Cursor's test results (all pass)
+- Cursor's patterns (consistency recommendations)
+
+/review implementation
+↓ Approves with suggestions
+
+Step 4: Commit
+git commit -m "refactor: migrate auth from Context to Zustand
+
+Used gradual migration pattern:
+- Zustand store in parallel with Context
+- Gradual consumer migration
+- All tests pass
+- Zero breaking changes
+
+Co-Authored-By: Cursor agents + Claude Code review"
+```
+
+## Related Patterns
+
+- @128-skills-patterns.mdc - Skills composition with agents
+- @125-verification-swarms.mdc - Multi-agent verification
+- @127-token-optimization.mdc - Cloud agents reduce token overhead
+- SDLC-WORKFLOW.md - Cloud agents in IDE coordination
+
+---
+
+**Key Takeaway**: Cursor 2.2 makes multi-IDE workflows seamless with
+Cloud Agents for persistent state, Shadow Workspace for safe exploration,
+and Tab++ for organized navigation.

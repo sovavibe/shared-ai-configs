@@ -1,0 +1,349 @@
+---
+description: 'Skills Patterns: Hot-reload workflows, composition, chaining without user intervention'
+alwaysApply: false
+---
+
+# Skills and Workflow Patterns
+
+> **Purpose**: Use Cursor skills for automated workflow composition and multi-agent chaining.
+> Skills enable hot-reload patterns and workflow execution without constant user input.
+
+## What are Skills?
+
+Skills are reusable workflows/commands in Cursor that can be:
+- Called from other skills
+- Composed together
+- Hot-reloaded on file changes
+- Chained without user intervention
+
+**Types**:
+- `/slash-commands` - User-triggered workflows
+- Skill triggers - Event-based automation
+- Composed skills - Chaining multiple skills
+
+## Skill Composition Pattern
+
+### Single Skill (Simple)
+
+```
+User: "run /analyze"
+    ↓
+Cursor skill executes
+    ↓
+Returns analysis
+```
+
+### Composed Skills (Automation)
+
+```
+/analyze
+    ↓
+/architect (uses analyze output)
+    ↓
+/plan (uses architect output)
+    ↓
+Auto-complete without user asking again
+```
+
+**Benefit**: Full SDLC without 4 separate prompts
+
+## Hot-Reload Patterns
+
+### Skill Definition Files
+
+Skills stored in `.cursor/commands/` can be hot-reloaded:
+
+```bash
+# File change detected
+.cursor/commands/analyze.md (modified)
+    ↓
+Cursor reloads skill immediately
+    ↓
+No restart needed
+    ↓
+Next `/analyze` uses updated version
+```
+
+**Use Case**: Refine skill logic mid-session without restarting
+
+## Workflow Chaining Without Intervention
+
+### Pattern: Auto-Next Skill
+
+When skill finishes, trigger next skill automatically:
+
+**Skill: /analyze**
+```
+1. Run analysis
+2. Save findings to beads
+3. Auto-trigger: /architect
+```
+
+**Skill: /architect**
+```
+1. Read analysis from beads
+2. Design architecture
+3. Save to beads
+4. Auto-trigger: /plan
+```
+
+**Result**: Analyze → Architect → Plan → Ready (all automatic)
+
+**User just types**: `/analyze "requirements"`
+**Result**: Full SDLC plan ready without asking 3 more times
+
+## Composition Strategies
+
+### Strategy 1: Sequential Chain
+
+```
+/analyze
+    ↓ (on completion)
+/architect
+    ↓ (on completion)
+/plan
+```
+
+**When to use**: Full SDLC needed
+**Duration**: 4-8 hours single-shot
+
+### Strategy 2: Conditional Chaining
+
+```
+/analyze
+    ↓
+if (requirements_unclear) → Ask clarifying questions
+    ↓
+if (requirements_clear) → Auto /architect
+    ↓
+/plan
+```
+
+**When to use**: Variable input clarity
+**Duration**: 2-4 hours (interactive where needed)
+
+### Strategy 3: Parallel Composition
+
+```
+/analyze
+    ↓
+Run in parallel:
+├─ /architect (technical design)
+├─ /security-review (security check)
+└─ /test-plan (testing strategy)
+    ↓
+Merge results → /plan
+```
+
+**When to use**: Need multiple perspectives
+**Duration**: 3-6 hours (parallel execution)
+
+### Strategy 4: Loop Until Done
+
+```
+/analyze
+    ↓
+/architect
+    ↓
+/review-design
+    ↓
+if (issues_found) → /architect (loop)
+    ↓
+if (approved) → /plan
+```
+
+**When to use**: Iterative refinement needed
+**Duration**: 4-6 hours (with review cycles)
+
+## Implementation in Cursor Skills
+
+### Skill File Structure
+
+```markdown
+# /my-skill
+
+**Purpose:** [What this skill does]
+
+**Composition**:
+1. Step 1: [Do X]
+   → Auto-trigger next skill on completion
+2. Step 2: [Do Y]
+   → Read output from Step 1 using @beads
+
+## Input Format
+- From: [Source (user input/beads/env)]
+- Format: [Expected format]
+
+## Output Format
+- To: [Destination (beads/env/return)]
+- Format: [Output format]
+
+## Triggers Next Skill
+When done → Auto-run `/next-skill-name`
+With context → Read from beads:<task_id>
+```
+
+### Example: /full-sdlc Skill
+
+```markdown
+# /full-sdlc
+
+**Purpose:** Run complete SDLC automatically: Analyze → Architect → Plan
+
+**Composition**:
+1. Analyze requirements
+   - Input: User description
+   - Output: Beads analysis (save as beads-001)
+   → Trigger /architect with beads-001
+
+2. Architect system
+   - Input: Beads-001 analysis
+   - Output: Beads architecture (save as beads-002)
+   → Trigger /plan with beads-002
+
+3. Create plan
+   - Input: Beads-002 architecture
+   - Output: Beads implementation plan (save as beads-003)
+   → Return to user: "Ready to implement"
+
+## User Experience
+
+```
+User: "Add dark mode support"
+    ↓
+/full-sdlc auto-runs
+    ↓
+1-2 hours later: "Analysis, Architecture, Plan ready. Ready to implement?"
+```
+
+vs
+
+```
+User: "Add dark mode support"
+Ask: "Can you /plan?"
+User: "Yes"
+Ask: "Can you /architect?"
+User: "Yes"
+Ask: "Can you /analyze?"
+(Multiple prompts needed)
+```
+
+## Data Flow: Beads as Skill Bridge
+
+Skills communicate through beads:
+
+```
+Skill 1 (/analyze)
+    ↓
+Write to beads: beads-123 {findings, decisions}
+    ↓
+Skill 2 (/architect)
+    ↓
+Read from beads: beads-123 {@beads}
+    ↓
+Write to beads: beads-124 {architecture}
+    ↓
+Skill 3 (/plan)
+    ↓
+Read from beads: beads-124 {@beads}
+    ↓
+Write result to beads: beads-125 {plan}
+```
+
+**Benefit**: Skills are decoupled, each can be tested independently
+
+## Error Handling in Chains
+
+When skill in chain fails:
+
+```
+/analyze ✓
+    ↓
+/architect ✗ (fails)
+    ↓
+STOP: Don't auto-trigger /plan
+SHOW: Error reason + fix suggestion
+USER: Fixes or re-runs /architect
+    ↓
+On success → Auto-trigger /plan
+```
+
+**Rule**: Never silently fail to next skill
+
+## Hot-Reload Development
+
+### Develop Skill with Hot-Reload
+
+```
+1. Edit .cursor/commands/my-skill.md
+    ↓
+2. Cursor detects change
+    ↓
+3. Skill reloaded automatically
+    ↓
+4. User runs `/my-skill` again
+    ↓
+5. Uses updated version immediately
+```
+
+**No restart needed**: Iterate quickly
+
+### Debugging Workflow
+
+```
+User: `/my-skill param1`
+    ↓
+Error in step 2
+    ↓
+Edit .cursor/commands/my-skill.md (fix step 2)
+    ↓
+Cursor hot-reloads
+    ↓
+User: `/my-skill param1` (retry)
+    ↓
+Success (using fixed version)
+```
+
+## Best Practices
+
+### DO:
+- ✅ Chain skills through beads (persistent data)
+- ✅ Auto-trigger next skill on completion
+- ✅ Use hot-reload for quick iteration
+- ✅ Save state to beads between skills
+- ✅ Document input/output formats
+- ✅ Handle errors gracefully
+
+### DON'T:
+- ❌ Require user to manually trigger each skill
+- ❌ Pass data through stdout (use beads)
+- ❌ Assume next skill will be run (save state!)
+- ❌ Ignore hot-reload capability
+- ❌ Chain 5+ skills (too long, breaks focus)
+- ❌ Skip error handling
+
+## Related Patterns
+
+- @127-token-optimization.mdc - Reduce tokens with skill composition
+- @125-verification-swarms.mdc - Multi-agent skills pattern
+- @124-sdd-patterns.mdc - SDD workflow as composed skills
+- SDLC-WORKFLOW.md - Full SDLC as composed skills
+
+## Real World: SDLC as Composed Skills
+
+```
+/full-sdlc
+├─ Step 1: /analyze
+   └─ Saves beads-001
+├─ Step 2: /architect (reads beads-001)
+   └─ Saves beads-002
+├─ Step 3: /plan (reads beads-002)
+   └─ Saves beads-003
+└─ Complete: Ready to implement
+
+User experience: One command, 2-4 hours later = Full plan
+```
+
+**Token savings**: 1 skill prompt vs 5 separate prompts (80% reduction)
+
+**Time savings**: Automatic composition vs manual triggering (60% faster)

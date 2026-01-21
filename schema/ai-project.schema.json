@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI Project Configuration",
+  "description": "Configuration schema for shared-ai-configs",
+  "type": "object",
+  "required": ["project", "stack", "commands"],
+  "properties": {
+    "project": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "description": "Project name" },
+        "description": { "type": "string" },
+        "role": { "type": "string", "default": "Senior Developer" },
+        "language": { "type": "string", "enum": ["Russian", "English"], "default": "English" }
+      }
+    },
+    "stack": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "type": "string", "enum": ["react", "node", "java", "python"] },
+        "framework": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "version": { "type": "string" }
+          }
+        },
+        "build": {
+          "type": "object",
+          "properties": {
+            "tool": { "type": "string" },
+            "version": { "type": "string" }
+          }
+        },
+        "language": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "version": { "type": "string" }
+          }
+        },
+        "ui": {
+          "type": "object",
+          "properties": {
+            "library": { "type": "string" },
+            "version": { "type": "string" },
+            "styling": { "type": "string" }
+          }
+        },
+        "state": {
+          "type": "object",
+          "properties": {
+            "server": { "type": "string" },
+            "client": { "type": "string" }
+          }
+        },
+        "api": {
+          "type": "object",
+          "properties": {
+            "codegen": { "type": "string" },
+            "client": { "type": "string" },
+            "mocks": { "type": "string" }
+          }
+        },
+        "auth": { "type": "string" },
+        "runtime": { "type": "string" },
+        "linter": { "type": "string" }
+      }
+    },
+    "architecture": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["FSD", "Clean", "Layered", "Modular"] },
+        "structure": { "type": "string" },
+        "import_rule": { "type": "string" }
+      }
+    },
+    "integrations": {
+      "type": "object",
+      "properties": {
+        "vcs": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["gitlab", "github", "bitbucket"] },
+            "project_id": { "type": "integer" },
+            "group": { "type": "string" },
+            "main_branch": { "type": "string", "default": "main" }
+          }
+        },
+        "issues": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["jira", "linear", "github-issues", "beads-only"] },
+            "key": { "type": "string" },
+            "board_id": { "type": "integer" },
+            "instance": { "type": "string", "format": "uri" }
+          }
+        },
+        "task_tracking": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["beads", "jira", "linear"] },
+            "enabled": { "type": "boolean" },
+            "key_prefix": { "type": "string" }
+          }
+        },
+        "mcp_servers": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "commands": {
+      "type": "object",
+      "required": ["dev", "build"],
+      "properties": {
+        "dev": { "type": "string" },
+        "build": { "type": "string" },
+        "lint": { "type": "string" },
+        "test": { "type": "string" },
+        "codegen": { "type": "string" },
+        "quality_gates": { "type": "string" },
+        "task_ready": { "type": "string" },
+        "task_update": { "type": "string" },
+        "task_close": { "type": "string" },
+        "task_sync": { "type": "string" }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "properties": {
+        "codegen_output": { "type": "string" },
+        "env_config": { "type": "string" },
+        "cursor_rules": { "type": "string" },
+        "claude_docs": { "type": "string" },
+        "context_handoff": { "type": "string" }
+      }
+    },
+    "ide": {
+      "type": "object",
+      "properties": {
+        "primary": { "type": "string" },
+        "secondary": { "type": "string" },
+        "dual_mode": { "type": "boolean" }
+      }
+    },
+    "options": {
+      "type": "object",
+      "properties": {
+        "dev_server_port": { "type": "integer" },
+        "model_switching": { "type": "string" },
+        "orchestration": { "type": "boolean" },
+        "sdd_enabled": { "type": "boolean" },
+        "token_optimization": { "type": "string" },
+        "skip_rules": {
+          "type": "object",
+          "properties": {
+            "enhancement": { "type": "string" },
+            "bugfix": { "type": "string" },
+            "simple_fix": { "type": "string" }
+          }
+        }
+      }
+    },
+    "shared_configs": {
+      "type": "object",
+      "properties": {
+        "source": { "type": "string" },
+        "method": { "type": "string", "enum": ["symlink", "copy", "generate"] },
+        "auto_update": { "type": "boolean" }
+      }
+    }
+  }
+}

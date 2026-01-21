@@ -1,0 +1,77 @@
+---
+description: 'AI workflow: Agent vs Chat, MCP-first approach'
+alwaysApply: false
+---
+
+# AI Development Workflow
+
+## Core Principles
+
+1. **MCP-first**: Use MCP tools over scripts
+2. **Existing solutions first**: Search before creating
+3. **Ask when unclear**: Don't assume
+
+## Agent vs Chat
+
+| Task                 | Mode  |
+| -------------------- | ----- |
+| Multi-file changes   | Agent |
+| Create files/folders | Agent |
+| Bug fixes            | Agent |
+| Questions            | Chat  |
+| Code explanations    | Chat  |
+
+## Context Symbols
+
+```
+@Codebase              # Semantic search
+@file path/to/file.ts  # Specific file
+@folder src/pages      # Directory
+@Web "query"           # Internet search
+```
+
+**Strategy**: Start specific (@file) → expand (@folder) → search (@Codebase)
+
+## MCP Priority
+
+| Tool      | Purpose                           |
+| --------- | --------------------------------- |
+| Beads     | Task tracking, research artifacts |
+| Context7  | Library documentation             |
+| Hindsight | Patterns, lessons, memory         |
+| Jira      | Team sync                         |
+
+**Rule**: Check MCP first, scripts only for mechanical operations.
+
+**Details**: @100-hindsight.mdc, @101-jira.mdc
+
+## Workflow Patterns
+
+### Refactoring
+
+```
+1. @Codebase "Find [old pattern]"
+2. Review results
+3. Plan approach
+4. Agent applies changes
+5. npm run quality:gates
+```
+
+### Bug Fixing
+
+```
+1. @file [error location]
+2. @Codebase "Related code"
+3. Identify root cause
+4. Fix with Agent
+5. Test
+```
+
+## Best Practices
+
+| Do                  | Don't             |
+| ------------------- | ----------------- |
+| Read before writing | Accept blindly    |
+| Test incrementally  | Skip verification |
+| Minimize context    | Excessive context |
+| Ask when unclear    | Assume            |

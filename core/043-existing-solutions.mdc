@@ -1,0 +1,184 @@
+---
+description: 'Search existing solutions before custom implementations - Context7, codebase, deps'
+globs: ['src/**/features/**/*.ts', 'src/**/features/**/*.tsx', 'scripts/**/*.ts']
+alwaysApply: false
+---
+
+# Use Existing Solutions First
+
+## Critical Rule
+
+**NEVER create custom implementations when proven solutions exist.**
+
+## Mandatory Workflow
+
+### Before Implementing ANY Feature or Tool
+
+**1. Plan with Beads** (MANDATORY):
+
+```bash
+# Create Epic for multi-step work
+EPIC=$(bd create "Epic: [Feature Title]" --type=epic -p 1)
+# Decompose into tasks
+bd create "Research: [topic]" --deps epic:$EPIC -p 1
+bd create "Implement: [component]" --deps epic:$EPIC -p 2
+```
+
+**2. Search for existing solutions (MANDATORY):**
+
+```typescript
+// ✅ CORRECT workflow
+// Step 1: Search for existing solutions
+CallMcpTool({
+  server: "user-MCP_DOCKER",
+  toolName: "resolve-library-id",
+  arguments: { libraryName: "secret-scanning" }
+})
+// Result: Secretlint (Trust Score: 90.3), Gitleaks (Trust Score: 89.9)
+
+// Step 2: Get documentation
+CallMcpTool({
+  server: "user-MCP_DOCKER",
+  toolName: "get-library-docs",
+  arguments: {
+    context7CompatibleLibraryID: "/secretlint/secretlint",
+    topic: "setup",
+    tokens: 5000
+  }
+})
+
+// Step 3: Use existing solution
+npm install --save-dev secretlint @secretlint/secretlint-rule-preset-recommend
+
+// ❌ WRONG workflow
+// Creating custom check-secrets.sh script without searching first
+```
+
+**2. Search order (MCP-first approach):**
+
+1. **Beads** - Check active/in-progress tasks and previous work
+
+   - Use `bd ready --json` to check ready work
+   - Use `bd list --status=open` to check all open tasks
+   - Use `bd show <id> --json` to get full context from task descriptions
+   - Look for: previous research, analysis reports, similar tasks in task descriptions
+
+2. **Context7 MCP** - Find libraries and tools (PRIORITY, used daily)
+   - Use `resolve-library-id` to find libraries
+   - Use `get-library-docs` for documentation
+   - Server: `MCP_DOCKER`
+3. **Hindsight MCP** - Recall previous experience, opinions, memories, and patterns
+   - Use `recall` to find: previous experience with similar tasks, opinions on solutions, memories of what worked/didn't work
+   - **Memories**: What was done before, sequence of events, decisions made
+   - **Experience**: How things were done, what worked well, what didn't work, practical knowledge
+   - **Opinions**: Preferences, decisions, approaches, "why we do it this way", team consensus, trade-offs considered
+   - **Patterns**: Coding patterns, architectural decisions, reusable solutions
+   - **Lessons**: What was learned, what to avoid, mistakes and their solutions
+   - Search banks: `patterns` (coding patterns), `lessons` (lessons learned), `alice` (general memory)
+   - Server: `user-hindsight-alice`
+   - See: @100-hindsight.mdc for detailed usage
+4. **Web search** - Find best practices and comparisons (if MCP doesn't have answer)
+5. **Project dependencies** - Check `package.json` for existing tools
+6. **Project documentation** - Check `docs/` and `.cursor/rules/`
+7. **Codebase search** - Check if similar functionality exists
+
+**Note**: MCP tools are priority. Beads and Hindsight provide project-specific context (research, experience, opinions, memories) that external search cannot provide. Use web search and other methods only if MCP doesn't provide sufficient information.
+
+**3. Study library documentation BEFORE implementing custom logic:**
+
+**CRITICAL**: Before writing custom code to solve a problem, check if the library already provides the feature:
+
+- ✅ **Read official documentation** - Check built-in features, options, configuration
+- ✅ **Search for examples** - Look for common patterns and best practices
+- ✅ **Check transport/plugin ecosystem** - Many libraries have official/community extensions
+- ✅ **Review API reference** - Look for configuration options that solve your need
+
+**Example - Winston File Logging**:
+
+```typescript
+// ❌ WRONG: Manual archiving logic
+const archiveOldLogs = () => {
+  // Reading directory, checking dates, deleting files...
+}
+
+// ✅ CORRECT: Use Winston's built-in rotation
+new winston.transports.File({
+  filename: 'logs/scripts.log',
+  maxsize: 10 * 1024 * 1024, // Winston automatically rotates
+  maxFiles: 5, // Winston automatically deletes old files
+})
+```
+
+**Pattern**: Trust the ecosystem. Libraries are designed to handle common use cases. Only add custom logic if there's a genuine gap.
+
+**4. Only create custom solutions if:**
+
+- ❌ No suitable library/tool exists after thorough search
+- ❌ Library doesn't provide the needed feature (after studying documentation)
+- ❌ Existing solutions don't meet specific requirements
+- ❌ Custom solution is explicitly requested by user
+
+## Examples
+
+### ❌ Wrong: Custom Secret Scanner
+
+**✅ Correct**: Use Secretlint (found via context7)
+
+### ❌ Wrong: Custom Validation
+
+**✅ Correct**: Use Zod (already in project)
+
+### ❌ Wrong: Custom HTTP Client
+
+**✅ Correct**: Use Axios (already in project)
+
+## Why This Matters
+
+1. **Time efficiency**: Existing solutions are tested, documented, maintained
+2. **Quality**: Proven tools have fewer bugs, better performance
+3. **Maintainability**: Standard tools are easier for team to understand
+4. **Security**: Established tools have security audits and updates
+5. **Community support**: Popular tools have active communities
+
+## Common Patterns
+
+### Security Tools
+
+- **Secret scanning**: Secretlint, Gitleaks, TruffleHog
+- **Dependency scanning**: Snyk, npm audit
+- **Code scanning**: SonarQube, ESLint security plugins
+
+### Validation
+
+- **TypeScript**: Built-in type system
+- **Runtime validation**: Zod (already in project)
+- **Form validation**: React Hook Form + Zod
+
+### Testing
+
+- **Unit tests**: Vitest (already in project)
+- **E2E tests**: Playwright, Cypress
+- **API testing**: MSW (already in project)
+
+### Build Tools
+
+- **Bundler**: Vite (already in project)
+- **Type checking**: TypeScript (already in project)
+- **Code generation**: Orval (already in project)
+
+## Workflow Checklist
+
+Before implementing ANY feature:
+
+- [ ] Searched context7 for relevant libraries
+- [ ] Searched web for best practices
+- [ ] Checked project dependencies
+- [ ] **Studied library documentation for built-in features** (CRITICAL)
+- [ ] **Checked for official/community transports/plugins** (CRITICAL)
+- [ ] Reviewed project documentation
+- [ ] Checked if similar functionality exists in codebase
+- [ ] Documented why custom solution is needed (if created)
+
+## Remember
+
+**If a problem is common, a solution likely already exists. Find it first.**
