@@ -1,0 +1,63 @@
+# Agent Instructions
+
+<% if (services.task_tracking && services.task_tracking.type === 'beads') { -%>
+This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
+
+## Quick Reference
+
+```bash
+<%= commands.task_ready %>              # Find available work
+<%= commands.task_show %> <id>          # View issue details
+<%= commands.task_update %> <id> --status in_progress  # Claim work
+<%= commands.task_close %> <id>         # Complete work
+<%= commands.task_sync %>               # Sync with git
+```
+
+<% } else if (services.task_tracking && services.task_tracking.type !== 'none') { -%>
+This project uses **<%= services.task_tracking.type %>** for issue tracking.
+
+## Quick Reference
+
+```bash
+<%= commands.task_ready %>              # Find available work
+<%= commands.task_show %> <id>          # View issue details
+<%= commands.task_update %> <id>        # Update work item
+<%= commands.task_close %> <id>         # Complete work
+```
+
+<% } -%>
+## Landing the Plane (Session Completion)
+
+**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
+
+**MANDATORY WORKFLOW:**
+
+1. **File issues for remaining work** - Create issues for anything that needs follow-up
+2. **Run quality gates** (if code changed) - Tests, linters, builds
+3. **Update issue status** - Close finished work, update in-progress items
+4. **PUSH TO REMOTE** - This is MANDATORY:
+   ```bash
+   git pull --rebase
+<% if (services.task_tracking && services.task_tracking.type !== 'none') { -%>
+   <%= commands.task_sync %>
+<% } -%>
+   git push
+   git status  # MUST show "up to date with origin"
+   ```
+5. **Clean up** - Clear stashes, prune remote branches
+6. **Verify** - All changes committed AND pushed
+7. **Hand off** - Provide context for next session
+
+**CRITICAL RULES:**
+- Work is NOT complete until `git push` succeeds
+- NEVER stop before pushing - that leaves work stranded locally
+- NEVER say "ready to push when you are" - YOU must push
+- If push fails, resolve and retry until it succeeds
+<% if (rules && rules.custom && rules.custom.length > 0) { -%>
+
+## Project-Specific Rules
+
+<% rules.custom.forEach((rule) => { -%>
+- <%- rule %>
+<% }); -%>
+<% } -%>

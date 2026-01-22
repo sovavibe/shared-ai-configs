@@ -1,14 +1,239 @@
 ---
 description: 'React performance optimization: Vercel-inspired rules ranked by impact'
-version: '1.0.0'
-lastUpdated: '2026-01-16'
-globs: ['src/**/*.{ts,tsx}', 'vite.config.ts', 'src/app/router/**/*.tsx']
+version: '2.0.0'
+lastUpdated: '2026-01-22'
+globs: ['**/*.{ts,tsx}', 'vite.config.ts', '**/router/**/*.tsx']
 alwaysApply: false
 ---
 
 # React Performance Optimization Rules
 
-Based on Vercel React Best Practices - 45 rules across 8 categories, prioritized by impact.
+Based on Vercel React Best Practices - 50+ rules across 10 categories, prioritized by impact.
+
+**React 19 Ready** - Includes Server Components, Actions, use() hook, and React Compiler patterns.
+
+## Core Web Vitals 2026
+
+| Metric | Target | Warning | Critical | Notes |
+|--------|--------|---------|----------|-------|
+| **LCP** (Largest Contentful Paint) | < 2.5s | 2.5-4s | > 4s | Primary loading metric |
+| **INP** (Interaction to Next Paint) | < 200ms | 200-500ms | > 500ms | Replaced FID in 2024 |
+| **CLS** (Cumulative Layout Shift) | < 0.1 | 0.1-0.25 | > 0.25 | Visual stability |
+| **TTFB** (Time to First Byte) | < 800ms | 800ms-1.8s | > 1.8s | Server responsiveness |
+
+**INP vs FID:** INP measures ALL interactions throughout page lifecycle, not just first input. Optimize event handlers, reduce main thread blocking, use `startTransition()` for non-urgent updates.
+
+## 🔴 CRITICAL: React 19 Performance Features
+
+### React Compiler (Auto-Memoization)
+
+React Compiler eliminates manual `useMemo`, `useCallback`, and `memo()` in most cases.
+
+```typescript
+// ✅ React 19 with Compiler - no manual memoization needed
+function ProductList({ products, onSelect }) {
+  const sorted = products.toSorted((a, b) => a.name.localeCompare(b.name))
+  const handleClick = (id) => onSelect(id)
+
+  return sorted.map(p => <Product key={p.id} product={p} onClick={handleClick} />)
+}
+
+// ❌ Pre-Compiler pattern (still works, but unnecessary with Compiler)
+function ProductList({ products, onSelect }) {
+  const sorted = useMemo(() => products.toSorted((a, b) => a.name.localeCompare(b.name)), [products])
+  const handleClick = useCallback((id) => onSelect(id), [onSelect])
+
+  return sorted.map(p => <Product key={p.id} product={p} onClick={handleClick} />)
+}
+```
+
+**When Compiler can't optimize:** External mutations, non-React state, `ref.current` reads during render.
+
+### use() Hook for Async Data
+
+```typescript
+// ✅ React 19 - use() unwraps promises during render
+function UserProfile({ userPromise }) {
+  const user = use(userPromise) // Suspends until resolved
+  return <div>{user.name}</div>
+}
+
+// ✅ Conditional use() - unlike hooks, can be called conditionally
+function MaybeUser({ userPromise, showUser }) {
+  if (!showUser) return null
+  const user = use(userPromise)
+  return <div>{user.name}</div>
+}
+
+// ❌ Old pattern - required useEffect + useState
+function UserProfile({ userId }) {
+  const [user, setUser] = useState(null)
+  useEffect(() => {
+    fetchUser(userId).then(setUser)
+  }, [userId])
+  if (!user) return <Spinner />
+  return <div>{user.name}</div>
+}
+```
+
+### Actions for Form Submissions
+
+```typescript
+// ✅ React 19 Actions - automatic pending state, optimistic updates
+function CommentForm({ postId }) {
+  const [state, submitAction, isPending] = useActionState(
+    async (prevState, formData) => {
+      const comment = formData.get('comment')
+      await addComment(postId, comment)
+      return { success: true }
+    },
+    { success: false }
+  )
+
+  return (
+    <form action={submitAction}>
+      <input name="comment" disabled={isPending} />
+      <button disabled={isPending}>{isPending ? 'Posting...' : 'Post'}</button>
+    </form>
+  )
+}
+
+// ❌ Old pattern - manual state management
+function CommentForm({ postId }) {
+  const [isPending, setIsPending] = useState(false)
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setIsPending(true)
+    await addComment(postId, new FormData(e.target).get('comment'))
+    setIsPending(false)
+  }
+  // ...
+}
+```
+
+### useOptimistic for Instant Feedback
+
+```typescript
+// ✅ React 19 - optimistic UI updates
+function LikeButton({ likes, postId }) {
+  const [optimisticLikes, addOptimisticLike] = useOptimistic(
+    likes,
+    (currentLikes, newLike) => [...currentLikes, newLike]
+  )
+
+  const handleLike = async () => {
+    addOptimisticLike({ id: 'temp', pending: true })
+    await likePost(postId) // If fails, React reverts optimistic update
+  }
+
+  return <button onClick={handleLike}>{optimisticLikes.length} Likes</button>
+}
+```
+
+## 🔴 CRITICAL: Server Components & Streaming
+
+### Server Components for Static Content
+
+```typescript
+// ✅ Server Component (default in React 19 with frameworks)
+// - Zero JS sent to client for this component
+// - Can directly access databases, file system
+async function ProductPage({ id }) {
+  const product = await db.products.findOne(id) // Direct DB access
+  const reviews = await db.reviews.find({ productId: id })
+
+  return (
+    <div>
+      <ProductDetails product={product} />
+      <Suspense fallback={<ReviewsSkeleton />}>
+        <Reviews reviews={reviews} />
+      </Suspense>
+      <AddToCartButton id={id} /> {/* Client Component */}
+    </div>
+  )
+}
+
+// ✅ Client Component - interactive parts only
+'use client'
+function AddToCartButton({ id }) {
+  const [isPending, startTransition] = useTransition()
+  return (
+    <button onClick={() => startTransition(() => addToCart(id))}>
+      {isPending ? 'Adding...' : 'Add to Cart'}
+    </button>
+  )
+}
+```
+
+### Suspense Streaming Patterns
+
+```typescript
+// ✅ Streaming with nested Suspense boundaries
+function Dashboard() {
+  return (
+    <div>
+      {/* Critical content - streams first */}
+      <Suspense fallback={<HeaderSkeleton />}>
+        <Header />
+      </Suspense>
+
+      <div className="grid">
+        {/* Independent streams - load in parallel */}
+        <Suspense fallback={<StatsSkeleton />}>
+          <StatsPanel />
+        </Suspense>
+
+        <Suspense fallback={<ChartSkeleton />}>
+          <RevenueChart />
+        </Suspense>
+
+        {/* Lower priority - streams last */}
+        <Suspense fallback={<ActivitySkeleton />}>
+          <RecentActivity />
+        </Suspense>
+      </div>
+    </div>
+  )
+}
+
+// ✅ Preload pattern for anticipated navigation
+import { preload } from 'react-dom'
+
+function ProductCard({ product }) {
+  const handleHover = () => {
+    preload(`/api/products/${product.id}/details`, { as: 'fetch' })
+    preload(product.imageUrl, { as: 'image' })
+  }
+
+  return <Link href={`/products/${product.id}`} onMouseEnter={handleHover}>...</Link>
+}
+```
+
+### Progressive Enhancement with Suspense
+
+```typescript
+// ✅ Show content progressively as it loads
+function UserDashboard({ userId }) {
+  return (
+    <ErrorBoundary fallback={<ErrorMessage />}>
+      {/* User info loads first (fast) */}
+      <Suspense fallback={<UserInfoSkeleton />}>
+        <UserInfo userId={userId} />
+      </Suspense>
+
+      {/* Stats can load independently */}
+      <Suspense fallback={<StatsSkeleton />}>
+        <UserStats userId={userId} />
+      </Suspense>
+
+      {/* Activity log is slowest, loads last */}
+      <Suspense fallback={<ActivitySkeleton />}>
+        <ActivityLog userId={userId} />
+      </Suspense>
+    </ErrorBoundary>
+  )
+}
+```
 
 ## 🔴 CRITICAL: Eliminating Waterfalls
 
@@ -483,23 +708,103 @@ for (const user of users) {
 }
 ```
 
+## Profiling Tools (React DevTools 5.x)
+
+### React DevTools Profiler
+
+```bash
+# Enable profiler in production builds (Vite)
+# vite.config.ts
+export default defineConfig({
+  define: {
+    __REACT_DEVTOOLS_GLOBAL_HOOK__: '({ isDisabled: false })',
+  },
+})
+```
+
+**Key metrics to watch:**
+
+- **Commit duration** - time React spent rendering
+- **Render count** - components re-rendered per commit
+- **Why did this render?** - identifies unnecessary re-renders
+
+### React Compiler Debugging
+
+```typescript
+// Check if component is optimized by Compiler
+// In DevTools, optimized components show "Memo ✓" badge
+
+// Force Compiler to skip optimization (debugging)
+// @ts-expect-error - debugging directive
+'use no memo'
+function ComponentToDebug() {
+  // ...
+}
+```
+
+### Performance Timeline Integration
+
+```typescript
+// Mark performance boundaries for DevTools Timeline
+import { unstable_trace as trace } from 'scheduler/tracing'
+
+function handleClick() {
+  trace('button click', performance.now(), () => {
+    // Action to trace
+  })
+}
+```
+
+### INP Debugging
+
+```typescript
+// Measure Interaction to Next Paint
+new PerformanceObserver((list) => {
+  for (const entry of list.getEntries()) {
+    if (entry.name === 'click' || entry.name === 'keydown') {
+      console.log(`INP candidate: ${entry.duration}ms`, entry)
+    }
+  }
+}).observe({ type: 'event', buffered: true, durationThreshold: 16 })
+```
+
 ## Code Review Checklist
+
+### React 19 & Compiler
+
+- [ ] React Compiler enabled (check for "Memo ✓" badges in DevTools)
+- [ ] Server Components used for static content
+- [ ] Client Components only for interactive parts
+- [ ] `use()` hook for async data instead of useEffect+useState
+- [ ] `useActionState` for form submissions
+- [ ] `useOptimistic` for instant feedback UI
+- [ ] Suspense boundaries at appropriate granularity
+
+### Bundle & Loading
 
 - [ ] All route components lazy loaded
 - [ ] Heavy components dynamically imported
 - [ ] No barrel file imports (direct imports)
+- [ ] Non-critical libraries deferred
+
+### Data Fetching
+
 - [ ] No sequential independent awaits (use Promise.all)
 - [ ] Independent queries use parallel useQuery
-- [ ] Large lists (100+ items) use virtualization or content-visibility
-- [ ] DOM CSS changes batched (classes or cssText)
 - [ ] Fetching only required fields
 - [ ] Server-side pagination for large datasets
+- [ ] Prefetching on hover/focus for anticipated navigation
+
+### Rendering
+
+- [ ] Large lists (100+ items) use virtualization or content-visibility
+- [ ] DOM CSS changes batched (classes or cssText)
 - [ ] Stable object references for memoized components
-- [ ] Expensive computations memoized
 - [ ] Functional setState for state-dependent updates
 - [ ] Lazy state initialization for expensive values
 - [ ] Narrow effect dependencies (primitives, not objects)
 - [ ] Subscribe to derived booleans, not continuous values
+- [ ] `startTransition` for non-urgent updates (improves INP)
 
 ## Performance Budgets
 

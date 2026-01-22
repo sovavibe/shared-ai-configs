@@ -19,12 +19,12 @@
 <%# Project-specific NEVER rules -%>
 <% if (rules && rules.never && rules.never.length > 0) { -%>
 <% rules.never.forEach((rule) => { -%>
-<%= ruleNum++ %>. **NEVER** <%= rule %>
+<%= ruleNum++ %>. **NEVER** <%- rule %>
 <% }); -%>
 <% } -%>
 <%# Auto-generated ALWAYS rules -%>
 <% if (commands && commands.quality_gates) { -%>
-<%= ruleNum++ %>. **ALWAYS** run `<%= commands.quality_gates %>` before committing
+<%= ruleNum++ %>. **ALWAYS** run `<%- commands.quality_gates %>` before committing
 <% } -%>
 <% if (services && services.task_tracking && services.task_tracking.type && services.task_tracking.type !== 'none') { -%>
 <%= ruleNum++ %>. **ALWAYS** use <%= services.task_tracking.type %> for task tracking
@@ -36,7 +36,16 @@
 <%# Project-specific ALWAYS rules -%>
 <% if (rules && rules.always && rules.always.length > 0) { -%>
 <% rules.always.forEach((rule) => { -%>
-<%= ruleNum++ %>. **ALWAYS** <%= rule %>
+<%= ruleNum++ %>. **ALWAYS** <%- rule %>
+<% }); -%>
+<% } -%>
+<%# Project-specific custom rules -%>
+<% if (rules && rules.custom && rules.custom.length > 0) { -%>
+
+### Project-Specific Rules
+
+<% rules.custom.forEach((rule) => { -%>
+- <%- rule %>
 <% }); -%>
 <% } -%>
 
@@ -53,7 +62,7 @@
 | **Important learnings** | Hindsight | `mcp__hindsight-alice__retain` | Auto-recalled next session via TEMPR |
 <% } -%>
 <% if (services.task_tracking.type !== 'none') { -%>
-| **Task tracking** | <%= services.task_tracking.type %> | `<%= commands.task_create %>`, `<%= commands.task_close %>` | Issue database, dependencies, status |
+| **Task tracking** | <%= services.task_tracking.type %> | `<%- commands.task_create %>`, `<%- commands.task_close %>` | Issue database, dependencies, status |
 <% } -%>
 | **Analysis reports** | Memory Bank | `mcp__allpepper-memory-bank__memory_bank_write` | Temporary analysis, NOT git |
 | **Reference docs** | `docs/guides/` | Version-controlled | Documentation, patterns, examples |
@@ -74,7 +83,7 @@ mcp__hindsight-alice__retain "Decision: Use X pattern for API errors because [re
 <% } -%>
 <% if (services.task_tracking.type !== 'none') { -%>
 # ✅ DO: Track work in <%= services.task_tracking.type %>
-<%= commands.task_create %> --title="Fix API error handling" --type=task
+<%- commands.task_create %> --title="Fix API error handling" --type=task
 
 <% } -%>
 # ❌ DON'T: Create YYYY-MM-DD report files
@@ -110,11 +119,11 @@ mcp__hindsight-alice__recall "API error handling decisions in <%= project.short_
 
 ```bash
 # Essential commands - memorize these
-<%= commands.dev %>           # Dev server (<%= options.dev_server_port || '' %>)
-<%= commands.quality_gates %> # MANDATORY before commit
-<%= commands.codegen %>       # Generate API types
+<%- commands.dev %>           # Dev server (<%= options.dev_server_port || '' %>)
+<%- commands.quality_gates %> # MANDATORY before commit
+<%- commands.codegen %>       # Generate API types
 <% if (services.task_tracking.type !== 'none') { -%>
-<%= commands.task_ready %>              # Check available work
+<%- commands.task_ready %>              # Check available work
 <% } -%>
 ```
 
@@ -186,21 +195,21 @@ graph LR
 ### Development
 
 ```bash
-<%= commands.dev %>           # Dev server
-<%= commands.build %>         # Production build
-<%= commands.lint %>          # <%= stack.linter %>
-<%= commands.test %>          # <%= stack.testing || 'Tests' %>
-<%= commands.codegen %>       # Generate API (<%= stack.api && stack.api.codegen ? stack.api.codegen.split(' ')[0] : 'Codegen' %>)
+<%- commands.dev %>           # Dev server
+<%- commands.build %>         # Production build
+<%- commands.lint %>          # <%= stack.linter %>
+<%- commands.test %>          # <%= stack.testing || 'Tests' %>
+<%- commands.codegen %>       # Generate API (<%= stack.api && stack.api.codegen ? stack.api.codegen.split(' ')[0] : 'Codegen' %>)
 ```
 
 <% if (services.task_tracking.type !== 'none') { -%>
 ### Task Management (<%= services.task_tracking.type %>)
 
 ```bash
-<%= commands.task_ready %>                           # Find available work
-<%= commands.task_update %> <id> --status=in_progress # Claim task
-<%= commands.task_close %> <id>                      # Complete task
-<%= commands.task_sync %>               # Export to JSONL
+<%- commands.task_ready %>                           # Find available work
+<%- commands.task_update %> <id> --status=in_progress # Claim task
+<%- commands.task_close %> <id>                      # Complete task
+<%- commands.task_sync %>               # Export to JSONL
 ```
 
 <% if (isTaskTracking('beads')) { -%>
@@ -223,14 +232,14 @@ graph LR
 
 ```bash
 # 1. Run quality gates
-<%= commands.quality_gates %>
+<%- commands.quality_gates %>
 
 # 2. If gates FAIL - fix issues, re-run (see <%= services.ide.paths.claude %>TROUBLESHOOTING.md)
 
 # 3. Only after gates pass:
 git add <files> && git commit -m "type(scope): description"
 <% if (services.task_tracking.type !== 'none') { -%>
-<%= commands.task_sync %>
+<%- commands.task_sync %>
 <% } -%>
 ```
 
@@ -243,7 +252,7 @@ The session-start hook automatically loads context. Manually refresh with:
 
 ```bash
 <% if (services.task_tracking.type !== 'none') { -%>
-<%= commands.task_ready %>                                    # Available tasks
+<%- commands.task_ready %>                                    # Available tasks
 <% } -%>
 mcp__hindsight-alice__recall "<%= project.short_name || project.name %> project context"
 /mcp                                        # Check server health
@@ -263,7 +272,7 @@ mcp__hindsight-alice__recall "<%= project.short_name || project.name %> project 
 ```bash
 mcp__hindsight-alice__retain "Session summary: [what was done]"
 <% if (services.task_tracking.type !== 'none') { -%>
-<%= commands.task_sync %>
+<%- commands.task_sync %>
 <% } -%>
 ```
 
@@ -285,7 +294,6 @@ graph TB
 **Reduces PR review cycle by 40%** - agents catch issues before human review.
 
 <% } -%>
-<% if (services?.ide?.dual_mode) { -%>
 ## Context Handoff Protocol (<%= services.ide.secondary %> ↔ <%= services.ide.primary %>)
 
 **Problem:** 5K tokens wasted per IDE switch without structured protocol
@@ -296,9 +304,6 @@ graph LR
     B -->|Implementation| C["Changes"]
     C -->|Commit| D["Back to Claude"]
     D -->|Review| E["✅ Approved"]
-
-    style A fill:#4a90e2
-    style B fill:#f39c12
 ```
 
 **Setup:**
@@ -312,10 +317,8 @@ api_contract: "docs/API-CONTRACT.md"
 test_plan: "docs/TEST-PLAN.md"
 ```
 
-<% } -%>
 ## SDLC Workflow
 
-<% if (services?.ide?.dual_mode) { -%>
 ```mermaid
 graph LR
     A["Analyze<br/>(Opus)"] -->|Requirements| B["Architect<br/>(Opus)"]
@@ -324,15 +327,8 @@ graph LR
     D -->|Code| E["Review<br/>(Opus)"]
     E -->|Approved| F["✅ Merge"]
     E -->|Issues| D
-
-    style A fill:#e3f2fd
-    style B fill:#e3f2fd
-    style C fill:#f3e5f5
-    style D fill:#fff3e0
-    style E fill:#e3f2fd
 ```
 
-<% } -%>
 <% if (options.model_switching) { -%>
 **Model switching:** <%= options.model_switching %>
 
@@ -370,7 +366,7 @@ graph LR
 **3 entry points:**
 
 1. **From prompt** - describe your idea → clarifications → auto-create structure → SDLC
-2. **From existing epic** - `<%= commands.task_show %> <%= services.task_tracking.key_prefix %>epic1` → skips clarifications → starts SDLC immediately
+2. **From existing epic** - `<%- commands.task_show %> <%= services.task_tracking.key_prefix %>epic1` → skips clarifications → starts SDLC immediately
 3. **Resume after failure** - continues from stopping point using labels
 
 **Example:**
@@ -394,7 +390,7 @@ perles
 - Test (Sonnet) - testing and validation
 - Review (Opus) - quality assurance
 
-**Trigger:** `<%= commands.task_update %> <%= services.task_tracking.key_prefix %>task --labels="full-sdlc"` (requires parent epic)
+**Trigger:** `<%- commands.task_update %> <%= services.task_tracking.key_prefix %>task --labels="full-sdlc"` (requires parent epic)
 
 **Resume:** Automatically continues from last phase using labels
 
@@ -402,7 +398,7 @@ perles
 
 Splits epic into batches for parallel execution (up to 5 Sonnet workers).
 
-**Trigger:** `<%= commands.task_update %> <%= services.task_tracking.key_prefix %>epic --labels="epic-batches"` (label on epic, not on tasks)
+**Trigger:** `<%- commands.task_update %> <%= services.task_tracking.key_prefix %>epic --labels="epic-batches"` (label on epic, not on tasks)
 
 ### Resume After Failure
 
@@ -410,7 +406,7 @@ Splits epic into batches for parallel execution (up to 5 Sonnet workers).
 
 ```bash
 # 1. Check progress
-<%= commands.task_show %> <%= services.task_tracking.key_prefix %>epic1  # Check labels: phase-sdlc-implement
+<%- commands.task_show %> <%= services.task_tracking.key_prefix %>epic1  # Check labels: phase-sdlc-implement
 
 # 2. In Perles TUI
 # Shift+J → "SDLC Progress Tracking" view
@@ -465,7 +461,7 @@ Splits epic into batches for parallel execution (up to 5 Sonnet workers).
 ### MCP Priority Order
 
 <% if (services.task_tracking.type !== 'none') { -%>
-1. **<%= services.task_tracking.type %>** → Task context (`<%= commands.task_ready %>`)
+1. **<%= services.task_tracking.type %>** → Task context (`<%- commands.task_ready %>`)
 <% } -%>
 2. **Codebase** → Existing patterns (Glob, Grep)
 <% if (services.mcp && services.mcp.hindsight && services.mcp.hindsight.enabled) { -%>
@@ -551,7 +547,7 @@ mcp__hindsight-alice__recall "How do we handle [pattern] in this project?"
 
 ```bash
 # Quick cleanup - delete temp banks, prune old docs
-<%= commands.task_sync %>
+<%- commands.task_sync %>
 CUTOFF=$(date -v-7d +%Y-%m-%d)
 curl -X DELETE "http://localhost:8888/v1/default/banks/reflections"
 curl -X DELETE "http://localhost:8888/v1/default/banks/session"
@@ -569,8 +565,7 @@ curl -X DELETE "http://localhost:8888/v1/default/banks/session"
 5. **Compact context** with `/compact` when responses slow down
 6. **Resume sessions** with `claude --continue` or `claude --resume <name>`
 
-<% if (services?.ide?.dual_mode) { -%>
-## Dual-IDE Workflow: <%= services.ide.secondary %> & <%= services.ide.primary %> Synchronization
+## Multi-Agent Workflow: <%= services.ide.secondary %> & <%= services.ide.primary %> Synchronization
 
 **CRITICAL:** We work in two IDEs simultaneously. All rules, conventions, and workflows must be identical.
 
@@ -604,7 +599,7 @@ curl -X DELETE "http://localhost:8888/v1/default/banks/session"
 <% if (services.task_tracking.type !== 'none') { -%>
 3. **<%= services.task_tracking.type %> Integration:** Both IDEs use `BD_ENABLED=1` for issue tracking
 <% } -%>
-4. **Quality Gates:** Both IDEs enforce `<%= commands.quality_gates %>` before commit
+4. **Quality Gates:** Both IDEs enforce `<%- commands.quality_gates %>` before commit
 5. **Changes Sync:** Updates to `<%= (services.ide?.paths?.cursor || '.cursor/') + 'rules/' %>` must be reflected in `<%= services.ide.paths.claude %>` documentation
 
 ### Language Preference
@@ -632,7 +627,6 @@ curl -X DELETE "http://localhost:8888/v1/default/banks/session"
 
 **Rule:** Use Opus for critical decisions, Sonnet for implementation.
 
-<% } -%>
 ---
 
 _Code style enforced by <%= stack.linter %> - no need to memorize rules._

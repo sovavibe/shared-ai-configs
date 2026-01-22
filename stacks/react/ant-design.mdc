@@ -64,7 +64,7 @@ const columns: ColumnsType<DataType> = [
 ### ConfigProvider Setup
 
 ```typescript
-// src/app/providers/ThemeProvider.tsx
+// Example: app/providers/ThemeProvider.tsx
 import { ConfigProvider, theme } from 'antd'
 
 <ConfigProvider

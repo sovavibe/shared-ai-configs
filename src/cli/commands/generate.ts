@@ -169,6 +169,12 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
       const results = await generateIgnoreFiles(config, outputDir, options);
       generatedFiles.push(...results);
     }
+
+    // AGENTS.md (agent instructions for Cursor)
+    if (targets.cursor.features.includes('agents')) {
+      const result = await generateAgentsMd(config, outputDir, options);
+      generatedFiles.push(result);
+    }
   }
 
   // ============================================================================
@@ -349,6 +355,43 @@ async function generateClaudeMd(
 }
 
 // ============================================================================
+// AGENTS.md Generation
+// ============================================================================
+
+async function generateAgentsMd(
+  config: Config,
+  outputDir: string,
+  options: GenerateOptions
+): Promise<GeneratedFile> {
+  const outputPath = join(outputDir, 'AGENTS.md');
+
+  if (existsSync(outputPath) && !options.force) {
+    if (!options.dryRun) {
+      logger.info(`Skipping AGENTS.md (exists, use --force to overwrite)`);
+    }
+    return { path: outputPath, action: 'skipped' };
+  }
+
+  try {
+    const content = await renderTemplate('AGENTS.md.ejs', config);
+
+    if (!options.dryRun) {
+      mkdirSync(dirname(outputPath), { recursive: true });
+      writeFileSync(outputPath, content);
+      logger.success(`Generated AGENTS.md`);
+    } else {
+      logger.info(`Would generate AGENTS.md`);
+    }
+
+    return { path: outputPath, action: existsSync(outputPath) ? 'updated' : 'created' };
+  } catch (error) {
+    const err = error as Error;
+    logger.error(`Failed to generate AGENTS.md: ${err.message}`);
+    return { path: outputPath, action: 'skipped' };
+  }
+}
+
+// ============================================================================
 // .claude/ Directory Generation
 // ============================================================================
 
@@ -430,7 +473,7 @@ async function generateClaudeDir(
 
   // Shell hooks (if 'hooks' feature enabled)
   if (features.includes('hooks')) {
-    const hooksSourceDir = join(packageRoot, 'hooks');
+    const hooksSourceDir = join(packageRoot, 'hooks', 'claude');
     const hooksTargetDir = join(claudeDir, 'hooks');
 
     if (!options.dryRun) {
@@ -706,11 +749,6 @@ function getRulesToInclude(config: Config): RuleSpec[] {
   // Security rules
   if (mcp?.snyk?.enabled) {
     rules.push({ source: 'core/security/security.mdc', target: 'security.mdc' });
-  }
-
-  // Dual IDE rules
-  if (config.services?.ide?.dual_mode) {
-    rules.push({ source: 'core/workflow/dual-ide.mdc', target: 'dual-ide.mdc' });
   }
 
   return rules;

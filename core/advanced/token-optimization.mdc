@@ -87,6 +87,159 @@ When implementing authentication, consider:
 **Choose**: JWT for REST APIs, Session for traditional web
 ```
 
+## Strategy 5: Multi-Turn Context Persistence (continuation_id)
+
+**Problem**: Each PAL MCP call loses previous conversation context (redundant re-explanation)
+
+**Solution**: Use `continuation_id` to maintain thread context across tool calls
+
+```bash
+# First call - establishes context
+mcp__pal__thinkdeep
+  step="Analyzing authentication flow"
+  continuation_id="auth-investigation-001"
+  ...
+
+# Subsequent calls - reuse context (no re-explanation needed)
+mcp__pal__thinkdeep
+  step="Found issue in token refresh"
+  continuation_id="auth-investigation-001"  # Same ID!
+  ...
+```
+
+**Pattern Rules**:
+
+- Generate unique ID per investigation thread (e.g., `<topic>-<timestamp>`)
+- Reuse ID for ALL related calls within same thread
+- Works across different PAL tools (thinkdeep, debug, codereview, precommit)
+- Context preserved: files, findings, hypotheses
+
+**Savings**: 2-4K tokens per multi-step investigation (no context rebuilding)
+
+## Strategy 6: Memory Bank Integration
+
+**Problem**: Session findings lost, next session rebuilds from scratch
+
+**Solution**: Persist analysis to Memory Bank, recall on demand
+
+```bash
+# Save findings (end of investigation)
+mcp__allpepper-memory-bank__memory_bank_write
+  projectName="<project>"
+  fileName="analysis-<topic>.md"
+  content="## Findings\n- [key insights]"
+
+# Recall later (next session)
+mcp__allpepper-memory-bank__memory_bank_read
+  projectName="<project>"
+  fileName="analysis-<topic>.md"
+```
+
+**Storage Strategy**:
+
+| Data Type | Storage | Why |
+|-----------|---------|-----|
+| Session findings | Memory Bank | Cross-session reuse |
+| Important decisions | Hindsight `retain` | Auto-recalled via semantic search |
+| Task tracking | beads | Issue database with dependencies |
+| Reference docs | Git (docs/) | Version-controlled, team-shared |
+
+**Savings**: 3-5K tokens per session (no re-analysis of known patterns)
+
+## Strategy 7: Hindsight Memory Patterns
+
+**Three operations for long-term memory**:
+
+```bash
+# RETAIN - Save important decision
+mcp__hindsight-alice__retain "Decision: Use JWT for auth because [reason]"
+
+# RECALL - Retrieve past context (semantic search)
+mcp__hindsight-alice__recall "How do we handle authentication?"
+
+# REFLECT - Deep synthesis across memories
+mcp__hindsight-alice__reflect "What patterns emerged in error handling?"
+```
+
+**When to use each**:
+
+| Operation | When | Token Impact |
+|-----------|------|--------------|
+| `retain` | After making important decision | +50 tokens (save) |
+| `recall` | Before starting related work | -500-2K (avoid re-discovery) |
+| `reflect` | Complex problems, multiple sources | -1-3K (synthesized context) |
+
+**Pattern**: Retain at session end, Recall at session start
+
+## Strategy 8: Context Window Management
+
+**Problem**: Long sessions exhaust context window (200K limit approached)
+
+**Mitigation Techniques**:
+
+```mermaid
+graph TD
+    A["Session Start<br/>~5K tokens"] --> B["Work Phase<br/>Accumulating"]
+    B --> C{">100K tokens?"}
+    C -->|No| B
+    C -->|Yes| D["Compact Context"]
+    D --> E["Summarize findings"]
+    E --> F["Clear intermediate"]
+    F --> G["Continue<br/>~30K tokens"]
+```
+
+**Commands**:
+
+```bash
+# Built-in compaction
+/compact  # Summarizes and reduces context
+
+# Manual checkpoint
+mcp__hindsight-alice__retain "Checkpoint: [summary of work so far]"
+# Then start fresh session with recall
+```
+
+**Threshold Guidelines**:
+
+| Context Used | Action |
+|--------------|--------|
+| <50% (100K) | Continue normally |
+| 50-75% | Consider /compact |
+| >75% | Checkpoint + new session |
+
+## Strategy 9: Auto-Summarization Patterns
+
+**Problem**: Verbose tool outputs consume tokens rapidly
+
+**Solution**: Request summaries, not full outputs
+
+```bash
+# Instead of reading entire file:
+mcp__pal__thinkdeep
+  step="Summarize key patterns in auth module"
+  # Returns synthesis, not raw content
+
+# Instead of full git diff:
+# Use focused queries
+git diff --stat  # Overview first
+git diff <specific-file>  # Then drill down
+```
+
+**Summarization Hierarchy**:
+
+1. **Overview first** - Get structure, not content
+2. **Targeted deep-dive** - Only expand what matters
+3. **Progressive detail** - Add context incrementally
+
+**Tool-Specific Patterns**:
+
+| Tool | Verbose | Optimized |
+|------|---------|-----------|
+| Read | Full file | Read with offset/limit |
+| Grep | All matches | head_limit parameter |
+| git diff | Full diff | --stat then specific files |
+| PAL tools | Full analysis | Focused step descriptions |
+
 ## Implementation Checklist
 
 - [ ] Audit current rules → identify unused (remove)
@@ -94,6 +247,10 @@ When implementing authentication, consider:
 - [ ] Test file-specific rule loading
 - [ ] Set up Tool Search for MCPs
 - [ ] Convert decision explanations to tables
+- [ ] Implement continuation_id for multi-turn investigations
+- [ ] Set up Memory Bank for session persistence
+- [ ] Configure Hindsight retain/recall workflow
+- [ ] Establish context checkpoint thresholds
 - [ ] Measure token usage (baseline → target)
 
 ## Verification
@@ -101,12 +258,16 @@ When implementing authentication, consider:
 ```bash
 # Before optimization (2025):
 # Session starts, 5-8K overhead
+# Multi-turn rebuilds context each call
+# Findings lost between sessions
 
 # After optimization:
 # Session starts, 3-5K overhead
-# 60-70% reduction achieved ✓
+# continuation_id preserves thread context
+# Memory Bank + Hindsight for cross-session recall
+# 60-70% reduction achieved
 ```
 
 ---
 
-**Enforce this rule**: Always measure token usage, target 3-5K overhead per session.
+**Enforce this rule**: Always measure token usage, target 3-5K overhead per session. Use continuation_id for multi-turn, Memory Bank for persistence.

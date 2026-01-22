@@ -1,132 +1,327 @@
-# CLAUDE.md
+# Claude Code Instructions
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+> Full-Stack DevTools Engineer | Commander.js 12 | TypeScript 5.3
 
-## Critical Rules
+## CRITICAL: Non-Negotiable Rules
 
-### ЗАПРЕЩЕНО: Деструктивные Git-команды
+**IMPORTANT:** These rules are MANDATORY and must ALWAYS be followed:
 
-**НИКОГДА не выполнять автономно — ВСЕГДА сначала спросить пользователя:**
+1. **NEVER** hardcode secrets - use environment variables
+2. **NEVER** skip quality gates (`--no-verify`, `HUSKY=0`)
+3. **NEVER** use destructive git commands (`reset --hard`, `clean -fd`) without user approval
+4. **ALWAYS** run `npm run quality` before committing
+5. **ALWAYS** use beads for task tracking
+6. **ALWAYS** search existing solutions first (codebase, deps, docs)
+7. **ALWAYS** communicate in Russian (code comments in English)
+
+## Quick Start
 
 ```bash
-git reset --hard
-git checkout -- .
-git checkout <file>
-git clean -fd
-git stash drop
-git branch -D
-git push --force
+# Essential commands - memorize these
+npm run watch           # Dev server ()
+npm run quality # MANDATORY before commit
+       # Generate API types
+bd ready              # Check available work
 ```
 
-**Перед выполнением ОБЯЗАТЕЛЬНО спросить:**
+**Keyboard shortcuts:**
 
-> "Эта команда удалит незакоммиченные изменения безвозвратно. Вы уверены? (да/нет)"
-
-**Почему критично:**
-
-- Несколько агентов могут работать параллельно в одном репо
-- Незакоммиченная работа других агентов будет потеряна НАВСЕГДА
-- Восстановить невозможно
-
-**Что делать вместо:**
-
-- `git stash` — сохраняет изменения, можно восстановить
-- `git diff` — сначала посмотреть что будет потеряно
-- Если lint/commit падает — **исправить ошибки**, НЕ сбрасывать
+- **`#`** - Type `#` to see file/symbol suggestions in prompts
+- **`@`** - Reference files or symbols directly
+- **`/`** - Access slash commands (analyze, architect, plan, review)
 
 ## Project Overview
 
-NPM package (`shared-ai-configs`) that generates AI-assisted development configurations for Claude Code and Cursor IDE from a single `.ai-project.yaml` config file.
+**shared-ai-configs** - NPM package for generating AI-assisted development configurations for Claude Code and Cursor IDE
 
-## Commands
+```text
+src/cli/
+├── commands/      # init, generate, validate, status, doctor
+├── utils/         # config, template, logger
+└── types.ts       # TypeScript interfaces
+core/              # Universal .mdc rules (28 files)
+stacks/            # Stack-specific rules (react/, node/)
+integrations/      # Tool integrations (beads/, github/, gitlab/)
+templates/         # EJS templates for generation
+content/           # Commands, skills, agents, notepads
+hooks/             # Shell/JS hooks for Claude/Cursor
+schema/            # JSON Schema for .ai-project.yaml
 
-```bash
-# Development
-npm run build          # Compile TypeScript to dist/
-npm run watch          # Watch mode compilation
-npm run test           # Run tests with Vitest
-npm run lint           # ESLint on src/
-
-# CLI usage (after build)
-npx shared-ai-configs init       # Create .ai-project.yaml template
-npx shared-ai-configs generate   # Generate configurations
-npx shared-ai-configs validate   # Validate config against schema
-npx shared-ai-configs status     # Show configuration status
-npx shared-ai-configs doctor     # Diagnose issues
 ```
 
-## Architecture
+**Stack:** tsc  | Commander.js 12 | TypeScript 5.3 | Vitest
 
-### CLI Entry Point
+## Workflow Commands
 
-- `src/cli/index.ts` - Commander.js CLI setup with 5 commands
-- `bin/cli.js` - Binary wrapper (aliases: `shared-ai-configs`, `sac`)
+### Development
 
-### Commands (`src/cli/commands/`)
+```bash
+npm run watch           # Dev server
+npm run build         # Production build
+npm run lint          # ESLint
+npm run test          # Vitest
+       # Generate API (Codegen)
+```
 
-| Command | File | Purpose |
-|---------|------|---------|
-| init | `init.ts` | Creates `.ai-project.yaml` template |
-| generate | `generate.ts` | Main generator - produces CLAUDE.md, .claude/, .cursor/ |
-| validate | `validate.ts` | JSON Schema validation |
-| status | `status.ts` | Shows current config state |
-| doctor | `doctor.ts` | Diagnoses missing files/outdated configs |
+### Task Management (beads)
 
-### Generation Flow (`generate.ts`)
+```bash
+bd ready                           # Find available work
+bd update <id> --status=in_progress # Claim task
+bd close <id>                      # Complete task
+bd sync --flush-only               # Export to JSONL
+```
 
-1. Load config via `loadConfig()` → validate with `validateConfig()`
-2. Normalize targets (Claude/Cursor) with feature flags
-3. For each enabled target:
-   - Claude: `generateClaudeMd()` → `generateClaudeDir()` (rules, hooks, docs, settings, commands)
-   - Cursor: `generateCursorDir()` (rules, skills, agents, notepads, hooks, mcp)
-4. Common: `.beads/` (if beads enabled), `.perles/` (if orchestration enabled)
-5. Update `.gitignore` with generated paths
+### Beads Sync (AI-Assisted)
 
-### Content Sources
+**Environment:** `BD_ENABLED=1` in `.env.development.local` enables integration.
 
-| Directory | Purpose |
-|-----------|---------|
-| `content/core/` | Universal rules (25+ .mdc files, numbered 001-200) |
-| `content/stacks/` | Stack-specific rules (react/, node/) |
-| `content/integrations/` | Tool integrations (beads/, gitlab/, jira/) |
-| `templates/` | EJS templates for CLAUDE.md and docs |
-| `hooks/` | Shell hooks for Claude Code |
-| `workflows/` | Workflow orchestration docs |
-| `schema/` | JSON Schema + example yaml |
+**AI should automatically:**
 
-### Rule Numbering Convention
+1. **At session start:** `bd ready` + `bd blocked` for context
+2. **When creating tasks:** `bd create --title="..." --type=task`
+3. **When completing work:** `bd close <id>` + `bd sync --flush-only`
+4. **Before commit:** ensure `bd sync --flush-only` is executed
 
-| Range | Category | alwaysApply |
-|-------|----------|-------------|
-| 001-009 | Core | true |
-| 010-049 | Context (glob-matched) | false |
-| 100-149 | On-demand (@mention) | false |
-| 150+ | Reference/Special | false |
+**For colleagues WITHOUT BD_ENABLED:** beads is invisible, `issues.jsonl` file doesn't change in their commits.
 
-### Key Utilities
+### Session End (MANDATORY)
 
-- `src/cli/utils/config.ts` - Config loading, validation, defaults (`CONFIG_DEFAULTS`)
-- `src/cli/utils/template.ts` - EJS rendering with `renderTemplate()`
-- `src/cli/utils/logger.ts` - Chalk-based console output
+```bash
+# 1. Run quality gates
+npm run quality
 
-### Types (`src/cli/types.ts`)
+# 2. If gates FAIL - fix issues, re-run (see .claude/TROUBLESHOOTING.md)
 
-Main interfaces: `Config`, `StackConfig`, `ServicesConfig`, `GenerationConfig`, `GenerateOptions`
+# 3. Only after gates pass:
+git add <files> && git commit -m "type(scope): description"
+bd sync --flush-only
+```
 
-Generation supports three strategies: `generate` (copy), `symlink`, `copy`
+## Memory & Context
 
-## Key Patterns
+### Session Start (Auto via hooks)
 
-### Rule Selection Logic
+The session-start hook automatically loads context. Manually refresh with:
 
-`getRulesToInclude(config)` in `generate.ts` determines which .mdc rules to include based on:
+```bash
+bd ready                                    # Available tasks
+mcp__hindsight-alice__recall "sac project context"
+/mcp                                        # Check server health
+```
 
-- Stack type (react → react-specific rules)
-- MCP servers enabled (hindsight, snyk, etc.)
-- Task tracking type (beads → 005-beads.mdc)
-- VCS type (gitlab → 119-gitlab-mr.mdc, github → 119-github-pr.mdc)
-- Dual IDE mode
+### During Work
 
-### Template Context
+- **ALWAYS** use TodoWrite for multi-step tasks
+- Use `retain` to save important decisions
+- Use Context7 before implementing unfamiliar APIs
+- Use `reflect` for complex decisions requiring synthesis
 
-EJS templates receive full `Config` object. Key placeholders reference `config.project`, `config.stack`, `config.services`, `config.commands`.
+### Session End
+
+```bash
+mcp__hindsight-alice__retain "Session summary: [what was done]"
+bd sync --flush-only
+```
+
+## Context Handoff Protocol (Claude Code ↔ Cursor)
+
+**Problem:** 5K tokens wasted per IDE switch without structured protocol
+
+```mermaid
+graph LR
+    A["Claude Code<br/>(Opus)"] -->|context-handoff.md| B["Cursor<br/>(Agent)"]
+    B -->|Implementation| C["Changes"]
+    C -->|Commit| D["Back to Claude"]
+    D -->|Review| E["✅ Approved"]
+```
+
+**Setup:**
+
+```yaml
+# .claude/context-handoff/current.md
+phase: "implementation"
+task_id: "SAC-xyz"
+scope: "Only modify src/pages/auth/ - don't touch generated API"
+api_contract: "docs/API-CONTRACT.md"
+test_plan: "docs/TEST-PLAN.md"
+```
+
+## SDLC Workflow
+
+```mermaid
+graph LR
+    A["Analyze<br/>(Opus)"] -->|Requirements| B["Architect<br/>(Opus)"]
+    B -->|Design| C["Plan<br/>(Sonnet)"]
+    C -->|Tasks| D["Implement<br/>(Cursor)"]
+    D -->|Code| E["Review<br/>(Opus)"]
+    E -->|Approved| F["✅ Merge"]
+    E -->|Issues| D
+```
+
+**Skip rules:**
+
+- New feature: All 5 phases
+- Enhancement: Plan → Implement → Review
+- Bug fix: Plan → Implement
+- Simple fix: Implement only
+
+## MCP Tools
+
+**Full guide:** `docs/guides/mcp-tools-complete.md`
+
+| Server               | Tools                                         | Use For                          |
+| -------------------- | --------------------------------------------- | -------------------------------- |
+| **hindsight-alice**  | `recall`, `reflect`, `retain`                 | Long-term memory                 |
+| **MCP_DOCKER**       | Context7, Jira, Confluence                    | Docs & project mgmt              |
+| **zread**            | `search_doc`, `read_file`                     | GitHub repos                     |
+| **Figma**            | `get_design_context`                          | Design to code                   |
+| **zai-mcp-server**   | `ui_to_artifact`, `diagnose_error_screenshot` | Image analysis                   |
+| **claude-in-chrome** | `navigate`, `computer`, `read_page`           | Browser automation               |
+
+### MCP Priority Order
+
+1. **beads** → Task context (`bd ready`)
+2. **Codebase** → Existing patterns (Glob, Grep)
+3. **Hindsight** → Past decisions (`recall`, `reflect`)
+4. **Context7** → Library docs (`resolve-library-id` → `get-library-docs`)
+5. **WebSearch** → External info (last resort)
+
+### Quick MCP Commands
+
+```bash
+# Library docs
+mcp__MCP_DOCKER__resolve-library-id "tanstack query"
+mcp__MCP_DOCKER__get-library-docs "/tanstack/query" --topic "mutations"
+
+# Memory
+mcp__hindsight-alice__recall "How do we handle errors?"
+mcp__hindsight-alice__retain "Decision: Use X because Y"
+
+```
+
+### When to Use Context7 vs WebSearch
+
+**Context7** (Library Documentation Lookup):
+
+- ✅ Looking up API documentation for known libraries (React, TanStack Query, Zustand)
+- ✅ Checking specific method signatures or parameters
+- ✅ Understanding library patterns and best practices
+- ✅ Finding examples from official library docs
+- ❌ NOT for current events, external data, or non-library info
+
+**WebSearch** (External Information):
+
+- ✅ Current framework updates or latest versions
+- ✅ External API documentation not in project
+- ✅ Community best practices and discussions
+- ✅ Problem solutions from Stack Overflow or blogs
+- ❌ NOT for project-internal patterns (use Hindsight instead)
+
+**Pattern:**
+
+```bash
+# Unknown library API? → Context7
+mcp__MCP_DOCKER__resolve-library-id "name-of-library"
+mcp__MCP_DOCKER__get-library-docs "/org/project" --topic "what-you-need"
+
+# Need current info? → WebSearch
+mcp__web-search-prime__webSearchPrime search_query="latest react patterns 2026"
+
+# Need project decision? → Hindsight (not WebSearch)
+mcp__hindsight-alice__recall "How do we handle [pattern] in this project?"
+```
+
+## Documentation
+
+| Topic            | Location                                                       |
+| ---------------- | -------------------------------------------------------------- |
+| **MCP guide**    | `.claude/MCP-GUIDE.md`                                         |
+| Session protocol | `.claude/SESSION-PROTOCOL.md`                                  |
+| Troubleshooting  | `.claude/TROUBLESHOOTING.md`                                   |
+| SDLC workflow    | `.claude/SDLC-WORKFLOW.md`                                     |
+| Hooks config     | `.claude/settings.json`                                        |
+| Cursor rules     | `.cursor/rules/INDEX.mdc` (41 rules, also work in Claude Code) |
+
+## Sprint/Milestone Close
+
+```bash
+# Quick cleanup - delete temp banks, prune old docs
+bd sync --flush-only
+CUTOFF=$(date -v-7d +%Y-%m-%d)
+curl -X DELETE "http://localhost:8888/v1/default/banks/reflections"
+curl -X DELETE "http://localhost:8888/v1/default/banks/session"
+```
+
+## Tips for Efficiency
+
+1. **Use `#` key** to quickly reference files when asking questions
+2. **Name sessions** with `/rename <task>` for easy resume
+3. **Check `/mcp`** if tools stop responding
+4. **Use `reflect`** for complex decisions requiring synthesis
+5. **Compact context** with `/compact` when responses slow down
+6. **Resume sessions** with `claude --continue` or `claude --resume <name>`
+
+## Multi-Agent Workflow: Claude Code & Cursor Synchronization
+
+**CRITICAL:** We work in two IDEs simultaneously. All rules, conventions, and workflows must be identical.
+
+### Split SDLC Between IDEs
+
+| SDLC Phase | IDE | Model | Use When |
+|-----------|-----|-------|----------|
+| **Analyze** | Claude Code | **Opus** | Breaking down requirements, understanding scope |
+| **Architect** | Claude Code | **Opus** | Design decisions, system architecture, deep analysis |
+| **Plan** | Claude Code | Sonnet | Detailed planning, TodoWrite, task breakdown |
+| **Implement** | **Cursor** | Agent mode | Code generation, fast iterations, automode |
+| **Review** | Claude Code | **Opus** | Code quality, security review, Snyk integration |
+| **Fix Issues** | Claude Code → Cursor | Opus → Agent | Analysis in Opus, implementation in Cursor |
+
+**Key Principle:**
+
+- 🧠 **Critical thinking** (architecture, analysis, deep review) = **Claude Code Opus only**
+- 💻 **Implementation** (writing code, tests, iterating) = **Cursor automode**
+- 📋 **Planning** (breaking down, TodoWrite) = **Claude Code Sonnet**
+
+### Why Split?
+
+- **Claude Code Opus:** Best for analysis, architecture, decision-making (context awareness, reasoning depth)
+- **Cursor Agent:** Best for implementation, iteration, code generation (speed, reflex reactions)
+- **Synergy:** Complex analysis in Claude Code → optimized code generation in Cursor
+
+### IDE Synchronization Rules
+
+1. **Rules Parity:** All 41 rules from `.cursor/rules/INDEX.mdc` apply to both IDEs
+2. **Git Workflow:** Both IDEs use stealth mode (no auto-push, no auto-commit)
+3. **beads Integration:** Both IDEs use `BD_ENABLED=1` for issue tracking
+4. **Quality Gates:** Both IDEs enforce `npm run quality` before commit
+5. **Changes Sync:** Updates to `.cursor/rules/` must be reflected in `.claude/` documentation
+
+### Language Preference
+
+**All strategic documentation (plans, roadmaps, architectural decisions) must be in Russian** for improved team readability and comprehension. Code comments remain in English per ESLint rules.
+
+### Model Selection Strategy: Opus vs Sonnet
+
+**When to use each model:**
+
+#### 🧠 **Opus**
+
+- ✅ Architectural decisions
+- ✅ Deep code review
+- ✅ Critical bug analysis
+- ✅ Security decisions
+- ✅ Complex reasoning
+
+#### 📊 **Sonnet/Haiku (for standard work)**
+
+- ✅ Implementation
+- ✅ Test writing
+- ✅ Code generation
+- ✅ Routine refactoring
+
+**Rule:** Use Opus for critical decisions, Sonnet for implementation.
+
+---
+
+_Code style enforced by ESLint - no need to memorize rules._

@@ -1,6 +1,6 @@
 ---
 description: 'English-only code policy - all code/comments in English, Russian allowed in chat'
-globs: ['src/**/*.ts', 'src/**/*.tsx', '**/*.md']
+globs: ['**/*.ts', '**/*.tsx', '**/*.md']
 alwaysApply: false
 ---
 

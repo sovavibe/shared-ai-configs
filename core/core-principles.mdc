@@ -1,6 +1,6 @@
 ---
 description: 'Core TypeScript and React principles: SOLID, immutability, type safety'
-globs: ['src/**/*.ts', 'src/**/*.tsx']
+globs: ['**/*.ts', '**/*.tsx']
 alwaysApply: false
 ---
 
@@ -14,7 +14,7 @@ alwaysApply: false
 | ---- | -------------------------------------- |
 | 1    | Search `context7` for libraries        |
 | 2    | Check `package.json` for existing deps |
-| 3    | Search `.cursor/rules/` for patterns   |
+| 3    | Search AI rules directory for patterns |
 | 4    | Only then create custom solution       |
 
 See: @existing-solutions.mdc
@@ -114,7 +114,7 @@ import { Button } from '../../../shared/ui'
 | ----------------- | -------------------------------------------------- |
 | Reports, research | Beads task description (`bd update --description`) |
 | Current state     | `docs/*.md`                                        |
-| AI rules          | `.cursor/rules/*.mdc`                              |
+| AI rules          | AI rules directory (`.mdc` files)                  |
 | ADR               | `docs/architecture/adr/`                           |
 | Tasks             | Beads + Jira                                       |
 
@@ -151,7 +151,7 @@ Check `shared/date` or `shared/utils/date` for project-specific wrapper before u
 
 ## Language
 
-**All code/comments/docs/commits**: English only. **Chat**: Russian allowed.
+**All code/comments/docs/commits**: English only. **Chat**: User's language allowed.
 
 ## Verification
 
@@ -260,13 +260,52 @@ See: @context-management for MCP usage details.
 
 **Core rule**: All planning and execution through Beads, no markdown checklists.
 
+## Output Formatting: Diagrams
+
+| Context | Format | Why |
+| ------- | ------ | --- |
+| **Console/Chat** (Claude Code, terminal) | ASCII diagrams | Mermaid doesn't render in terminal |
+| **Markdown docs** (.md files) | Mermaid | Renders in GitHub/GitLab/IDE preview |
+
+**ASCII example** (for console):
+
+```
+┌─────────┐     ┌─────────┐
+│  Input  │ ──▶ │ Output  │
+└─────────┘     └─────────┘
+```
+
+**Mermaid example** (for docs):
+
+```mermaid
+graph LR
+    A[Input] --> B[Output]
+```
+
+## Generated Files: NEVER Edit Directly
+
+**🔴 CRITICAL**: AI-generated files are overwritten on regeneration.
+
+| Do NOT edit directly | Edit source instead |
+| -------------------- | ------------------- |
+| AI rules (`*.mdc`)   | `ai-project.yaml` or `shared-ai-configs/core/` |
+| `CLAUDE.md` | `ai-project.yaml` |
+| `AGENTS.md` | `ai-project.yaml` |
+| `.gitignore` (AI section) | `ai-project.yaml` |
+
+**Workflow**:
+
+```
+ai-project.yaml → npx shared-ai-configs generate → Files
+```
+
 ## Documentation Architecture
 
-| Location           | Content                | Format |
-| ------------------ | ---------------------- | ------ |
-| `.cursor/rules/`   | AI rules (auto-loaded) | `.mdc` |
-| `.cursor/prompts/` | AI commands (prompts)  | `.md`  |
-| `docs/guides/`     | Human guides           | `.md`  |
-| `docs/`            | Project documentation  | `.md`  |
+| Location            | Content                | Format |
+| ------------------- | ---------------------- | ------ |
+| AI rules directory  | AI rules (auto-loaded) | `.mdc` |
+| AI prompts directory| AI commands (prompts)  | `.md`  |
+| `docs/guides/`      | Human guides           | `.md`  |
+| `docs/`             | Project documentation  | `.md`  |
 
-**Rule**: Guides for humans → `docs/guides/`, commands for AI → `.cursor/prompts/`
+**Rule**: Guides for humans → `docs/guides/`, commands for AI → AI prompts directory

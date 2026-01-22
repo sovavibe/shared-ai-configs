@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## Core Rules
 
-1. **Query key factory** - centralize in `src/shared/api/keys.ts`
+1. **Query key factory** - centralize in a dedicated keys file (e.g., `shared/api/keys.ts`)
 2. **Orval-generated hooks** - use generated API hooks
 3. **Optimistic updates** - for mutations with UI feedback
 4. **Proper invalidation** - invalidate related queries after mutation
@@ -16,7 +16,7 @@ alwaysApply: false
 ## Query Keys
 
 ```typescript
-// src/shared/api/keys.ts
+// Example: shared/api/keys.ts
 export const queryKeys = {
   root: {
     cargoRequests: ['cargoRequests'] as const,
@@ -116,9 +116,6 @@ flowchart TD
     Opt -->|Yes| OptUp["onMutate → setQueryData<br/>onError → rollback<br/>onSettled → invalidate"]
     Opt -->|No| Simple["onSuccess → invalidate"]
 
-    style Start fill:#e1f5e1
-    style Keys fill:#e1f0ff
-    style OptUp fill:#fff4e1
 ```
 
 ## queryOptions Helper (Shared Config)

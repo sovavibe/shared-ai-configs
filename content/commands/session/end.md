@@ -54,14 +54,6 @@ flowchart TD
     SyncOK -->|Yes| Summary[Session Summary:<br/>✅ Task complete<br/>✅ Quality gates passed<br/>✅ Changes committed<br/>✅ Changes pushed<br/>✅ Beads synced]
 
     Summary --> End([Ready for Next Session])
-
-    style Start fill:#e1f5e1
-    style End fill:#ffe1e1
-    style Step3 fill:#fff4e1
-    style QG_Pass fill:#ffe1f0
-    style PushOK fill:#ffe1f0
-    style SyncOK fill:#ffe1f0
-    style Summary fill:#e1ffe1
 ```
 
 ## Quick Reference

@@ -45,3 +45,6 @@ memory-bank/
 # Future IDE support
 .kilo/
 .jb-ai/
+
+# Additional AI entries (auto-added)
+.env.aiproject

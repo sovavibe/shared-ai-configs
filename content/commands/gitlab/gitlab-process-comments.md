@@ -480,4 +480,4 @@ npm run gitlab:mr:add-comment -- --mr xx --body "..."
 ## References
 
 - @beads - Core Beads workflow
-- @mcp.md - MCP tools reference
+- @tool-selection - MCP tools reference

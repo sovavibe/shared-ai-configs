@@ -20,7 +20,6 @@ const CONFIG_DEFAULTS = {
   },
   services: {
     ide: {
-      dual_mode: false,
       paths: {
         claude: '.claude/',
         cursor: '.cursor/',
@@ -114,8 +113,6 @@ function applyDefaults(config: Config): void {
     config.services.ide.paths.cursor =
       config.services.ide.paths.cursor ?? CONFIG_DEFAULTS.services.ide.paths.cursor;
   }
-  config.services.ide.dual_mode =
-    config.services.ide.dual_mode ?? CONFIG_DEFAULTS.services.ide.dual_mode;
 
   // VCS
   if (!config.services.vcs) {
@@ -207,13 +204,6 @@ export function validateConfig(config: Config): { valid: boolean; errors: string
     // Beads requires paths - defaults already applied
   }
 
-  // Validate IDE dual mode
-  if (config.services?.ide?.dual_mode) {
-    if (!config.services.ide.secondary || config.services.ide.secondary === 'none') {
-      errors.push('services.ide.secondary is required when dual_mode is enabled');
-    }
-  }
-
   return { valid: errors.length === 0, errors };
 }
 
@@ -238,7 +228,6 @@ export function getDefaultConfig(projectPath: string, stack: string): Partial<Co
       ide: {
         primary: 'Cursor',
         secondary: 'none',
-        dual_mode: CONFIG_DEFAULTS.services.ide.dual_mode,
         paths: CONFIG_DEFAULTS.services.ide.paths,
       },
       vcs: {

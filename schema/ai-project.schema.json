@@ -106,7 +106,6 @@
           "properties": {
             "primary": { "type": "string", "enum": ["Cursor", "VSCode", "WebStorm", "Neovim"] },
             "secondary": { "type": "string", "enum": ["Claude Code", "Cursor", "VSCode", "none"] },
-            "dual_mode": { "type": "boolean", "default": false },
             "paths": {
               "type": "object",
               "properties": {

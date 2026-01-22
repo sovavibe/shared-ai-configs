@@ -49,17 +49,6 @@ flowchart TD
     Store --> Query[Query Beads:<br/>bd list --json<br/>jq select by Jira/Discussion]
 
     Query --> End([Beads tracks everything])
-
-    style Start fill:#e1f5e1
-    style End fill:#ffe1e1
-    style Immediate fill:#fff4e1
-    style Complexity fill:#ffe1f0
-    style SubComplexity fill:#ffe1f0
-    style CreateTask fill:#e1f0ff
-    style CreateEpic fill:#e1ffe1
-    style CreateSubTask fill:#e1f0ff
-    style CreateChildEpic fill:#e1ffe1
-    style Store fill:#f0e1ff
 ```
 
 ## GitLab MR Processing

@@ -34,14 +34,14 @@ core/
 
 | Rule                   | Globs                     |
 | ---------------------- | ------------------------- |
-| `@tanstack-query`      | `src/**/*.tsx`            |
-| `@zustand`             | `src/**/store/**`         |
-| `@architecture`        | `src/app/**`              |
-| `@core-principles`     | `src/**/*.ts`             |
+| `@tanstack-query`      | `**/*.tsx`                |
+| `@zustand`             | `**/store/**`             |
+| `@architecture`        | `**/app/**`               |
+| `@core-principles`     | `**/*.ts`                 |
 | `@styling`             | `**/*styled*`             |
-| `@ant-design`          | `src/**/*.tsx`            |
+| `@ant-design`          | `**/*.tsx`                |
 | `@english-only`        | `**/*.ts`                 |
-| `@existing-solutions`  | `src/**/*`                |
+| `@existing-solutions`  | `**/*`                    |
 
 ## On-Demand Rules - Manual @mention
 

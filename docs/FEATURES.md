@@ -3,31 +3,23 @@
 > **Version:** 1.0.0
 > **Last Updated:** 2026-01-22
 
-A comprehensive configuration generator for AI-assisted development across multiple IDEs and agents.
-
-## Table of Contents
-
-1. [Core Features (Implemented)](#core-features-implemented)
-2. [MCP Integrations](#mcp-integrations)
-3. [Workflow Features](#workflow-features)
-4. [Planned Features (Roadmap)](#planned-features-roadmap)
+A comprehensive configuration generator for AI-assisted development across multiple IDEs.
 
 ---
 
-## Core Features (Implemented)
+## Generation Features
 
 ### Multi-Target Generation
 
-Generate configurations for multiple AI assistants from a single source:
+Generate configurations for multiple AI assistants from a single `.ai-project.yaml`:
 
 | Target | Status | Output | Description |
 |--------|--------|--------|-------------|
 | **Claude Code** | Stable | `.claude/`, `CLAUDE.md` | Anthropic's CLI assistant |
-| **Cursor** | Stable | `.cursor/`, `.cursorrules` | AI-powered IDE |
+| **Cursor** | Stable | `.cursor/`, `.cursorrules`, `AGENTS.md` | AI-powered IDE |
 | **Kilo** | Planned | `.kilo/` | Future agent support |
 
 ```yaml
-# .ai-project.yaml
 generation:
   targets:
     claude:
@@ -37,142 +29,151 @@ generation:
     cursor:
       enabled: true
       output_dir: ".cursor"
-      features: ["rules", "hooks", "skills", "agents", "notepads", "mcp"]
+      features: ["rules", "hooks", "skills", "agents", "notepads", "mcp", "cursorrules"]
     kilo:
       enabled: false  # Future
 ```
 
-**Benefits:**
+### EJS Templating with Config Interpolation
 
-- Write rules once, generate for all IDEs
-- Maintain consistency across development environments
-- Reduce duplication and drift between configurations
+All output generated from EJS templates with full config access:
 
-### Template-Based Configuration
-
-All output is generated from EJS templates with 60+ configurable placeholders:
-
-```
-templates/
-├── CLAUDE.md.ejs           # Main Claude Code instructions
-├── claude/
-│   ├── settings.json.ejs   # Claude settings
-│   └── docs/               # Documentation templates
-├── cursor/
-│   └── cursorrules.ejs     # Cursor rules file
-└── mcp/
-    └── mcp.json.ejs        # Shared MCP configuration
-```
-
-**Template Context Variables:**
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `project.name` | Project name | `"Customer Portal"` |
-| `stack.type` | Tech stack type | `"react"`, `"node"` |
-| `commands.dev` | Dev command | `"npm run dev"` |
-| `services.mcp.*` | MCP configurations | `hindsight.enabled: true` |
-
-**Conditional Content Example:**
+| Template | Output | Interpolation Examples |
+|----------|--------|----------------------|
+| `CLAUDE.md.ejs` | `CLAUDE.md` | `project.name`, `stack.type`, `commands.*` |
+| `settings.json.ejs` | `.claude/settings.json` | `services.mcp.*`, `options.*` |
+| `mcp.json.ejs` | `.claude/mcp.json`, `.cursor/mcp.json` | `services.mcp.*` with server configs |
+| `.env.aiproject.ejs` | `.env.aiproject` | API keys, tokens, integration secrets |
 
 ```ejs
 <% if (services?.task_tracking?.type === 'beads') { %>
-## Task Tracking with Beads
-```bash
-bd ready           # Find available work
-bd close <id>      # Complete task
-```
+## Task Tracking
+bd ready   # Find available work
 <% } %>
 ```
 
-### Auto-Generated Rules from Config
+### CLI Flags
 
-Transform YAML configuration into AI-enforced rules:
+| Flag | Description |
+|------|-------------|
+| `--force` | Overwrite existing files (normally skipped) |
+| `--clean` | Remove all generated directories before regenerating |
+| `--dry-run` | Preview what would be generated without writing |
+| `-c, --config <path>` | Custom config path (default: `.ai-project.yaml`) |
+| `-o, --output <dir>` | Output directory (default: `.`) |
+
+```bash
+# Full regeneration
+npx shared-ai-configs generate --clean --force
+
+# Preview changes
+npx shared-ai-configs generate --dry-run
+
+# Custom config location
+npx shared-ai-configs generate -c ./config/ai.yaml
+```
+
+### Generation Strategies
+
+| Strategy | Description | Use Case |
+|----------|-------------|----------|
+| `generate` | Copy files to target | Production (default) |
+| `symlink` | Create symlinks to source | Development/debugging |
+| `copy` | Direct file copy | Same as generate |
 
 ```yaml
-# .ai-project.yaml
+generation:
+  strategy: "generate"  # generate | symlink | copy
+```
+
+---
+
+## Configuration Features
+
+### Single Source of Truth
+
+`.ai-project.yaml` centralizes all AI assistant configuration:
+
+| Section | Purpose | Example Fields |
+|---------|---------|----------------|
+| `project` | Project metadata | `name`, `short_name`, `description`, `role` |
+| `stack` | Tech stack definition | `type`, `framework`, `language`, `build`, `ui` |
+| `services` | External integrations | `ide`, `vcs`, `task_tracking`, `mcp` |
+| `commands` | CLI commands | `dev`, `build`, `test`, `lint`, `quality_gates` |
+| `options` | AI behavior settings | `orchestration`, `sdd_enabled`, `agentic_workflows` |
+| `rules` | Project constraints | `never[]`, `always[]`, `custom[]` |
+| `generation` | Output configuration | `targets`, `strategy`, `gitignore_entries` |
+
+### Stack-Specific Rules
+
+Automatic rule loading based on stack type:
+
+| Stack | Auto-Loaded Rules |
+|-------|-------------------|
+| `react` | `tech-stack.mdc`, `architecture.mdc`, `styling.mdc`, `tanstack-query.mdc`, `zustand.mdc` |
+| `react` + Ant Design | + `ant-design.mdc` |
+| `node` | `functional-patterns.mdc`, `nodejs-scripts.mdc` |
+| `python` | (planned) |
+| `java` | (planned) |
+
+```yaml
+stack:
+  type: "react"
+  ui:
+    library: "Ant Design"  # Triggers ant-design.mdc
+```
+
+### Custom Rules
+
+| Rule Type | Behavior | Example |
+|-----------|----------|---------|
+| `rules.never[]` | FORBIDDEN actions | `"Edit generated files"` |
+| `rules.always[]` | MANDATORY actions | `"Run quality gates before commit"` |
+| `rules.custom[]` | Guidelines (non-critical) | `"Prefer existing components"` |
+
+```yaml
 rules:
   never:
-    - "Edit src/shared/api/generated/ - always use npm run codegen"
-    - "Hardcode secrets - always use environment variables"
-    - "Skip quality gates - no --no-verify or HUSKY=0"
-
+    - "Edit src/shared/api/generated/ - use npm run codegen"
+    - "Hardcode secrets - use environment variables"
   always:
     - "Run npm run quality:gates before committing"
     - "Use Beads for task tracking"
-    - "Search before creating - check codebase, deps, docs first"
-
   custom:
-    - "Prefer existing components over creating new ones"
-    - "Follow FSD architecture patterns"
+    - "Prefer composition over inheritance"
 ```
 
-**Generated Output:**
+### Language Configuration
 
-The generator transforms these into properly formatted rules sections in CLAUDE.md and .cursorrules with appropriate severity indicators.
-
-### Quality Gates Integration
-
-Built-in support for pre-commit quality checks:
+| Field | Purpose | Values |
+|-------|---------|--------|
+| `languages.chat` | AI communication language | `Russian`, `English` |
+| `languages.code` | Code comments language | `English` (always) |
 
 ```yaml
-commands:
-  quality_gates: "npm run quality:gates"  # Referenced in hooks
-
-generation:
-  common:
-    quality_gates: true  # Enable quality gate hooks
+languages:
+  chat: "Russian"   # Plans, analysis, reports
+  code: "English"   # Code comments (ESLint enforced)
 ```
 
-**Hook Integration:**
+---
 
-```bash
-# Generated hook: .claude/hooks/validate-bash.sh
-#!/bin/bash
-npm run quality:gates
-```
+## MCP Integration
 
-**Supported Quality Gates:**
+### Supported Servers
 
-- ESLint / TypeScript checks
-- Prettier formatting
-- Markdown linting
-- Test execution
-- Custom scripts
+| Server | Type | Purpose | API Key Env |
+|--------|------|---------|-------------|
+| `hindsight` | HTTP | Long-term memory | - (local) |
+| `snyk` | stdio | Security scanning | `SNYK_TOKEN` |
+| `context7` | stdio | Library docs | `CONTEXT7_API_KEY` |
+| `memory_bank` | stdio | Project memory | - |
+| `figma` | HTTP | Design-to-code | `FIGMA_API_KEY` |
+| `browser` | stdio/HTTP | Browser automation, web search | `Z_AI_API_KEY` |
 
-### Beads Task Tracking Integration
+### Auto-Generated mcp.json
 
-Native integration with the Beads issue tracking system:
-
-```yaml
-services:
-  task_tracking:
-    type: "beads"
-    key_prefix: "{PREFIX}-"
-    paths:
-      beads: ".beads/"
-```
-
-**Auto-Generated Commands:**
-
-| Command | Description |
-|---------|-------------|
-| `bd ready` | Find available work |
-| `bd update <id> --status=in_progress` | Claim task |
-| `bd close <id>` | Complete task |
-| `bd sync --flush-only` | Export to JSONL |
-
-**Alternative Tracking Systems:**
-
-| Type | Generated Commands |
-|------|-------------------|
-| `jira` | `jira create`, `jira close`, `jira list` |
-| `linear` | `linear issue create`, `linear issue close` |
-| `github-issues` | `gh issue create`, `gh issue close` |
-
-### MCP Server Configuration
-
-Declarative MCP (Model Context Protocol) server configuration:
+Both IDEs receive identical MCP configuration:
 
 ```yaml
 services:
@@ -181,582 +182,284 @@ services:
       enabled: true
     snyk:
       enabled: true
-      api_key_env: "SNYK_TOKEN"
-    context7:
-      enabled: true
-    figma:
-      enabled: true
-      api_key_env: "FIGMA_API_KEY"
 ```
 
-**Generated MCP Configuration:**
+**Generated output:**
 
 ```json
 {
   "mcpServers": {
     "hindsight-alice": {
-      "command": "npx",
-      "args": ["-y", "hindsight-alice-mcp"]
+      "url": "http://localhost:8888/mcp/alice/"
     },
-    "snyk": {
+    "Snyk": {
       "command": "npx",
-      "args": ["-y", "@anthropic-ai/snyk-mcp"],
-      "env": {
-        "SNYK_TOKEN": "${SNYK_TOKEN}"
-      }
+      "args": ["-y", "snyk@latest", "mcp", "-t", "stdio"]
     }
   }
 }
 ```
 
-### JSON Schema Validation
+### Browser MCP Bundle
 
-Full validation of `.ai-project.yaml` against JSON Schema:
+Enabling `browser` activates multiple z.ai services:
+
+| Service | Type | Purpose |
+|---------|------|---------|
+| `zai-mcp-server` | stdio | Image analysis, UI conversion |
+| `web-search-prime` | HTTP | Web search |
+| `web-reader` | HTTP | URL content fetching |
+| `zread` | HTTP | GitHub repo search/read |
+
+### API Key Template Generation
+
+`.env.aiproject` generated with placeholders for all enabled services:
 
 ```bash
-# Validate configuration
-npx shared-ai-configs validate
+# Generated for enabled MCP servers
+SNYK_TOKEN=
+FIGMA_API_KEY=
+Z_AI_API_KEY=
 
-# Schema location
-schema/ai-project.schema.json
+# Task tracking
+BD_ENABLED=1
+
+# VCS
+GITLAB_TOKEN=glpat-xxxxxxxxxxxx
 ```
-
-**Validation Covers:**
-
-- Required fields (`project`, `stack`, `commands`)
-- Enum values for types (`react`, `node`, `gitlab`, `github`)
-- MCP server configuration structure
-- Generation target options
 
 ---
 
-## MCP Integrations
+## Content System
 
-### Hindsight (Memory)
+### Core Rules (`core/`)
 
-Long-term memory and context persistence:
+Universal rules loaded for all projects:
 
-| Tool | Purpose |
+| File | Purpose |
 |------|---------|
-| `recall` | Retrieve past decisions and context |
-| `reflect` | Synthesize complex decisions |
-| `retain` | Save important information |
+| `persona.mdc` | AI persona definition |
+| `quality.mdc` | Quality standards |
+| `core-principles.mdc` | Development principles |
+| `existing-solutions.mdc` | Reuse patterns |
+| `INDEX.mdc` | Rules index |
 
-```yaml
-services:
-  mcp:
-    hindsight:
-      enabled: true
+**Subdirectories:**
+
+| Directory | Content |
+|-----------|---------|
+| `core/mcp/` | MCP usage patterns, troubleshooting |
+| `core/workflow/` | Git, task management, documentation |
+| `core/security/` | Security practices, error recovery |
+| `core/advanced/` | SDD, token optimization, verification swarms |
+| `core/commands/` | analyze, architect, plan, review |
+
+### Stack Rules (`stacks/`)
+
+Stack-specific patterns:
+
+| Stack | Files |
+|-------|-------|
+| `react/` | `tech-stack.mdc`, `architecture.mdc`, `styling.mdc`, `ant-design.mdc`, `tanstack-query.mdc`, `zustand.mdc`, `react-performance.mdc` |
+| `node/` | `functional-patterns.mdc`, `nodejs-scripts.mdc` |
+
+### Content Directories
+
+| Directory | Purpose | IDE Target |
+|-----------|---------|------------|
+| `content/skills/` | Cursor skills | Cursor |
+| `content/agents/` | Agent definitions | Both |
+| `content/notepads/` | Reference examples | Cursor |
+| `content/commands/` | Slash commands | Both |
+
+**Commands structure:**
+
+```
+content/commands/
+├── core/          # debug, diagram, explain, implement, investigate, review, test
+├── gitlab/        # gitlab-* commands
+├── session/       # continue, create-tasks, dev, end, start
+└── quality/       # metrics
 ```
 
-**Usage Pattern:**
+### Integrations (`integrations/`)
+
+| Integration | File | Trigger |
+|-------------|------|---------|
+| Beads | `beads/beads.mdc` | `task_tracking.type: beads` |
+| GitHub | `github/github-pr.mdc` | `vcs.type: github` |
+| GitLab | `gitlab/gitlab-mr.mdc` | `vcs.type: gitlab` |
+| Jira | `jira/sync-jira.md` | `task_tracking.type: jira` |
+
+### Hooks (`hooks/`)
+
+| Hook | IDE | Purpose |
+|------|-----|---------|
+| `claude/session-start.sh` | Claude | Context loading at session start |
+| `claude/pre-commit.sh` | Claude | Quality gates before commit |
+| `claude/validate-bash.sh` | Claude | Command validation |
+| `claude/workflow-stop.sh` | Claude | Session cleanup |
+| `claude/beads-completion-check.sh` | Claude | Task completion verification |
+| `cursor/session-init.js` | Cursor | Session initialization |
+| `cursor/accept-check.js` | Cursor | File accept validation |
+| `cursor/quality-check.js` | Cursor | Quality verification |
+
+---
+
+## CLI Commands
+
+| Command | Description | Options |
+|---------|-------------|---------|
+| `init` | Create `.ai-project.yaml` | `--force`, `--stack <type>` |
+| `generate` | Generate all configs | `--force`, `--clean`, `--dry-run`, `-c`, `-o` |
+| `validate` | Validate config against schema | `-c` |
+| `status` | Show current config status | `-c` |
+| `doctor` | Health check and dependency verification | - |
+
+### init
 
 ```bash
-# Session start
-mcp__hindsight-alice__recall "Project context"
-
-# During work - save decisions
-mcp__hindsight-alice__retain "Decision: Use X because Y"
-
-# Complex analysis
-mcp__hindsight-alice__reflect "Architecture options for feature Z"
+npx shared-ai-configs init --stack react
 ```
 
-### Snyk (Security)
+Creates `.ai-project.yaml` with sensible defaults for the specified stack.
 
-Security vulnerability scanning:
-
-| Tool | Purpose |
-|------|---------|
-| `snyk_code_scan` | SAST scanning |
-| `snyk_sca_scan` | Dependency scanning |
-| `snyk_container_scan` | Container image scanning |
-| `snyk_iac_scan` | Infrastructure as Code scanning |
-
-```yaml
-services:
-  mcp:
-    snyk:
-      enabled: true
-```
-
-**Pre-commit Integration:**
+### generate
 
 ```bash
-# Scan before commit
-mcp__Snyk__snyk_code_scan --path "/src" --severity_threshold "high"
+npx shared-ai-configs generate --clean --force
 ```
 
-### Context7 (Documentation)
+Generates all configurations based on `.ai-project.yaml`.
 
-Library documentation lookup:
-
-| Tool | Purpose |
-|------|---------|
-| `resolve-library-id` | Find library in Context7 |
-| `get-library-docs` | Retrieve documentation |
-
-```yaml
-services:
-  mcp:
-    context7:
-      enabled: true
-```
-
-**Usage Pattern:**
+### validate
 
 ```bash
-# Find library
-mcp__MCP_DOCKER__resolve-library-id "tanstack query"
-
-# Get specific docs
-mcp__MCP_DOCKER__get-library-docs "/tanstack/query" --topic "mutations"
+npx shared-ai-configs validate
 ```
 
-### Figma (Design)
+Validates against `schema/ai-project.schema.json`. Shows:
 
-Design-to-code integration:
+- Project name and stack
+- Chat/code languages
+- VCS type
+- Task tracking type
+- Generation strategy
 
-| Tool | Purpose |
-|------|---------|
-| `get_design_context` | Generate code from Figma design |
-| `get_screenshot` | Capture design screenshots |
-| `get_metadata` | Get design structure |
-
-```yaml
-services:
-  mcp:
-    figma:
-      enabled: true
-      api_key_env: "FIGMA_API_KEY"
-```
-
-### Memory Bank (Project Memory)
-
-Project-specific knowledge storage:
-
-| Tool | Purpose |
-|------|---------|
-| `memory_bank_read` | Read stored knowledge |
-| `memory_bank_write` | Store new knowledge |
-| `memory_bank_update` | Update existing entries |
-| `list_project_files` | List stored files |
-
-```yaml
-services:
-  mcp:
-    memory_bank:
-      enabled: true
-```
-
-**Usage Pattern:**
+### status
 
 ```bash
-# Store analysis results
-mcp__allpepper-memory-bank__memory_bank_write \
-  projectName="Front" \
-  fileName="analysis-api-patterns.md" \
-  content="## API Error Handling Analysis..."
-
-# Retrieve later
-mcp__allpepper-memory-bank__memory_bank_read \
-  projectName="Front" \
-  fileName="analysis-api-patterns.md"
+npx shared-ai-configs status
 ```
 
-### Browser Automation (Chrome)
+Shows:
 
-Web interaction and automation:
+- Project configuration summary
+- Services status (IDE, VCS, task tracking)
+- MCP tools status (enabled/disabled)
+- Generated files status (exists/missing)
+- Recommendations for missing components
 
-| Tool | Purpose |
-|------|---------|
-| `navigate` | Navigate to URLs |
-| `computer` | Mouse/keyboard control |
-| `read_page` | Parse page content |
-| `find` | Find elements |
-| `javascript_tool` | Execute JavaScript |
+### doctor
 
-```yaml
-services:
-  mcp:
-    browser:
-      enabled: true
+```bash
+npx shared-ai-configs doctor
 ```
 
-### PAL (Multi-Model)
+Checks:
 
-Multi-model orchestration and reasoning:
+| Check | Severity | Fix Suggestion |
+|-------|----------|----------------|
+| Node.js version | error | Requires 18+ |
+| npm availability | error | Install npm |
+| Config file exists | warn | Run `init` |
+| Claude Code installed | warn | `npm i -g @anthropics/claude-code` |
+| Cursor directory | warn | `mkdir -p .cursor` |
+| gh/glab CLI | warn | Platform-specific install |
+| bd (Beads) | warn | `npm i -g @anthropic/beads` |
+| MCP env vars | warn | Set required tokens |
 
-| Tool | Purpose |
-|------|---------|
-| `chat` | General collaborative thinking |
-| `thinkdeep` | Complex problem analysis |
-| `planner` | Sequential planning |
-| `consensus` | Multi-model decision making |
-| `codereview` | Systematic code review |
-| `debug` | Root cause analysis |
+---
 
-```yaml
-services:
-  mcp:
-    pal:
-      enabled: true
-```
+## Templates Reference
+
+| Template | Output | Variables Used |
+|----------|--------|----------------|
+| `CLAUDE.md.ejs` | `CLAUDE.md` | All config sections |
+| `AGENTS.md.ejs` | `AGENTS.md` | project, stack, services |
+| `.env.aiproject.ejs` | `.env.aiproject` | services.mcp, services.vcs, services.task_tracking |
+| `claude/settings.json.ejs` | `.claude/settings.json` | services.mcp, options |
+| `claude/docs/*.ejs` | `.claude/docs/*` | project, commands, services |
+| `mcp/mcp.json.ejs` | `.claude/mcp.json`, `.cursor/mcp.json` | services.mcp |
+| `perles/config.yaml.ejs` | `.perles/config.yaml` | project, services.task_tracking |
+
+---
+
+## Schema Validation
+
+Full JSON Schema at `schema/ai-project.schema.json`:
+
+| Required Fields | Type |
+|----------------|------|
+| `project.name` | string |
+| `stack.type` | enum: `react`, `node`, `java`, `python`, `nextjs` |
+| `commands.dev` | string |
+| `commands.build` | string |
+
+| Validated Enums | Values |
+|-----------------|--------|
+| `services.ide.primary` | `Cursor`, `VSCode`, `WebStorm`, `Neovim` |
+| `services.vcs.type` | `gitlab`, `github`, `bitbucket`, `none` |
+| `services.task_tracking.type` | `beads`, `jira`, `linear`, `github-issues`, `none` |
+| `generation.strategy` | `generate`, `symlink`, `copy` |
 
 ---
 
 ## Workflow Features
 
-### Session Management
+### SDLC Phases
 
-Automated session start/stop hooks:
+| Phase | Model | IDE | Purpose |
+|-------|-------|-----|---------|
+| Analyze | Opus | Claude Code | Requirements breakdown |
+| Architect | Opus | Claude Code | System design |
+| Plan | Sonnet | Claude Code | Task breakdown |
+| Implement | Agent | Cursor | Code generation |
+| Test | Sonnet | Cursor | Testing |
+| Review | Opus | Claude Code | Quality assurance |
 
-**Claude Code Hooks (Bash):**
-
-```bash
-# .claude/hooks/
-├── session-start.sh    # Context loading
-├── pre-commit.sh       # Quality gates
-└── validate-bash.sh    # Command validation
-```
-
-**Cursor Hooks (JavaScript):**
-
-```javascript
-// .cursor/hooks/
-├── accept-check.js     # File accept validation
-└── init.js             # Session initialization
-```
-
-**Hook Events:**
-
-| IDE | Event | Trigger |
-|-----|-------|---------|
-| Claude Code | `UserPromptSubmit` | Before prompt processing |
-| Claude Code | `Stop` | After response complete |
-| Claude Code | `PreToolUse` | Before tool execution |
-| Cursor | `init` | Session start |
-| Cursor | `accept` | File accept action |
-
-### Dual-IDE Workflows
-
-Coordinated workflows between IDEs:
-
-| SDLC Phase | Recommended IDE | Model | Use Case |
-|------------|-----------------|-------|----------|
-| **Analyze** | Claude Code | Opus | Requirements breakdown |
-| **Architect** | Claude Code | Opus | System design decisions |
-| **Plan** | Claude Code | Sonnet | Task breakdown |
-| **Implement** | Cursor | Agent | Code generation |
-| **Review** | Claude Code | Opus | Quality assurance |
-
-**Context Handoff:**
-
-```yaml
-# .claude/context-handoff/current.md
-phase: "implementation"
-task_id: "{PREFIX}-xyz"
-scope: "Only modify src/pages/auth/"
-api_contract: "docs/API-CONTRACT.md"
-```
-
-### SDLC Workflow Phases
-
-Six-phase development lifecycle:
-
-```
-Analyze → Architect → Plan → Implement → Test → Review
-```
-
-| Phase | Agent | Focus |
-|-------|-------|-------|
-| **Analyze** | Opus | Understand requirements, scope |
-| **Architect** | Opus | System design, patterns |
-| **Plan** | Opus | Implementation breakdown |
-| **Implement** | Sonnet | Code generation |
-| **Test** | Sonnet | Testing and validation |
-| **Review** | Opus | Quality assurance |
-
-**Skip Rules:**
-
-| Task Type | Phases |
-|-----------|--------|
-| New feature | All 6 phases |
-| Enhancement | Plan → Implement → Review |
-| Bug fix | Plan → Implement |
-| Simple fix | Implement only |
-
-### Orchestration Mode
-
-Multi-agent workflows for complex tasks:
-
-**Available Workflows:**
-
-| Workflow | Description | Trigger |
-|----------|-------------|---------|
-| **Interactive SDLC** | From idea to implementation | `from-prompt` |
-| **Full SDLC** | Complete development cycle | `full-sdlc` label |
-| **Epic Batches** | Parallel task execution | `epic-batches` label |
-
-**Interactive SDLC Flow:**
-
-1. Start with idea description
-2. Coordinator asks clarifying questions
-3. Auto-creates epic + tasks
-4. Runs full SDLC workflow
-5. Tracks progress via labels
-
-**Progress Labels:**
-
-- `phase-clarify` - Clarification phase
-- `phase-sdlc-analyze` - Requirements analysis
-- `phase-sdlc-architect` - Architecture design
-- `phase-sdlc-implement` - Code implementation
-- `phase-sdlc-review` - Quality review
-- `phase-complete` - Workflow complete
-
-### Token Optimization Strategies
-
-Techniques to reduce context overhead:
-
-| Technique | Savings | Description |
-|-----------|---------|-------------|
-| Glob-based rule loading | 60-70% | Load only relevant rules |
-| MCP tool search | 50% | Dynamic tool discovery |
-| Decision tree compression | 87% | Tables/diagrams vs text |
-| Progressive loading | Variable | Load on demand |
+### Orchestration (Optional)
 
 ```yaml
 options:
-  token_optimization: "aggressive"  # minimal | standard | aggressive
+  orchestration: true
 ```
 
----
+Enables Perles workflows in `.perles/`:
 
-## Planned Features (Roadmap)
+- Interactive SDLC from prompt
+- Full SDLC cycle
+- Epic parallel batches
 
-### Phase 1: MCP Token Generation (Q1 2026)
-
-**Problem:** Manual API key configuration for each MCP server.
-
-**Solution:** Generate MCP configuration with environment variable placeholders:
+### Token Optimization
 
 ```yaml
-# .ai-project.yaml
-services:
-  mcp:
-    figma:
-      enabled: true
-      api_key_env: "FIGMA_API_KEY"  # Name of env var
-    snyk:
-      enabled: true
-      api_key_env: "SNYK_TOKEN"
+options:
+  token_optimization: "60-70%"
 ```
 
-**Generated Output:**
+Techniques applied:
 
-```json
-{
-  "mcpServers": {
-    "figma": {
-      "env": {
-        "FIGMA_API_KEY": "${FIGMA_API_KEY}"
-      }
-    }
-  }
-}
-```
-
-**Doctor Command Enhancement:**
-
-```bash
-npx shared-ai-configs doctor
-# Checks:
-# [x] FIGMA_API_KEY is set
-# [ ] SNYK_TOKEN is missing
-```
-
-### Phase 2: NPM Publish (Q1 2026)
-
-**Goal:** Publish to npm for easy installation.
-
-```bash
-# Global install
-npm install -g shared-ai-configs
-
-# Project local
-npm install --save-dev shared-ai-configs
-
-# npx usage
-npx shared-ai-configs generate
-```
-
-**Package Structure:**
-
-```json
-{
-  "name": "shared-ai-configs",
-  "version": "1.0.0",
-  "bin": {
-    "shared-ai-configs": "./bin/cli.js",
-    "sac": "./bin/cli.js"
-  },
-  "files": [
-    "bin/",
-    "dist/",
-    "content/",
-    "templates/",
-    "schema/"
-  ]
-}
-```
-
-### Phase 3: Custom MCP Server Support (Q2 2026)
-
-**Goal:** Define custom MCP servers in configuration.
-
-```yaml
-services:
-  mcp:
-    # Built-in servers
-    hindsight:
-      enabled: true
-
-    # Custom servers
-    custom:
-      my-internal-api:
-        type: "http"
-        url: "https://api.internal.com/mcp"
-        api_key_env: "INTERNAL_API_KEY"
-
-      local-tools:
-        type: "stdio"
-        command: "node"
-        args: ["./tools/mcp-server.js"]
-```
-
-**Features:**
-
-- HTTP and stdio transport support
-- Custom environment variables
-- Validation of server configuration
-- Auto-discovery of installed MCP packages
-
-### Phase 4: Plan/Force Mode (Q2 2026)
-
-**Goal:** Preview changes before applying, force regeneration when needed.
-
-```bash
-# Plan mode - show what would be generated
-npx shared-ai-configs generate --plan
-
-# Output:
-# Would create:
-#   .claude/rules/persona.mdc (new)
-#   .claude/rules/quality.mdc (modified)
-#   CLAUDE.md (modified)
-# Would skip (no changes):
-#   .claude/settings.json
-
-# Force mode - regenerate even unchanged files
-npx shared-ai-configs generate --force
-
-# Selective generation
-npx shared-ai-configs generate --only=claude
-npx shared-ai-configs generate --only=cursor
-npx shared-ai-configs generate --only=rules
-```
-
-### Phase 5: Plugin System (Q3 2026)
-
-**Goal:** Extensible architecture for custom content.
-
-```yaml
-plugins:
-  install:
-    - name: "sac-plugin-nextjs"
-      source: "npm"
-    - name: "sac-plugin-company-rules"
-      source: "npm"
-      config:
-        department: "engineering"
-```
-
-**Plugin Structure:**
-
-```
-sac-plugin-nextjs/
-├── content/
-│   └── stacks/
-│       └── nextjs/
-│           ├── app-router.mdc
-│           └── server-components.mdc
-├── templates/
-│   └── nextjs/
-│       └── middleware.ejs
-└── package.json
-```
-
-### Phase 6: Kilo Agent Support (Q3 2026)
-
-**Goal:** Support for Kilo and other emerging AI agents.
-
-```yaml
-generation:
-  targets:
-    claude: true
-    cursor: true
-    kilo:
-      enabled: true
-      output_dir: ".kilo"
-      features: ["rules", "context"]
-```
-
-### Phase 7: Team Sync (Q4 2026)
-
-**Goal:** Team-wide configuration synchronization.
-
-```yaml
-team:
-  sync:
-    enabled: true
-    source: "https://company.com/ai-configs"
-    override_local: false
-```
-
-**Features:**
-
-- Central configuration repository
-- Per-project overrides
-- Version pinning
-- Change notifications
-
----
-
-## CLI Reference
-
-| Command | Description |
-|---------|-------------|
-| `init` | Create `.ai-project.yaml` template |
-| `generate` | Generate all configurations |
-| `validate` | Validate config against schema |
-| `status` | Show current generation status |
-| `doctor` | Diagnose issues and missing deps |
-
-**Options:**
-
-```bash
---force, -f     # Overwrite existing files
---plan          # Preview changes (planned)
---only=<target> # Generate specific target (planned)
---verbose, -v   # Verbose output
-```
+- Glob-based rule loading
+- MCP tool search
+- Decision tree compression
+- Progressive loading
 
 ---
 
 ## Related Documentation
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) - System design and structure
+- [ARCHITECTURE.md](ARCHITECTURE.md) - System design
 - [PRINCIPLES.md](PRINCIPLES.md) - Core design principles
-- [CONTRIBUTING.md](../CONTRIBUTING.md) - Development guide
-- [CHANGELOG.md](../CHANGELOG.md) - Version history
+- [MULTI-TARGET-ARCHITECTURE.md](MULTI-TARGET-ARCHITECTURE.md) - Target system design
+- [GIT-TRACKING-STRATEGY.md](GIT-TRACKING-STRATEGY.md) - What to track in git

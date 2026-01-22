@@ -425,7 +425,6 @@ services:
     paths:
       claude: string (.claude/)
       cursor: string (.cursor/)
-    dual_mode: boolean
 
   vcs:
     type: gitlab | github

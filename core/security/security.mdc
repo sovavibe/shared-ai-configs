@@ -149,4 +149,3 @@ Before deploying, verify:
 
 - @quality - Quality rules that include security
 - @architecture - Architecture patterns for security
-- @testing - Security testing patterns

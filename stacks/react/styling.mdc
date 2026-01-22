@@ -1,6 +1,6 @@
 ---
 description: 'Styling with Ant Design, styled-components, CSS modules, theming'
-globs: ['**/*styled*.ts', '**/*styled*.tsx', '**/*.css', 'src/shared/ui/**/*.tsx']
+globs: ['**/*styled*.ts', '**/*styled*.tsx', '**/*.css', '**/ui/**/*.tsx']
 alwaysApply: false
 ---
 
@@ -86,7 +86,7 @@ const StyledTable = styled(Table)`
 ### CSS Variables Strategy
 
 ```tsx
-// Global CSS variables in src/shared/ui/styles/variables.css
+// Global CSS variables (e.g., in shared/ui/styles/variables.css)
 :root {
   --color-primary: #1890ff;
   --color-text: #262626;

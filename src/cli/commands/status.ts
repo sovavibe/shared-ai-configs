@@ -35,7 +35,6 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
   logger.table({
     'IDE Primary': services?.ide?.primary || 'not set',
     'IDE Secondary': services?.ide?.secondary || 'none',
-    'Dual mode': services?.ide?.dual_mode ? 'enabled' : 'disabled',
     VCS: services?.vcs?.type || 'none',
     'Task tracking': services?.task_tracking?.type || 'none',
   });

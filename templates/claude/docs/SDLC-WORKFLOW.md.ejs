@@ -14,18 +14,11 @@ graph LR
 
 | Phase | IDE | Model | Description |
 |-------|-----|-------|-------------|
-<% if (services?.ide?.dual_mode) { %>
-| Analyze | Claude Code | Opus | Requirements analysis |
-| Architect | Claude Code | Opus | System design |
-| Plan | Claude Code | Sonnet | Task breakdown |
-| Implement | Cursor | Agent | Code generation |
-| Review | Claude Code | Opus | Quality review |
-<% } else { %>
-| Analyze | <%= services?.ide?.primary || 'Cursor' %> | Sonnet | Requirements analysis |
-| Plan | <%= services?.ide?.primary || 'Cursor' %> | Sonnet | Task breakdown |
-| Implement | <%= services?.ide?.primary || 'Cursor' %> | Sonnet | Code generation |
-| Review | <%= services?.ide?.primary || 'Cursor' %> | Sonnet | Quality review |
-<% } %>
+| Analyze | <%= services?.ide?.secondary || 'Claude Code' %> | Opus | Requirements analysis |
+| Architect | <%= services?.ide?.secondary || 'Claude Code' %> | Opus | System design |
+| Plan | <%= services?.ide?.secondary || 'Claude Code' %> | Sonnet | Task breakdown |
+| Implement | <%= services?.ide?.primary || 'Cursor' %> | Agent | Code generation |
+| Review | <%= services?.ide?.secondary || 'Claude Code' %> | Opus | Quality review |
 
 ## Skip Rules
 
@@ -73,10 +66,9 @@ bd show <epic-id>
 ```
 <% } %>
 
-<% if (services?.ide?.dual_mode) { %>
 ## Context Handoff Protocol
 
-When switching between Claude Code and Cursor:
+When switching between <%= services?.ide?.secondary || 'Claude Code' %> and <%= services?.ide?.primary || 'Cursor' %>:
 
 ```yaml
 # .claude/context-handoff/current.md
@@ -88,14 +80,12 @@ api_contract: "docs/API-CONTRACT.md"
 
 ### Key Principles
 
-- 🧠 **Critical thinking** = Claude Code Opus
-- 💻 **Implementation** = Cursor Agent
-- 📋 **Planning** = Claude Code Sonnet
-<% } %>
+- 🧠 **Critical thinking** = <%= services?.ide?.secondary || 'Claude Code' %> Opus
+- 💻 **Implementation** = <%= services?.ide?.primary || 'Cursor' %> Agent
+- 📋 **Planning** = <%= services?.ide?.secondary || 'Claude Code' %> Sonnet
 
 ## Model Selection
 
-<% if (services?.ide?.dual_mode) { %>
 ### Opus (Direct)
 - ✅ Architectural decisions
 - ✅ Deep code review
@@ -105,11 +95,4 @@ api_contract: "docs/API-CONTRACT.md"
 - ✅ Implementation
 - ✅ Test writing
 - ✅ Routine refactoring
-<% } else { %>
-### When to Use Which Model
-
-- **Complex tasks**: Use Opus for analysis
-- **Standard work**: Sonnet is sufficient
-- **Quick fixes**: Haiku for speed
-<% } %>
 

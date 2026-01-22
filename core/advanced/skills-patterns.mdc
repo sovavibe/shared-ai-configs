@@ -1,367 +1,510 @@
 ---
-description: 'Skills Patterns: Hot-reload workflows, composition, chaining without user intervention'
+description: 'Skills Patterns: MCP-first workflows, composition, multi-turn conversations'
 alwaysApply: false
+version: '2.0.0'
+lastUpdated: '2026-01-22'
 ---
 
 # Skills and Workflow Patterns
 
-> **Purpose**: Use Cursor skills for automated workflow composition and multi-agent chaining.
-> Skills enable hot-reload patterns and workflow execution without constant user input.
+> **Purpose**: Build automated workflows using MCP tools as primary integration method.
+> Skills enable composable, stateful workflows with persistent context across turns.
+
+## Core Principle: MCP-First
+
+**MCP tools are the primary integration method** - not custom scripts.
+
+```
+Priority Order:
+1. MCP Tools (hindsight, context7, beads, snyk, figma...)
+2. Skill composition (chaining MCP calls)
+3. Built-in IDE tools (Glob, Grep, Read, Edit)
+4. Custom scripts (ONLY for mechanical bulk operations)
+```
 
 ## What are Skills?
 
-Skills are reusable workflows/commands in Cursor that can be:
+Skills are reusable workflows that leverage MCP tools:
 
-- Called from other skills
-- Composed together
-- Hot-reloaded on file changes
-- Chained without user intervention
+- **MCP-powered** - Primary data flow through MCP servers
+- **Composable** - Chain multiple MCP operations
+- **Stateful** - Use continuation_id for multi-turn context
+- **Hot-reloadable** - Update without restart
 
 **Types**:
 
-- `/slash-commands` - User-triggered workflows
-- Skill triggers - Event-based automation
-- Composed skills - Chaining multiple skills
+- `/slash-commands` - User-triggered MCP workflows
+- Composed skills - Chaining multiple MCP operations
+- Multi-turn skills - Using continuation_id for context
+
+## MCP Server Selection
+
+### When to Use Which Server
+
+| Server          | Use For                                    | Key Tools                           |
+| --------------- | ------------------------------------------ | ----------------------------------- |
+| **hindsight**   | Long-term memory, pattern recall           | `recall`, `reflect`, `retain`       |
+| **context7**    | Library docs lookup                        | `resolve-library-id`, `get-library-docs` |
+| **pal**         | Deep analysis, multi-model consensus       | `thinkdeep`, `consensus`, `debug`   |
+| **snyk**        | Security scanning                          | `snyk_code_scan`, `snyk_sca_scan`   |
+| **figma**       | Design to code                             | `get_design_context`                |
+| **zread**       | GitHub repo exploration                    | `search_doc`, `read_file`           |
+| **web-search**  | External information                       | `webSearchPrime`                    |
+| **memory-bank** | Project-specific persistent storage        | `memory_bank_read/write/update`     |
+
+### Server Selection Decision Tree
+
+```
+What do you need?
+│
+├─ Past decisions/patterns → hindsight.recall
+├─ Deep analysis needed → pal.thinkdeep (with continuation_id)
+├─ Multiple perspectives → pal.consensus
+├─ Library API docs → context7 (resolve → get-library-docs)
+├─ Security check → snyk
+├─ Design specs → figma
+├─ GitHub repo info → zread
+├─ Store findings → memory-bank (NOT markdown files!)
+└─ External info → web-search (last resort)
+```
+
+## continuation_id Pattern (Multi-Turn Context)
+
+### Why continuation_id?
+
+MCP tools like `pal.thinkdeep`, `pal.consensus`, `pal.debug` support multi-turn conversations.
+**ALWAYS reuse continuation_id** to preserve full context across calls.
+
+### Pattern: Multi-Step Investigation
+
+```
+# Step 1: Start investigation
+thinkdeep(
+  step: "Analyzing authentication flow",
+  step_number: 1,
+  total_steps: 3,
+  next_step_required: true,
+  findings: "Found OAuth integration in auth.ts",
+  model: "gpt-5-codex"
+)
+→ Returns: { continuation_id: "abc-123", ... }
+
+# Step 2: Continue with SAME continuation_id
+thinkdeep(
+  continuation_id: "abc-123",  # ← CRITICAL: reuse!
+  step: "Examining token refresh logic",
+  step_number: 2,
+  total_steps: 3,
+  next_step_required: true,
+  findings: "Token refresh missing error handling",
+  model: "gpt-5-codex"
+)
+
+# Step 3: Final step
+thinkdeep(
+  continuation_id: "abc-123",
+  step: "Proposing fix",
+  step_number: 3,
+  total_steps: 3,
+  next_step_required: false,  # ← Last step
+  findings: "Add try/catch in refreshToken()",
+  model: "gpt-5-codex"
+)
+```
+
+### Pattern: Consensus Building
+
+```
+# Step 1: Define the question
+consensus(
+  step: "Should we use Zustand or Redux for state?",
+  step_number: 1,
+  total_steps: 4,
+  models: [
+    { model: "gpt-5-codex", stance: "for" },
+    { model: "claude-sonnet", stance: "against" }
+  ],
+  findings: "Initial analysis: bundle size vs features",
+  next_step_required: true
+)
+→ Returns: { continuation_id: "xyz-456", ... }
+
+# Steps 2-3: Each model responds (use continuation_id)
+# Step 4: Synthesis with continuation_id
+```
 
 ## Skill Composition Pattern
 
-### Single Skill (Simple)
+### Single MCP Skill
 
 ```
 User: "run /analyze"
     ↓
-Cursor skill executes
+Skill calls hindsight.recall("similar patterns")
+    ↓
+Skill calls thinkdeep(step: "analyze", ...)
     ↓
 Returns analysis
 ```
 
-### Composed Skills (Automation)
+### Composed MCP Skills
 
 ```
 /analyze
     ↓
-/architect (uses analyze output)
+hindsight.recall → thinkdeep(continuation_id)
     ↓
-/plan (uses architect output)
+/architect (reads continuation_id context)
     ↓
-Auto-complete without user asking again
+thinkdeep(continuation_id) → memory-bank.write
+    ↓
+/plan (reads from memory-bank)
+    ↓
+Complete without user intervention
 ```
 
-**Benefit**: Full SDLC without 4 separate prompts
+**Benefit**: Full SDLC with persistent MCP context
 
 ## Hot-Reload Patterns
 
-### Skill Definition Files
-
-Skills stored in `.cursor/commands/` can be hot-reloaded:
+Skills stored in `.cursor/commands/` or `.claude/commands/` hot-reload:
 
 ```bash
 # File change detected
 .cursor/commands/analyze.md (modified)
     ↓
-Cursor reloads skill immediately
+IDE reloads skill immediately
     ↓
-No restart needed
-    ↓
-Next `/analyze` uses updated version
+Next `/analyze` uses updated MCP workflow
 ```
 
-**Use Case**: Refine skill logic mid-session without restarting
+**Use Case**: Iterate on MCP tool combinations without restart
 
 ## Workflow Chaining Without Intervention
 
-### Pattern: Auto-Next Skill
+### Pattern: MCP-Driven Chain
 
-When skill finishes, trigger next skill automatically:
+Skills chain through MCP tools (not stdout):
 
 **Skill: /analyze**
 
 ```
-1. Run analysis
-2. Save findings to beads
-3. Auto-trigger: /architect
+1. hindsight.recall("similar features") → context
+2. thinkdeep(step: "analyze", ...) → findings
+3. memory-bank.write(findings) → persistent storage
+4. Auto-trigger: /architect with continuation_id
 ```
 
 **Skill: /architect**
 
 ```
-1. Read analysis from beads
-2. Design architecture
-3. Save to beads
-4. Auto-trigger: /plan
+1. memory-bank.read("analysis") → previous findings
+2. thinkdeep(continuation_id: <same>) → design
+3. memory-bank.update(architecture) → storage
+4. Auto-trigger: /plan with continuation_id
 ```
 
-**Result**: Analyze → Architect → Plan → Ready (all automatic)
+**Result**: Analyze → Architect → Plan (all MCP-connected)
 
 **User just types**: `/analyze "requirements"`
-**Result**: Full SDLC plan ready without asking 3 more times
+**Result**: Full SDLC with persistent MCP context
 
 ## Composition Strategies
 
-### Strategy 1: Sequential Chain
+### Strategy 1: Sequential MCP Chain
 
 ```
 /analyze
-    ↓ (on completion)
+    ↓ thinkdeep(continuation_id: A)
 /architect
-    ↓ (on completion)
+    ↓ thinkdeep(continuation_id: A)  # Same context!
 /plan
+    ↓ memory-bank.write(final_plan)
 ```
 
 **When to use**: Full SDLC needed
-**Duration**: 4-8 hours single-shot
+**MCP benefit**: continuation_id preserves all context
 
-### Strategy 2: Conditional Chaining
+### Strategy 2: Conditional with MCP
 
 ```
 /analyze
-    ↓
-if (requirements_unclear) → Ask clarifying questions
-    ↓
-if (requirements_clear) → Auto /architect
+    ↓ thinkdeep → confidence: "low"
+if (confidence < "medium") → Ask user for clarification
+    ↓ thinkdeep(continuation_id) → confidence: "high"
+if (confidence >= "medium") → Auto /architect
     ↓
 /plan
 ```
 
 **When to use**: Variable input clarity
-**Duration**: 2-4 hours (interactive where needed)
+**MCP benefit**: confidence level drives branching
 
-### Strategy 3: Parallel Composition
+### Strategy 3: Parallel MCP Composition
 
 ```
 /analyze
     ↓
-Run in parallel:
-├─ /architect (technical design)
-├─ /security-review (security check)
-└─ /test-plan (testing strategy)
+Run in parallel (different continuation_ids):
+├─ thinkdeep(focus: "architecture")
+├─ snyk.code_scan(severity: "high")
+└─ consensus(question: "test strategy")
     ↓
-Merge results → /plan
+Merge via memory-bank → /plan
 ```
 
 **When to use**: Need multiple perspectives
-**Duration**: 3-6 hours (parallel execution)
+**MCP benefit**: Each stream has own context
 
-### Strategy 4: Loop Until Done
+### Strategy 4: MCP Loop Until Done
 
 ```
 /analyze
-    ↓
+    ↓ thinkdeep(continuation_id: A)
 /architect
-    ↓
+    ↓ codereview(continuation_id: B)
 /review-design
     ↓
-if (issues_found) → /architect (loop)
+if (issues_found) → debug(continuation_id: B) → /architect
     ↓
-if (approved) → /plan
+if (approved) → memory-bank.write → /plan
 ```
 
 **When to use**: Iterative refinement needed
-**Duration**: 4-6 hours (with review cycles)
+**MCP benefit**: Review context preserved in loop
 
-## Implementation in Cursor Skills
+## Implementation in Skills
 
-### Skill File Structure
+### Skill File Structure (MCP-First)
 
 ```markdown
 # /my-skill
 
 **Purpose:** [What this skill does]
 
+**MCP Tools Used:**
+- hindsight.recall - Load patterns
+- pal.thinkdeep - Deep analysis
+- memory-bank.write - Store results
+
 **Composition**:
-1. Step 1: [Do X]
-   → Auto-trigger next skill on completion
-2. Step 2: [Do Y]
-   → Read output from Step 1 using @beads
+1. Step 1: hindsight.recall("relevant patterns")
+   → Load context
+2. Step 2: thinkdeep(step: "analysis", continuation_id: null)
+   → Get continuation_id for chain
+3. Step 3: memory-bank.write(findings)
+   → Persist results
 
 ## Input Format
-- From: [Source (user input/beads/env)]
+- From: [Source (user input/MCP recall/memory-bank)]
 - Format: [Expected format]
 
 ## Output Format
-- To: [Destination (beads/env/return)]
+- To: [Destination (memory-bank/hindsight.retain/return)]
 - Format: [Output format]
 
-## Triggers Next Skill
-When done → Auto-run `/next-skill-name`
-With context → Read from beads:<task_id>
+## Context Preservation
+continuation_id: Pass to next skill
+memory-bank key: [project]/[skill-output]
 ```
 
-### Example: /full-sdlc Skill
+### Example: /full-sdlc Skill (MCP-First)
 
 ```markdown
 # /full-sdlc
 
-**Purpose:** Run complete SDLC automatically: Analyze → Architect → Plan
+**Purpose:** Run complete SDLC with MCP context preservation
+
+**MCP Tools:**
+- hindsight.recall - Load past patterns
+- pal.thinkdeep - Multi-step analysis (with continuation_id)
+- memory-bank - Persist artifacts
 
 **Composition**:
 1. Analyze requirements
-   - Input: User description
-   - Output: Beads analysis (save as beads-001)
-   → Trigger /architect with beads-001
+   - hindsight.recall("similar features")
+   - thinkdeep(step: "analyze", ...) → get continuation_id
+   - memory-bank.write("analysis", findings)
 
 2. Architect system
-   - Input: Beads-001 analysis
-   - Output: Beads architecture (save as beads-002)
-   → Trigger /plan with beads-002
+   - thinkdeep(continuation_id: <from step 1>)
+   - memory-bank.write("architecture", design)
 
 3. Create plan
-   - Input: Beads-002 architecture
-   - Output: Beads implementation plan (save as beads-003)
-   → Return to user: "Ready to implement"
+   - thinkdeep(continuation_id: <same>)
+   - memory-bank.write("plan", tasks)
+   - Return: "Ready to implement"
 
 ## User Experience
-
 ```
 
 User: "Add dark mode support"
     ↓
-/full-sdlc auto-runs
+/full-sdlc
     ↓
-1-2 hours later: "Analysis, Architecture, Plan ready. Ready to implement?"
+All MCP context preserved via continuation_id
+    ↓
+Results in memory-bank (not temp files!)
+    ↓
+"Analysis, Architecture, Plan ready"
 
 ```
 
-vs
+## Data Flow: MCP as Skill Bridge
 
-```
-
-User: "Add dark mode support"
-Ask: "Can you /plan?"
-User: "Yes"
-Ask: "Can you /architect?"
-User: "Yes"
-Ask: "Can you /analyze?"
-(Multiple prompts needed)
-
-```
-
-## Data Flow: Beads as Skill Bridge
-
-Skills communicate through beads:
+Skills communicate through MCP tools:
 
 ```
 
 Skill 1 (/analyze)
     ↓
-Write to beads: beads-123 {findings, decisions}
+thinkdeep() → continuation_id: "ctx-123"
+memory-bank.write("project/analysis", findings)
     ↓
 Skill 2 (/architect)
     ↓
-Read from beads: beads-123 {@beads}
-    ↓
-Write to beads: beads-124 {architecture}
+memory-bank.read("project/analysis")
+thinkdeep(continuation_id: "ctx-123")  # Context preserved!
+memory-bank.write("project/architecture", design)
     ↓
 Skill 3 (/plan)
     ↓
-Read from beads: beads-124 {@beads}
-    ↓
-Write result to beads: beads-125 {plan}
+memory-bank.read("project/architecture")
+thinkdeep(continuation_id: "ctx-123")
+memory-bank.write("project/plan", tasks)
 
 ```
 
-**Benefit**: Skills are decoupled, each can be tested independently
+**Benefits**:
 
-## Error Handling in Chains
+- continuation_id preserves reasoning context
+- memory-bank persists across sessions
+- No temp files in git repository
+- Skills decoupled, testable independently
 
-When skill in chain fails:
+## Error Handling in MCP Chains
+
+When MCP call fails:
 
 ```
 
 /analyze ✓
-    ↓
-/architect ✗ (fails)
+    ↓ thinkdeep(continuation_id: A)
+/architect ✗ (MCP error)
     ↓
 STOP: Don't auto-trigger /plan
-SHOW: Error reason + fix suggestion
-USER: Fixes or re-runs /architect
+SAVE: memory-bank.write("project/error-state", context)
+SHOW: Error + continuation_id for resume
+USER: Fixes issue
     ↓
-On success → Auto-trigger /plan
+RESUME: thinkdeep(continuation_id: A)  # Context preserved!
+    ↓
+On success → /plan with same continuation_id
 
 ```
 
-**Rule**: Never silently fail to next skill
+**Rule**: Always save state before failing, preserve continuation_id
 
 ## Hot-Reload Development
 
-### Develop Skill with Hot-Reload
+### Develop MCP Skill with Hot-Reload
 
 ```
 
 1. Edit .cursor/commands/my-skill.md
     ↓
-2. Cursor detects change
+2. IDE detects change
     ↓
 3. Skill reloaded automatically
     ↓
 4. User runs `/my-skill` again
     ↓
-5. Uses updated version immediately
+5. Uses updated MCP workflow immediately
 
 ```
 
-**No restart needed**: Iterate quickly
+**No restart needed**: Iterate on MCP tool combinations quickly
 
-### Debugging Workflow
+### Debugging MCP Workflow
 
 ```
 
 User: `/my-skill param1`
     ↓
-Error in step 2
+Error in thinkdeep() call
     ↓
-Edit .cursor/commands/my-skill.md (fix step 2)
+Edit skill (fix MCP parameters)
     ↓
-Cursor hot-reloads
+IDE hot-reloads
     ↓
-User: `/my-skill param1` (retry)
+User: `/my-skill param1` (retry with same continuation_id)
     ↓
-Success (using fixed version)
+Success: MCP context preserved from previous attempt
 
 ```
 
 ## Best Practices
 
 ### DO:
-- ✅ Chain skills through beads (persistent data)
+- ✅ Use MCP tools as primary integration
+- ✅ Preserve continuation_id across skill chain
+- ✅ Store artifacts in memory-bank (not files!)
+- ✅ Use hindsight for pattern recall
 - ✅ Auto-trigger next skill on completion
-- ✅ Use hot-reload for quick iteration
-- ✅ Save state to beads between skills
-- ✅ Document input/output formats
-- ✅ Handle errors gracefully
+- ✅ Document MCP tools used per skill
+- ✅ Handle MCP errors gracefully (save state)
 
 ### DON'T:
-- ❌ Require user to manually trigger each skill
-- ❌ Pass data through stdout (use beads)
-- ❌ Assume next skill will be run (save state!)
-- ❌ Ignore hot-reload capability
-- ❌ Chain 5+ skills (too long, breaks focus)
-- ❌ Skip error handling
+- ❌ Write custom scripts when MCP tool exists
+- ❌ Create temp markdown files (use memory-bank)
+- ❌ Lose continuation_id between skills
+- ❌ Pass data through stdout (use MCP)
+- ❌ Ignore existing MCP servers
+- ❌ Chain 5+ skills (context overflow risk)
+- ❌ Skip MCP error handling
 
 ## Related Patterns
 
+- @tool-selection - MCP server selection guide
 - @token-optimization - Reduce tokens with skill composition
-- @verification-swarms - Multi-agent skills pattern
-- @sdd-patterns - SDD workflow as composed skills
-- SDLC-WORKFLOW.md - Full SDLC as composed skills
+- @verification-swarms - Multi-agent skills with pal.consensus
+- @sdd-patterns - SDD workflow as composed MCP skills
+- @context-management - Four pillars integration
 
-## Real World: SDLC as Composed Skills
+## Real World: SDLC as MCP-Composed Skills
 
 ```
 
 /full-sdlc
 ├─ Step 1: /analyze
-   └─ Saves beads-001
-├─ Step 2: /architect (reads beads-001)
-   └─ Saves beads-002
-├─ Step 3: /plan (reads beads-002)
-   └─ Saves beads-003
+│  ├─ hindsight.recall("patterns")
+│  ├─ thinkdeep() → continuation_id: "sdlc-123"
+│  └─ memory-bank.write("analysis")
+├─ Step 2: /architect
+│  ├─ thinkdeep(continuation_id: "sdlc-123")
+│  └─ memory-bank.write("architecture")
+├─ Step 3: /plan
+│  ├─ thinkdeep(continuation_id: "sdlc-123")
+│  └─ memory-bank.write("plan")
 └─ Complete: Ready to implement
 
-User experience: One command, 2-4 hours later = Full plan
+User experience: One command = Full MCP-preserved context
 
 ```
 
-**Token savings**: 1 skill prompt vs 5 separate prompts (80% reduction)
+**Token savings**: continuation_id preserves context (no re-explaining)
 
-**Time savings**: Automatic composition vs manual triggering (60% faster)
+**Persistence**: memory-bank survives across sessions (no lost work)
+
+**Traceability**: All reasoning captured in MCP history
+
+## Anti-Patterns to Avoid
+
+| Anti-Pattern                  | MCP-First Alternative            |
+| ----------------------------- | -------------------------------- |
+| Write analysis to .md file    | memory-bank.write()              |
+| Custom script for code search | Use Glob/Grep built-in tools     |
+| Manual pattern lookup         | hindsight.recall()               |
+| Re-explain context each step  | Reuse continuation_id            |
+| WebSearch for library docs    | context7.get-library-docs()      |
+| Separate calls losing context | Chain with continuation_id       |

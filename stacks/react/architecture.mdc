@@ -1,6 +1,6 @@
 ---
 description: 'FSD architecture, layered patterns, SOLID principles, dependency injection'
-globs: ['src/app/**/*.ts', 'src/app/**/*.tsx', 'src/pages/**/*.tsx']
+globs: ['**/app/**/*.ts', '**/app/**/*.tsx', '**/pages/**/*.tsx']
 alwaysApply: false
 ---
 

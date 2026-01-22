@@ -45,7 +45,6 @@ function createTemplateContext(config: Config): TemplateContext {
     ide: {
       primary: 'Cursor' as const,
       secondary: 'none' as const,
-      dual_mode: false,
       paths: { claude: '.claude/', cursor: '.cursor/' },
       ...config.services?.ide,
     },

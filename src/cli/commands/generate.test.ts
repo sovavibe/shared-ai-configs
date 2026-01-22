@@ -38,7 +38,6 @@ vi.mock('../utils/config.js', () => ({
     languages: { chat: 'English', code: 'English' },
     services: {
       ide: {
-        dual_mode: false,
         paths: { claude: '.claude/', cursor: '.cursor/' },
       },
       vcs: { main_branch: 'main' },
@@ -460,13 +459,20 @@ describe('generate command', () => {
     });
 
     it('should not modify .gitignore if AI marker already exists', async () => {
+      // Use config with only Claude enabled to match the mock gitignore content
+      const configClaudeOnly: Config = {
+        ...minimalConfig,
+        generation: { targets: { claude: true, cursor: false } },
+      };
+      (loadConfig as Mock).mockReturnValue(configClaudeOnly);
+
       (existsSync as Mock).mockImplementation((path: string) => {
         if (path.endsWith('.gitignore')) return true;
         if (path.includes('templates')) return true;
         return false;
       });
       (readFileSync as Mock).mockReturnValue(
-        'node_modules/\n# AI Generated (by shared-ai-configs)\n.claude/\nCLAUDE.md\n'
+        'node_modules/\n# AI Generated (by shared-ai-configs)\n.claude/\nCLAUDE.md\n.env.aiproject\n'
       );
 
       await generateCommand(defaultOptions);

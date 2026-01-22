@@ -156,4 +156,3 @@ npm run build
 
 - @quality - Quality rules that include performance
 - @architecture - React patterns for performance
-- @testing - Performance testing patterns

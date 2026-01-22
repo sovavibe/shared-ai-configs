@@ -17,7 +17,7 @@
 ## Project: <%= project?.name || 'Project' %>
 
 **Stack:** <%= stack?.type || 'unknown' %>
-**IDE:** <%= services?.ide?.primary || 'Cursor' %><% if (services?.ide?.dual_mode) { %> + <%= services?.ide?.secondary %><% } %>
+**IDE:** <%= services?.ide?.primary || 'Cursor' %> + <%= services?.ide?.secondary || 'Claude Code' %>
 <% if (services?.vcs?.type) { %>
 **VCS:** <%= services.vcs.type %>
 <% } %>

@@ -56,7 +56,6 @@ export interface ArchitectureConfig {
 export interface IDEServiceConfig {
   primary?: 'Cursor' | 'VSCode' | 'WebStorm' | 'Neovim';
   secondary?: 'Claude Code' | 'Cursor' | 'VSCode' | 'none';
-  dual_mode?: boolean;
   paths?: {
     claude?: string;
     cursor?: string;

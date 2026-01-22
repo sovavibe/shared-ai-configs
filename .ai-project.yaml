@@ -58,7 +58,6 @@ services:
   ide:
     primary: 'Cursor'
     secondary: 'Claude Code'
-    dual_mode: true
     paths:
       claude: '.claude/'
       cursor: '.cursor/'

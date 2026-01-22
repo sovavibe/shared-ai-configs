@@ -9,7 +9,6 @@ describe('CONFIG_DEFAULTS', () => {
   });
 
   it('should have required service defaults', () => {
-    expect(CONFIG_DEFAULTS.services.ide.dual_mode).toBe(false);
     expect(CONFIG_DEFAULTS.services.ide.paths.claude).toBe('.claude/');
     expect(CONFIG_DEFAULTS.services.ide.paths.cursor).toBe('.cursor/');
   });

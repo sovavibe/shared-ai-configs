@@ -63,18 +63,6 @@ flowchart TD
     Local_Decompose --> Done
 
     Done([Tasks Created])
-
-    style Start fill:#e1f5e1
-    style Done fill:#ffe1e1
-    style UseExisting fill:#e1f0ff
-    style MR_Path fill:#fff4e1
-    style Feature_Path fill:#ffe1f0
-    style Local_Path fill:#e1f5ff
-    style MR_CreateJira fill:#ffe1f0
-    style MR_CreateEpic fill:#e1ffe1
-    style Feature_CreateJira fill:#ffe1f0
-    style Feature_CreateEpic fill:#e1ffe1
-    style Local_NoJira fill:#f0f0f0
 ```
 
 ## Commands by Scenario
@@ -168,4 +156,4 @@ TASK1=$(bd create "Extract functions" --deps epic:$EPIC -p 1 --json | jq -r '.id
 ## References
 
 - @beads - Core Beads workflow
-- @mcp.md - MCP tools reference
+- @tool-selection - MCP tools reference

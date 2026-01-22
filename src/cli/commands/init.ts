@@ -50,7 +50,6 @@ services:
   ide:
     primary: "Cursor"         # Cursor | VSCode | WebStorm | Neovim
     secondary: "none"         # Claude Code | Cursor | VSCode | none
-    dual_mode: false
     paths:
       claude: ".claude/"
       cursor: ".cursor/"

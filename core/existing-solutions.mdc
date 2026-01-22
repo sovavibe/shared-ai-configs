@@ -1,6 +1,6 @@
 ---
 description: 'Search existing solutions before custom implementations - Context7, codebase, deps'
-globs: ['src/**/features/**/*.ts', 'src/**/features/**/*.tsx', 'scripts/**/*.ts']
+globs: ['**/features/**/*.ts', '**/features/**/*.tsx', 'scripts/**/*.ts']
 alwaysApply: false
 ---
 
@@ -77,7 +77,7 @@ CallMcpTool({
    - See: @hindsight for detailed usage
 4. **Web search** - Find best practices and comparisons (if MCP doesn't have answer)
 5. **Project dependencies** - Check `package.json` for existing tools
-6. **Project documentation** - Check `docs/` and `.cursor/rules/`
+6. **Project documentation** - Check `docs/` and AI rules directory
 7. **Codebase search** - Check if similar functionality exists
 
 **Note**: MCP tools are priority. Beads and Hindsight provide project-specific context (research, experience, opinions, memories) that external search cannot provide. Use web search and other methods only if MCP doesn't provide sufficient information.

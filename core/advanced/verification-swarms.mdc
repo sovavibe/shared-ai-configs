@@ -1,100 +1,360 @@
 ---
-description: 'Verification swarms - 3-agent pattern for comprehensive code review'
+description: 'Verification swarms - multi-model async patterns for comprehensive code review (2026)'
 alwaysApply: false
 ---
 
-# Verification Swarms
+# Verification Swarms (2026)
 
 ## What is a Verification Swarm?
 
-**Definition**: 3 specialized agents review code in parallel, must ALL approve before merge.
-
-**Agents**:
-
-1. **Coder Agent** (You) - Implementation quality
-2. **Security Agent** (Snyk) - Vulnerabilities & compliance
-3. **Architecture Agent** (Claude Opus) - Design & maintainability
-
-## Pattern: Pre-Merge Verification
+**Definition**: Multiple specialized agents review code in parallel using async multi-model patterns. All agents must reach consensus before merge.
 
 ```
-Code Ready → Verification Swarm:
-  ├─ Coder: Check test coverage, code style
-  ├─ Security: Run Snyk scan, check OWASP
-  └─ Architecture: Check design patterns, performance
-
-  If ALL pass ✓ → Merge
-  If ANY fail ✗ → Return to development
+┌─────────────────────────────────────────────────────────────┐
+│                    VERIFICATION SWARM                        │
+│                                                              │
+│  ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐     │
+│  │ Coder   │   │Security │   │  Arch   │   │  Perf   │     │
+│  │ Agent   │   │  Agent  │   │  Agent  │   │  Agent  │     │
+│  └────┬────┘   └────┬────┘   └────┬────┘   └────┬────┘     │
+│       │             │             │             │           │
+│       └─────────────┴──────┬──────┴─────────────┘           │
+│                            │                                 │
+│                    ┌───────▼───────┐                        │
+│                    │   CONSENSUS   │                        │
+│                    │    ENGINE     │                        │
+│                    └───────┬───────┘                        │
+│                            │                                 │
+│                   ┌────────▼────────┐                       │
+│                   │  ✅ APPROVED    │                       │
+│                   │  ❌ REJECTED    │                       │
+│                   └─────────────────┘                       │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+## Swarm Agents
+
+| Agent | Responsibility | Model Tier | PAL MCP Tool |
+|-------|---------------|------------|--------------|
+| **Coder** | Implementation quality, tests | `$FAST_MODEL` | `codereview` |
+| **Security** | Vulnerabilities, compliance | `$SECURITY_MODEL` + Snyk | `codereview` |
+| **Architecture** | Design patterns, maintainability | `$REASONING_MODEL` | `thinkdeep` |
+| **Performance** | Runtime analysis, memory | `$FAST_MODEL` | `debug` |
+
+**Model Tier Placeholders:**
+
+- `$FAST_MODEL` - Fast, cost-effective (e.g., tier-1 models)
+- `$REASONING_MODEL` - Deep analysis capability (e.g., tier-2/3 models)
+- `$SECURITY_MODEL` - Specialized for security review
+
+## Multi-Model Async Verification Pattern
+
+### Pattern 1: Parallel Independent Review
+
+All agents run simultaneously, results aggregated at end.
+
+```bash
+# Launch parallel verification (non-blocking)
+mcp__pal__codereview \
+  step="Launch parallel code review for security focus" \
+  step_number=1 \
+  total_steps=2 \
+  next_step_required=true \
+  findings="Starting security-focused review" \
+  model="$FAST_MODEL" \
+  review_type="security" \
+  review_validation_type="external"
+
+# Simultaneously launch architecture review
+mcp__pal__codereview \
+  step="Launch parallel architecture review" \
+  step_number=1 \
+  total_steps=2 \
+  next_step_required=true \
+  findings="Starting architecture review" \
+  model="$REASONING_MODEL" \
+  review_type="full" \
+  focus_on="design patterns, performance"
+```
+
+### Pattern 2: Multi-Model Consensus (PAL MCP)
+
+Use `consensus` tool for structured debate between models.
+
+```bash
+mcp__pal__consensus \
+  step="Evaluate code changes for merge readiness: [describe changes]" \
+  step_number=1 \
+  total_steps=4 \
+  next_step_required=true \
+  findings="Initial analysis: [your assessment]" \
+  models='[
+    {"model": "$REASONING_MODEL", "stance": "for", "stance_prompt": "Argue why this code is ready to merge"},
+    {"model": "$FAST_MODEL", "stance": "against", "stance_prompt": "Identify potential issues and risks"},
+    {"model": "$SECURITY_MODEL", "stance": "neutral", "stance_prompt": "Focus on security implications"}
+  ]'
+```
+
+### Pattern 3: Sequential Deep Analysis
+
+For complex changes requiring deep investigation.
+
+```bash
+# Step 1: Fast initial scan
+mcp__pal__codereview \
+  step="Quick scan for obvious issues" \
+  model="$FAST_MODEL" \
+  review_type="quick" \
+  ...
+
+# Step 2: Deep analysis on flagged areas
+mcp__pal__thinkdeep \
+  step="Deep analysis of flagged components" \
+  model="$REASONING_MODEL" \
+  focus_areas='["architecture", "performance", "security"]' \
+  ...
+
+# Step 3: Pre-commit validation
+mcp__pal__precommit \
+  step="Final validation before commit" \
+  model="$FAST_MODEL" \
+  precommit_type="external" \
+  ...
+```
+
+## PAL MCP Integration
+
+### Available Swarm Tools
+
+| Tool | Purpose | When to Use |
+|------|---------|-------------|
+| `mcp__pal__consensus` | Multi-model debate | Architectural decisions, controversial changes |
+| `mcp__pal__codereview` | Structured code review | Pre-merge validation |
+| `mcp__pal__precommit` | Git change validation | Before every commit |
+| `mcp__pal__debug` | Root cause analysis | Bug investigation |
+| `mcp__pal__thinkdeep` | Complex problem analysis | Architecture, performance issues |
+
+### Consensus Tool for Swarm Decisions
+
+```bash
+# When agents disagree, use consensus to resolve
+mcp__pal__consensus \
+  step="Should we approve this refactoring?" \
+  models='[
+    {"model": "model-a", "stance": "for"},
+    {"model": "model-b", "stance": "against"},
+    {"model": "model-c", "stance": "neutral"}
+  ]' \
+  relevant_files='["/path/to/changed/file.ts"]' \
+  ...
+```
+
+### Pre-commit Swarm Pattern
+
+```bash
+mcp__pal__precommit \
+  step="Validate all staged changes across multiple dimensions" \
+  step_number=1 \
+  total_steps=3 \
+  next_step_required=true \
+  findings="Analyzing git diff for security, quality, and completeness" \
+  model="$FAST_MODEL" \
+  path="/project/root" \
+  include_staged=true \
+  include_unstaged=false \
+  precommit_type="external" \
+  severity_filter="medium"
+```
+
+## Cost Optimization Strategy
+
+### Model Selection by Task Complexity
+
+```
+┌────────────────────────────────────────────────────────────┐
+│                   COST OPTIMIZATION MATRIX                  │
+├────────────────┬─────────────────┬────────────────────────┤
+│ Task Type      │ Model Tier      │ Rationale              │
+├────────────────┼─────────────────┼────────────────────────┤
+│ Quick scan     │ $FAST_MODEL     │ Fast, cheap, good      │
+│ Style check    │ $FAST_MODEL     │ enough for patterns    │
+│ Test coverage  │ $FAST_MODEL     │                        │
+├────────────────┼─────────────────┼────────────────────────┤
+│ Security audit │ $SECURITY_MODEL │ Specialized knowledge  │
+│ CVE checking   │ + Snyk tooling  │ + deterministic scan   │
+├────────────────┼─────────────────┼────────────────────────┤
+│ Architecture   │ $REASONING_MODEL│ Deep analysis needed   │
+│ Complex bugs   │                 │ for nuanced decisions  │
+│ Trade-offs     │                 │                        │
+└────────────────┴─────────────────┴────────────────────────┘
+```
+
+### Tiered Verification Strategy
+
+1. **Tier 1 - Fast Gate** (blocks 70% of issues)
+   - Model: `$FAST_MODEL`
+   - Time: ~30 seconds
+   - Cost: Low
+   - Checks: Lint, types, basic patterns
+
+2. **Tier 2 - Security Gate** (catches vulnerabilities)
+   - Model: `$FAST_MODEL` + Snyk
+   - Time: ~2 minutes
+   - Cost: Medium
+   - Checks: CVEs, secrets, OWASP compliance
+
+3. **Tier 3 - Deep Analysis** (quality assurance)
+   - Model: `$REASONING_MODEL`
+   - Time: ~5 minutes
+   - Cost: Higher
+   - Checks: Architecture, performance, maintainability
+
+### Skip Rules (Cost Savings)
+
+| Change Type | Skip Tier 3? | Rationale |
+|-------------|--------------|-----------|
+| Docs only | Yes | No code impact |
+| Config change | Maybe | Depends on scope |
+| Test-only | Yes | Low risk |
+| New feature | No | Full review needed |
+| Security fix | No | Critical path |
+| Hotfix | No | High impact |
 
 ## Implementation Flow
 
-### Step 1: Trigger Verification (Before PR)
+### Step 1: Trigger Swarm Verification
 
 ```bash
 # When code is ready for review:
 /review
 
-# Swarm runs:
-# 1. Snyk code scan (security)
-# 2. Architecture analysis (Opus)
-# 3. Your test/coverage check
+# Or manually trigger swarm:
+# 1. Snyk scan (security agent)
+# 2. PAL codereview (architecture agent)
+# 3. Local validation (coder agent)
 ```
 
-### Step 2: Each Agent Reviews
+### Step 2: Parallel Agent Execution
 
-**Coder Checklist**:
+```
+Time ─────────────────────────────────────────────────▶
+
+Agent 1: ████████░░░░░░░░░ Security Scan (Snyk)
+Agent 2: ████████████░░░░░ Architecture Review (PAL)
+Agent 3: ████░░░░░░░░░░░░░ Code Quality (Fast)
+Agent 4: ██████░░░░░░░░░░░ Performance Check (Fast)
+
+                        ▼ Sync Point ▼
+                   ┌─────────────────┐
+                   │ Aggregate Results│
+                   │ Build Consensus  │
+                   └────────┬────────┘
+                            ▼
+                   ┌─────────────────┐
+                   │ Final Decision  │
+                   └─────────────────┘
+```
+
+### Step 3: Agent Checklists
+
+**Coder Agent** (`$FAST_MODEL`):
 
 - [ ] Tests passing (unit + integration)
-- [ ] Test coverage > 80%
-- [ ] ESLint passing
+- [ ] Test coverage >= threshold
+- [ ] Lint rules passing
 - [ ] Code style consistent
-- [ ] Comments clear
+- [ ] Comments clear and accurate
 
-**Security Agent (Snyk)**:
+**Security Agent** (`$SECURITY_MODEL` + Snyk):
 
 - [ ] No high/critical vulnerabilities
 - [ ] No dependency issues
 - [ ] OWASP Top 10 compliance
-- [ ] Secrets not committed
+- [ ] No secrets committed
+- [ ] Input validation present
 
-**Architecture Agent (Opus)**:
+**Architecture Agent** (`$REASONING_MODEL`):
 
 - [ ] Design consistent with project patterns
-- [ ] Performance acceptable
-- [ ] No technical debt introduced
-- [ ] Maintainability high
+- [ ] Performance implications acceptable
+- [ ] No unnecessary technical debt
+- [ ] Maintainability preserved
+- [ ] Proper abstraction levels
 
-### Step 3: Approval & Merge
+**Performance Agent** (`$FAST_MODEL`):
 
-- All 3 agents must approve
-- Auto-create bug beads for issues
-- Merge only when all pass
+- [ ] No obvious O(n²) or worse algorithms
+- [ ] Memory usage acceptable
+- [ ] No blocking operations in hot paths
+- [ ] Caching strategy appropriate
 
-## Time Savings
-
-| Process | Old Way | With Swarm | Savings |
-|---------|---------|-----------|---------|
-| PR review cycle | 3-4 iterations (2+ hours) | 1 iteration (15 min) | ~1.75 hours |
-| Bug escape rate | 10% pre-production bugs | 2% | 80% fewer bugs |
-| Security issues | 5 per release | <1 per release | ~4 issues prevented |
-
----
-
-## Integration with /review Command
+### Step 4: Consensus & Merge
 
 ```bash
+# All agents must approve
+# If consensus reached:
+✅ APPROVED → Proceed to merge
+
+# If disagreement:
+❌ BLOCKED → Run consensus resolution
+mcp__pal__consensus ...
+
+# Auto-create bug beads for issues found
+bd create --title="[Swarm Finding] Issue description" --type=bug
+```
+
+## Time & Quality Metrics
+
+| Metric | Traditional | With Swarm | Improvement |
+|--------|-------------|-----------|-------------|
+| PR review cycle | 3-4 iterations | 1 iteration | 75% faster |
+| Time to merge | 2+ hours | 15-20 min | ~85% reduction |
+| Bug escape rate | 10% | 2% | 80% fewer bugs |
+| Security issues | 5/release | <1/release | 80% reduction |
+| Model cost | N/A | Optimized | Tiered savings |
+
+## Integration Commands
+
+```bash
+# Full swarm review
 /review
 
-# Executes:
-# 1. Reads git diff
-# 2. Runs Snyk scan (security agent)
-# 3. Opus analysis (architecture agent)
-# 4. Your verification (coder agent)
-# 5. Creates bug beads for findings
-# 6. Posts to GitLab MR (if in workflow)
+# Quick swarm (Tier 1 only)
+/review --quick
+
+# Security-focused swarm
+/review --security
+
+# Architecture-focused swarm (uses $REASONING_MODEL)
+/review --deep
+```
+
+## Async Workflow Example
+
+```bash
+# 1. Developer pushes code
+git push origin feature/my-feature
+
+# 2. CI triggers swarm (parallel)
+- job: security_scan
+  script: snyk test
+- job: architecture_review
+  script: pal codereview --model=$REASONING_MODEL
+- job: quality_check
+  script: pal codereview --model=$FAST_MODEL --quick
+
+# 3. Results aggregated
+- artifact: swarm-results.json
+
+# 4. Consensus check
+- job: consensus_gate
+  script: pal consensus --from swarm-results.json
+
+# 5. Merge decision
+- job: auto_merge
+  when: consensus_approved
 ```
 
 ---
 
-**Enforce this rule**: All PRs must pass verification swarm before merge.
+**Enforce this rule**: All PRs must pass multi-model verification swarm before merge. Use cost-appropriate model tiers for each verification stage.
