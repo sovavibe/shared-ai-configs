@@ -101,6 +101,45 @@ While rules share the same content, some features are IDE-specific:
 
 The generator automatically updates `.gitignore` with appropriate entries.
 
+### 6. Secrets Management
+
+**Principle:** Secrets never go in config files. Use environment variables.
+
+```yaml
+# .ai-project.yaml (TRACKED - no secrets!)
+services:
+  mcp:
+    figma:
+      enabled: true    # Just enable/disable, no keys
+    snyk:
+      enabled: true
+```
+
+```bash
+# Environment variables (user's shell or .env.local)
+export FIGMA_API_KEY="your-key"
+export SNYK_TOKEN="your-token"
+```
+
+MCP templates reference env vars:
+```json
+{
+  "env": {
+    "FIGMA_API_KEY": "${FIGMA_API_KEY}"
+  }
+}
+```
+
+**Required env vars by service:**
+
+| Service | Environment Variable |
+|---------|---------------------|
+| Figma | `FIGMA_API_KEY` |
+| Snyk | `SNYK_TOKEN` (optional, uses CLI auth) |
+| Context7 | None (uses Upstash free tier) |
+
+Use `npx shared-ai-configs doctor` to verify required env vars are set.
+
 ## System Architecture
 
 ```
