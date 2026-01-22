@@ -66,11 +66,17 @@ npm run test -- --run
 
 ## Adding Inline Comments
 
-Use MCP for inline comments on specific lines:
+Use shell scripts for inline comments on specific lines:
 
 ```bash
-# Via glab CLI
-glab mr comment <MR> --message "Comment text" --line <LINE> --file <PATH>
+# Via glab CLI wrapper scripts (scripts/gitlab-cli/)
+./scripts/gitlab-cli/mr-inline-comment.sh <MR> \
+  --file <PATH> --line <LINE> --side new \
+  -m "Comment text"
+
+# Or use glab api directly
+glab api -X POST "projects/:fullpath/merge_requests/<MR>/discussions" \
+  --input - <<< '{"body": "Comment", "position": {...}}'
 ```
 
 ## Creating Tasks from Review

@@ -7,46 +7,59 @@ Get unresolved comments from MR #{{mr}}:
 ## Usage
 
 ```bash
-# All unresolved (default)
-npm run gitlab:mr:get-unresolved -- --mr {{mr}}
+# All discussions (with discussion_id for replies)
+./scripts/gitlab-cli/mr-discussions.sh {{mr}}
 
-# Only inline comments (DiffNote)
-npm run gitlab:mr:get-unresolved -- --mr {{mr}} --inline-only
+# Only unresolved discussions
+./scripts/gitlab-cli/mr-discussions.sh {{mr}} --unresolved
 
-# All comments (ignore filters)
-npm run gitlab:mr:get-unresolved -- --mr {{mr}} --all
+# All notes (without discussion_id)
+./scripts/gitlab-cli/mr-notes.sh {{mr}}
+
+# Using glab api directly
+glab api "projects/:fullpath/merge_requests/{{mr}}/discussions"
 ```
-
-## Options
-
-- `-m, --mr` - MR number (IID) [required]
-- `-o, --open-only` - Show only unresolved comments [default: true]
-- `-i, --inline-only` - Show only inline comments (DiffNote) [default: true]
-- `-a, --all` - Show all comments (ignore filters) [default: false]
 
 ## Output
 
-JSON array of notes (NOT wrapped in object):
+JSON array of discussions:
 
 ```json
 [
   {
-    "id": 123,
-    "type": "DiffNote",
-    "body": "Comment text",
-    "position": {
-      "new_path": "src/app.tsx",
-      "new_line": 42
-    },
-    "author": { "username": "user" },
-    "resolvable": true,
-    "resolved": false
+    "id": "abc123def",
+    "notes": [
+      {
+        "id": 123,
+        "type": "DiffNote",
+        "body": "Comment text",
+        "position": {
+          "new_path": "src/app.tsx",
+          "new_line": 42
+        },
+        "author": { "username": "user" },
+        "resolvable": true,
+        "resolved": false
+      }
+    ]
   }
 ]
 ```
 
-> **NOTE**: As of 2026-01-19, this script uses Discussions API and DOES return `discussion_id`.
-> You can directly use the `discussion_id` field for replies with `reply-to-thread.ts`.
+> **NOTE**: Use `discussion_id` (e.g., "abc123def") for replies with mr-reply.sh script.
+
+## jq Examples
+
+```bash
+# Get unresolved discussion IDs
+./scripts/gitlab-cli/mr-discussions.sh {{mr}} --unresolved | jq -r '.[].id'
+
+# Get file paths with unresolved comments
+./scripts/gitlab-cli/mr-discussions.sh {{mr}} --unresolved | jq -r '.[].notes[0].position.new_path'
+
+# Count unresolved discussions
+./scripts/gitlab-cli/mr-discussions.sh {{mr}} --unresolved | jq 'length'
+```
 
 ## Follow
 

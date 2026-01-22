@@ -8,6 +8,22 @@ description: 'Process GitLab MR comments: structure → research → implement �
 /gitlab-process-comments --mr xx
 ```
 
+## Integration Mode
+
+**Check `.ai-project.yaml` for Jira integration mode:**
+
+```yaml
+services:
+  task_tracking:
+    type: 'jira'
+    integration_mode: 'cli'  # 'mcp' or 'cli'
+```
+
+| Mode | Jira Commands | Server |
+|------|---------------|--------|
+| `mcp` | `jira_*` MCP tools | `mcp-atlassian` |
+| `cli` | `jira issue ...` Bash | N/A |
+
 ## Workflow
 
 ```mermaid
@@ -84,24 +100,27 @@ After EACH step:
 ### Step 0: Context Detection
 
 ```bash
-# 1. GitLab - get unresolved threads (MUST use --open-only flag!)
+# 1. GitLab - get unresolved threads (MUST use --unresolved flag!)
 # IMPORTANT: Use Notes API (not Discussions) for real-time data
-npm run gitlab:mr:get-unresolved -- --mr xx --open-only
+./scripts/gitlab-cli/mr-discussions.sh xx --unresolved
 
 # 2. GitLab - get general comments
-npm run gitlab:mr:get-all-notes -- --mr xx
+./scripts/gitlab-cli/mr-notes.sh xx
 
 # 3. Beads - find existing Epic
 bd list --json | jq '.[] | select(.description | contains("Review MR-xx"))'
 ```
 
 ```typescript
-// 4. Jira - find existing tasks for MR
+// 4. Jira - find existing tasks for MR (use appropriate mode)
+// MCP Mode:
 CallMcpTool({
-  server: 'user-MCP_DOCKER',
+  server: 'mcp-atlassian',
   toolName: 'jira_search',
   arguments: { jql: 'project = <JIRA_PROJECT> AND labels = mr-xx AND status != Done' },
 })
+// CLI Mode:
+// jira issue list --raw -q "project = <JIRA_PROJECT> AND labels = mr-xx AND status != Done"
 
 // 5. Hindsight - patterns
 CallMcpTool({
@@ -120,7 +139,7 @@ CallMcpTool({
 **Check for general comments (type: null, resolvable: false):**
 
 ```bash
-npm run gitlab:mr:get-all-notes -- --mr xx
+./scripts/gitlab-cli/mr-notes.sh xx
 # Filter: type: null, resolvable: false
 ```
 
@@ -135,10 +154,14 @@ npm run gitlab:mr:get-all-notes -- --mr xx
 
 ### Step 1: Create Jira Task + Beads Epic
 
+**Create Jira Task (if not exists):**
+
+<details>
+<summary><b>MCP Mode</b></summary>
+
 ```typescript
-// Create Jira Task (if not exists)
 CallMcpTool({
-  server: 'user-MCP_DOCKER',
+  server: 'mcp-atlassian',
   toolName: 'jira_create_issue',
   arguments: {
     project_key: '<JIRA_PROJECT>',
@@ -148,6 +171,20 @@ CallMcpTool({
   },
 })
 ```
+
+</details>
+
+<details>
+<summary><b>CLI Mode</b></summary>
+
+```bash
+jira issue create --no-input \
+  -t "Task" \
+  -s "[MR-xx] Code Review Round N" \
+  -l "mr-xx" -l "code-review" -l "round-N"
+```
+
+</details>
 
 ```bash
 # Create Beads Epic IMMEDIATELY
@@ -187,7 +224,7 @@ bd update $TASK --description="## Задача
 
 ## Before Reply
 ⚠️ VALIDATE Discussion ID before GitLab reply!
-npm run gitlab:mr:get-unresolved -- --mr xx | grep [id]
+./scripts/gitlab-cli/mr-discussions.sh xx | grep [id]
 
 ## Acceptance Criteria
 - TypeScript компилируется
@@ -232,11 +269,13 @@ CallMcpTool({
 })
 
 // 3. Jira - контекст (если нужно)
+// MCP Mode:
 CallMcpTool({
-  server: 'user-MCP_DOCKER',
+  server: 'mcp-atlassian',
   toolName: 'jira_get_issue',
   arguments: { issue_key: '{PREFIX}-XXX' },
 })
+// CLI Mode: jira issue view {PREFIX}-XXX --raw
 
 // 4. Context7 - документация (если нужно)
 CallMcpTool({
@@ -294,7 +333,7 @@ npm run test -- --run
 
 ```bash
 # Fetch current unresolved discussions
-npm run gitlab:mr:get-unresolved -- --mr xx
+./scripts/gitlab-cli/mr-discussions.sh xx
 
 # Compare Discussion ID from Beads task with current list
 # If NOT found → discussion was resolved or ID changed
@@ -318,7 +357,7 @@ npm run gitlab:mr:get-unresolved -- --mr xx
 ### Step 7: Reply to GitLab Thread
 
 ```bash
-npm run gitlab:mr:reply -- --mr xx --discussion-id [ID] --body "✅ Fixed: [description]
+./scripts/gitlab-cli/mr-reply.sh xx  "✅ Fixed: [description]
 
 Files: file1.ts, file2.ts
 Verified: ✅ lint ✅ build ✅ tests"
@@ -328,9 +367,12 @@ Verified: ✅ lint ✅ build ✅ tests"
 
 ### Step 8: Comment to Jira (Detailed Report)
 
+<details>
+<summary><b>MCP Mode</b></summary>
+
 ```typescript
 CallMcpTool({
-  server: 'user-MCP_DOCKER',
+  server: 'mcp-atlassian',
   toolName: 'jira_add_comment',
   arguments: {
     issue_key: '{PREFIX}-XXX',
@@ -351,6 +393,30 @@ CallMcpTool({
   },
 })
 ```
+
+</details>
+
+<details>
+<summary><b>CLI Mode</b></summary>
+
+```bash
+jira issue comment add {PREFIX}-XXX --no-input -b "## Что сделано
+[Детальное описание]
+
+### Анализ проблемы
+[Почему возникла]
+
+### Реализованное решение
+[Подход, почему выбран]
+
+### Изменённые файлы
+- file1.ts: [что и почему]
+
+### Ретроспектива
+[Lessons learned]"
+```
+
+</details>
 
 **⏸️ STOP: "Комментарий добавлен. Продолжить с сохранением?"**
 
@@ -391,7 +457,7 @@ bd close <task-id> --reason="Fixed: [description]"
 ### Step 1: Final Report to GitLab MR
 
 ```bash
-npm run gitlab:mr:add-comment -- --mr xx --body "✅ **Code Review Round N - Complete**
+./scripts/gitlab-cli/mr-comment.sh xx --body "✅ **Code Review Round N - Complete**
 
 ## Обработанные комментарии
 
@@ -413,9 +479,12 @@ npm run gitlab:mr:add-comment -- --mr xx --body "✅ **Code Review Round N - Com
 
 ### Step 2: Final Report to Jira Task
 
+<details>
+<summary><b>MCP Mode</b></summary>
+
 ```typescript
 CallMcpTool({
-  server: 'user-MCP_DOCKER',
+  server: 'mcp-atlassian',
   toolName: 'jira_add_comment',
   arguments: {
     issue_key: '{PREFIX}-XXX',
@@ -435,6 +504,28 @@ CallMcpTool({
 })
 ```
 
+</details>
+
+<details>
+<summary><b>CLI Mode</b></summary>
+
+```bash
+jira issue comment add {PREFIX}-XXX --no-input -b "## Итог Round N
+
+### Выполненные задачи
+- {PREFIX}-XXX: [описание] ✅
+- {PREFIX}-XXX: [описание] ✅
+
+### Ключевые изменения
+[Общее описание]
+
+### Lessons Learned
+- [Паттерн 1]
+- [Паттерн 2]"
+```
+
+</details>
+
 **⏸️ STOP: "Отчёт в Jira добавлен. Продолжить с закрытием?"**
 
 ### Step 3: Close Round
@@ -448,14 +539,29 @@ bd sync
 git push
 ```
 
+**Close Jira Task:**
+
+<details>
+<summary><b>MCP Mode</b></summary>
+
 ```typescript
-// 3. Close Jira Task
 CallMcpTool({
-  server: 'user-MCP_DOCKER',
+  server: 'mcp-atlassian',
   toolName: 'jira_transition_issue',
-  arguments: { issue_key: '{PREFIX}-XXX', transition_id: '71' },
+  arguments: { issue_key: '{PREFIX}-XXX', transition_name: 'Done' },
 })
 ```
+
+</details>
+
+<details>
+<summary><b>CLI Mode</b></summary>
+
+```bash
+jira issue move {PREFIX}-XXX "Done"
+```
+
+</details>
 
 **✅ Round N completed.**
 
@@ -464,11 +570,11 @@ CallMcpTool({
 ## GitLab Scripts
 
 ```bash
-# CRITICAL: Always use --open-only flag for unresolved threads!
-npm run gitlab:mr:get-unresolved -- --mr xx --open-only  # Unresolved threads (Notes API)
-npm run gitlab:mr:get-all-notes -- --mr xx               # All notes
-npm run gitlab:mr:reply -- --mr xx --discussion-id [ID] --body "..."
-npm run gitlab:mr:add-comment -- --mr xx --body "..."
+# CRITICAL: Always use --unresolved flag for unresolved threads!
+./scripts/gitlab-cli/mr-discussions.sh xx --unresolved  # Unresolved threads (Notes API)
+./scripts/gitlab-cli/mr-notes.sh xx               # All notes
+./scripts/gitlab-cli/mr-reply.sh xx  "..."
+./scripts/gitlab-cli/mr-comment.sh xx --body "..."
 ```
 
 **Why Notes API?**

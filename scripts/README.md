@@ -6,10 +6,18 @@ Scripts for AI-assisted development workflows. These scripts can be used by AI a
 
 ```
 scripts/
-├── gitlab/           # GitLab MR automation (for old GitLab without MCP)
-│   ├── core/                 # API client, MR operations
-│   ├── comments/             # Comment management
-│   └── add-mr-comment.ts     # Add comment to MR
+├── gitlab-cli/       # GitLab MR automation (using glab CLI)
+│   ├── mr-view.sh            # View MR details
+│   ├── mr-diff.sh            # Get MR diff
+│   ├── mr-notes.sh           # Get all notes
+│   ├── mr-discussions.sh     # Get discussions (with IDs)
+│   ├── mr-comment.sh         # Add MR comment
+│   ├── mr-reply.sh           # Reply to discussion
+│   ├── mr-inline-comment.sh  # Add inline comment
+│   ├── mr-update.sh          # Update MR
+│   └── README.md             # Detailed usage guide
+├── cursor/           # Cursor IDE automation
+│   └── metrics/              # Metrics collection
 ├── mcp-doctor/       # MCP server diagnostics
 │   ├── checks/               # Individual health checks
 │   ├── utils/                # Logging utilities
@@ -17,23 +25,33 @@ scripts/
 └── shared/           # Shared utilities
     ├── logger.ts             # Logging with colors
     ├── config.ts             # Configuration loader
-    ├── errors.ts             # Error handling
-    └── gitlab-client.ts      # GitLab API client
+    └── errors.ts             # Error handling
 ```
 
 ## Usage
 
-### GitLab Scripts (when MCP not available)
+### GitLab Scripts (using glab CLI)
 
 ```bash
-# Get unresolved MR comments
-npx tsx scripts/gitlab/comments/get-unresolved.ts --mr 123
+# View MR details
+./scripts/gitlab-cli/mr-view.sh 321 --json
 
-# Reply to a thread
-npx tsx scripts/gitlab/comments/reply-to-thread.ts --mr 123 --thread abc --message "Fixed"
+# Get MR diff
+./scripts/gitlab-cli/mr-diff.sh 321
 
-# Update MR description
-npx tsx scripts/gitlab/core/update-mr-description.ts --mr 123 --description "New desc"
+# Get unresolved discussions
+./scripts/gitlab-cli/mr-discussions.sh 321 --unresolved
+
+# Reply to discussion
+./scripts/gitlab-cli/mr-reply.sh 321 "discussion-id" -m "Fixed!"
+
+# Add inline comment
+./scripts/gitlab-cli/mr-inline-comment.sh 321 -f src/app.tsx -l 42 -s new -m "Consider..."
+
+# Or use glab directly
+glab mr view 321 --output json
+glab mr diff 321
+glab mr note 321 -m "Comment"
 ```
 
 ### MCP Doctor
@@ -43,14 +61,29 @@ npx tsx scripts/gitlab/core/update-mr-description.ts --mr 123 --description "New
 npx tsx scripts/mcp-doctor/summary.ts
 ```
 
+## Prerequisites
+
+- `glab` CLI installed (`brew install glab`)
+- `jq` for JSON processing (`brew install jq`)
+- Authenticated with `glab auth login`
+
 ## Environment Variables
 
-Scripts read from `.env.aiproject`:
+For scripts that need explicit repo config:
 
-- `GITLAB_TOKEN` - GitLab personal access token
-- `GITLAB_URL` - GitLab instance URL
-- `GITLAB_PROJECT_ID` - Project ID (numeric)
+```bash
+export GITLAB_REPO="group/project"        # or full URL
+export GITLAB_HOST="gitlab.example.com"   # default: gitlab.com
+```
 
-## Migration Note
+Scripts auto-detect repository from git remote if not set.
 
-When GitLab MCP becomes available for your GitLab version, prefer using MCP tools over these scripts. The scripts are provided for backwards compatibility with older GitLab instances.
+## Migration from TypeScript Scripts
+
+The old TypeScript scripts using GitBeaker API have been replaced with shell scripts using `glab` CLI:
+
+| Old (TypeScript) | New (Shell) |
+|-----------------|-------------|
+| `npx tsx scripts/gitlab/core/get-mr.ts --mr 321` | `./scripts/gitlab-cli/mr-view.sh 321 --json` |
+| `npx tsx scripts/gitlab/comments/get-unresolved.ts --mr 321` | `./scripts/gitlab-cli/mr-discussions.sh 321 --unresolved` |
+| `npx tsx scripts/gitlab/comments/reply-to-thread.ts ...` | `./scripts/gitlab-cli/mr-reply.sh ...` |

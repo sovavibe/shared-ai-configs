@@ -7,31 +7,31 @@ Reply to discussion in MR #{{mr}}:
 ## Usage
 
 ```bash
-npm run gitlab:mr:reply \
-  --mr {{mr}} \
-  --discussion-id <DISCUSSION_ID> \
-  --body "Reply text"
+# Using wrapper script
+./scripts/gitlab-cli/mr-reply.sh {{mr}} <DISCUSSION_ID> -m "Reply text"
+
+# Using glab api directly
+glab api -X POST "projects/:fullpath/merge_requests/{{mr}}/discussions/<DISCUSSION_ID>/notes" \
+  -f body="Reply text"
 ```
 
 ## Options
 
-- `-m, --mr` - MR number (IID) [required]
-- `-d, --discussion-id` - Discussion thread ID [required]
-- `-b, --body` - Reply body (use quotes for multi-line) [required]
+- First arg: MR number (IID) [required]
+- Second arg: Discussion thread ID [required]
+- `-m, --message`: Reply body (use quotes for multi-line) [required]
 
 ## Example
 
 ```bash
-npm run gitlab:mr:reply \
-  --mr 321 \
-  --discussion-id "a2d3e4f5g6h" \
-  --body "Thanks for feedback! I'll fix this."
+./scripts/gitlab-cli/mr-reply.sh 321 "a2d3e4f5g6h" -m "Thanks for feedback! Fixed in commit abc123."
 ```
 
 ## Finding Discussion ID
 
 ```bash
-npm run gitlab:mr:get-unresolved -- --mr {{mr}}
+# Get all unresolved discussion IDs
+./scripts/gitlab-cli/mr-discussions.sh {{mr}} --unresolved | jq -r '.[].id'
 ```
 
 ## Follow

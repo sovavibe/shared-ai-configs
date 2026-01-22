@@ -7,7 +7,11 @@ View detailed information about MR #{{mr}}:
 ## Usage
 
 ```bash
-npm run gitlab:mr:view -- --mr {{mr}}
+# Using glab CLI directly
+glab mr view {{mr}} --output json
+
+# Or using wrapper script
+./scripts/gitlab-cli/mr-view.sh {{mr}} --json
 ```
 
 ## Output
@@ -30,13 +34,16 @@ MR details as JSON:
 
 ```bash
 # Get title
-npm run gitlab:mr:view -- --mr 321 | jq -r '.title'
+glab mr view {{mr}} --output json | jq -r '.title'
 
 # Get author
-npm run gitlab:mr:view -- --mr 321 | jq '.author'
+glab mr view {{mr}} --output json | jq '.author'
 
 # Get SHA hashes
-npm run gitlab:mr:view -- --mr 321 | jq '.diff_refs'
+glab mr view {{mr}} --output json | jq '.diff_refs'
+
+# Get MR diff
+glab mr diff {{mr}}
 ```
 
 ## Follow

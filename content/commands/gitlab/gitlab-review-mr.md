@@ -121,18 +121,33 @@ CallMcpTool({
 
 #### 🏛️ PILLAR 3: Jira (Team Context - MR Mode Only)
 
+**Check `.ai-project.yaml` for `integration_mode`: 'mcp' or 'cli'**
+
+<details>
+<summary><b>MCP Mode</b></summary>
+
 ```typescript
-// MR Mode: Check existing Jira tasks for this MR
 CallMcpTool({
-  server: 'user-MCP_DOCKER',
+  server: 'mcp-atlassian',
   toolName: 'jira_search',
   arguments: {
     jql: 'project = <JIRA_PROJECT> AND labels = mr-<N> AND status != Done',
   },
 })
+```
+
+</details>
+
+<details>
+<summary><b>CLI Mode</b></summary>
+
+```bash
+jira issue list --raw -q "project = <JIRA_PROJECT> AND labels = mr-<N> AND status != Done"
+```
+
+</details>
 
 // Local Mode: Skip Jira (no tracking for local reviews)
-```
 
 #### 🏛️ PILLAR 4: Context7 (Library Documentation - On Demand)
 
@@ -153,7 +168,7 @@ CallMcpTool({
 
 ```bash
 # Verify MR exists
-npm run gitlab:mr:get-info -- --mr <ID>
+glab mr view <ID>
 
 # Expected: MR details (ID, title, branches, SHAs)
 # Error: "404 Not Found" → Invalid MR ID
@@ -179,10 +194,10 @@ git rev-parse --verify <BASE>
 
 ```bash
 # Get MR info
-npm run gitlab:mr:get-info -- --mr <ID>
+glab mr view <ID>
 
 # Get MR changes (writes to file)
-npm run gitlab:mr:get-changes -- --mr <ID>
+glab mr diff <ID>
 # Output: "Command output has been written to: /tmp/mr-diff-xyz.txt"
 
 # Read diff file
@@ -312,10 +327,14 @@ function OrderPage() {
 
 #### MR Mode (Jira + Beads)
 
+**1. Create Jira Task (check `integration_mode` in `.ai-project.yaml`):**
+
+<details>
+<summary><b>MCP Mode</b></summary>
+
 ```typescript
-// 1. Create Jira Task
 const jiraTask = CallMcpTool({
-  server: 'user-MCP_DOCKER',
+  server: 'mcp-atlassian',
   toolName: 'jira_create_issue',
   arguments: {
     project_key: '<JIRA_PROJECT>',
@@ -335,13 +354,41 @@ const jiraTask = CallMcpTool({
 
 ## Solution
 [Proposed solution]`,
-    additional_fields: {
-      labels: ['code-review', 'mr-<N>'],
-      priority: { name: 'High' },
-    },
+    labels: ['code-review', 'mr-<N>'],
+    priority: 'High',
   },
 })
 ```
+
+</details>
+
+<details>
+<summary><b>CLI Mode</b></summary>
+
+```bash
+jira issue create --no-input \
+  -t "Task" \
+  -s "[MR-<N>] [Category] [Issue Title]" \
+  -b "## Problem
+[Description of issue found in code review]
+
+## File
+[File path]:[line number]
+
+## Category
+[Type Safety/React/Code Quality/Security/Architecture/Performance]
+
+## Priority
+[Critical/Important]
+
+## Solution
+[Proposed solution]" \
+  -l "code-review" -l "mr-<N>" \
+  -y "High"
+# Returns: {PREFIX}-XXX
+```
+
+</details>
 
 ```bash
 # 2. Create Beads Epic IMMEDIATELY with priority based on ranking
@@ -428,7 +475,7 @@ TASK=$(bd create "[atomic action]" --deps epic:$EPIC -p 1 --json | jq -r '.id')
 
 ```bash
 # Fetch current unresolved discussions
-npm run gitlab:mr:get-unresolved -- --mr <N> --open-only > /tmp/current-discussions.json
+./scripts/gitlab-cli/mr-discussions.sh <N> --open-only > /tmp/current-discussions.json
 
 # Extract valid Discussion IDs
 jq -r '.[].discussion_id' /tmp/current-discussions.json | sort -u > /tmp/valid-ids.txt
@@ -457,7 +504,7 @@ fi
 **For Critical/Important issues:**
 
 ```bash
-npm run gitlab:inline-comment \
+./scripts/gitlab-cli/mr-inline-comment.sh \
   --mr <MR_ID> \
   --file <FILE_PATH> \
   --line <LINE_NUMBER> \
@@ -474,7 +521,7 @@ npm run gitlab:inline-comment \
 **Then create MR summary:**
 
 ```bash
-npm run gitlab:mr:add-comment -- --mr <MR_ID> --body "## 🎯 Code Review Summary
+./scripts/gitlab-cli/mr-comment.sh <MR_ID> --body "## 🎯 Code Review Summary
 
 **Overall Assessment**: [EXCELLENT/GOOD/NEEDS WORK] [emoji]
 
@@ -654,7 +701,7 @@ npx vite-node /tmp/get-discussions.ts
 
 ```bash
 # Reply format: commit hash + what was fixed
-npm run gitlab:mr:reply -- --mr <ID> \
+./scripts/gitlab-cli/mr-reply.sh <ID> \
   --discussion-id "<DISCUSSION_ID>" \
   --body "✅ **Исправлено** в коммите \`<COMMIT_HASH>\`
 
@@ -701,12 +748,12 @@ npm run lint:strict -- --all             # Strict lint ALL files (careful!)
 npm run lint:strict -- --fix             # Auto-fix where possible
 
 # MR Mode: GitLab Operations
-npm run gitlab:mr:get-info -- --mr <ID>                    # Get MR details
-npm run gitlab:mr:get-changes -- --mr <ID>                 # Get MR diff
-npm run gitlab:inline-comment -- --mr <ID> --file <FILE> --line <N> --side new --body "..."
-npm run gitlab:mr:reply -- --mr <ID> --discussion-id <ID> --body "..."
-npm run gitlab:mr:add-comment -- --mr <ID> --body "..."
-npm run gitlab:mr:get-unresolved -- --mr <ID> --open-only  # Validate Discussion IDs
+glab mr view <ID>                    # Get MR details
+glab mr diff <ID>                 # Get MR diff
+./scripts/gitlab-cli/mr-inline-comment.sh -- --mr <ID> --file <FILE> --line <N> --side new --body "..."
+./scripts/gitlab-cli/mr-reply.sh <ID> --discussion-id <ID> --body "..."
+./scripts/gitlab-cli/mr-comment.sh <ID> --body "..."
+./scripts/gitlab-cli/mr-discussions.sh <ID> --open-only  # Validate Discussion IDs
 
 # Local Mode: Git Operations
 git diff <BASE> --name-only                                # List changed files
@@ -860,7 +907,7 @@ const userData: any = fetchUserData()
 **Step 5: Create Inline Comment + Summary**
 
 ```bash
-npm run gitlab:inline-comment \
+./scripts/gitlab-cli/mr-inline-comment.sh \
   --mr 321 \
   --file src/widgets/UserProfile.tsx \
   --line 23 \

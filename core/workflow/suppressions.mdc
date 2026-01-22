@@ -71,9 +71,9 @@ alwaysApply: false
 ```javascript
 // ✅ GOOD: Isolated to specific directory with complete format
 {
-  files: ['scripts/gitlab/**/*.ts'],
+  files: ['scripts/mcp-doctor/**/*.ts'],
   rules: {
-    '@typescript-eslint/no-explicit-any': 'off', // WHY: GitBeaker types are poorly resolved. TODO({PREFIX}-345): Create type definitions
+    '@typescript-eslint/no-explicit-any': 'off', // WHY: MCP server types are dynamic. TODO({PREFIX}-345): Create type definitions
     '@typescript-eslint/no-unsafe-assignment': 'off', // WHY: External library types incorrect. TODO({PREFIX}-345): Fix types
   }
 }

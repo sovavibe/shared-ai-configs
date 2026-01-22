@@ -30,7 +30,7 @@ Generate professional, comprehensive MR description by analyzing code changes, f
 **Action**: Fetch MR details
 
 ```bash
-npm run gitlab:mr:get-info -- --mr <MR_ID>
+glab mr view <MR_ID> --output json
 ```
 
 **Check**:
@@ -49,7 +49,7 @@ npm run gitlab:mr:get-info -- --mr <MR_ID>
 **Action**: Fetch MR file changes and diffs
 
 ```bash
-npm run gitlab:mr:get-changes -- --mr <MR_ID>
+glab mr diff <MR_ID>
 ```
 
 **Check**:
@@ -231,7 +231,7 @@ CallMcpTool({
 **Using script** (create this script next):
 
 ```bash
-npm run gitlab:mr:update-description -- --mr <MR_ID> --body "<GENERATED_DESCRIPTION>"
+glab mr update <MR_ID> --description "<GENERATED_DESCRIPTION>"
 ```
 
 **Alternative**: Manually update description in GitLab UI
