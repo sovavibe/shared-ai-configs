@@ -122,6 +122,7 @@ export SNYK_TOKEN="your-token"
 ```
 
 MCP templates reference env vars:
+
 ```json
 {
   "env": {
@@ -436,7 +437,6 @@ services:
     hindsight: { enabled: boolean }
     snyk: { enabled: boolean }
     context7: { enabled: boolean }
-    pal: { enabled: boolean }
 
 commands:
   dev: string

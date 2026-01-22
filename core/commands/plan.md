@@ -85,10 +85,11 @@ WebSearch "[PROBLEM] solution React TypeScript"
 
 ### 3.3 Deep Thinking (Optional - for complex tasks)
 
-```
-mcp__pal__thinkdeep for architectural decisions
-mcp__pal__consensus for comparing approaches
-```
+For complex architectural decisions:
+
+- Analyze multiple approaches
+- Document trade-offs
+- Consider project conventions
 
 ---
 
@@ -249,12 +250,10 @@ Key decisions:
 
 ## Quick Reference: Research Tools
 
-| Need            | Tool                | Example                         |
-| --------------- | ------------------- | ------------------------------- |
-| Past decisions  | `hindsight__recall` | "auth implementation decisions" |
-| Project memory  | `allpepper__read`   | architecture.md                 |
-| Library docs    | `Context7`          | React Query mutation patterns   |
-| Best practices  | `WebSearch`         | "React form validation 2025"    |
-| Deep analysis   | `pal__thinkdeep`    | Complex architecture            |
-| Compare options | `pal__consensus`    | Multiple approaches             |
-| Explore code    | `Task(Explore)`     | "How is X implemented?"         |
+| Need           | Tool                | Example                         |
+| -------------- | ------------------- | ------------------------------- |
+| Past decisions | `hindsight__recall` | "auth implementation decisions" |
+| Project memory | `allpepper__read`   | architecture.md                 |
+| Library docs   | `Context7`          | React Query mutation patterns   |
+| Best practices | `WebSearch`         | "React form validation 2025"    |
+| Explore code   | `Task(Explore)`     | "How is X implemented?"         |

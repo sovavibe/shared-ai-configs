@@ -219,16 +219,21 @@
     },
     "rules": {
       "type": "object",
-      "description": "Project-specific rules",
+      "description": "Project-specific rules (non-negotiable constraints)",
       "properties": {
-        "critical": {
+        "never": {
           "type": "array",
-          "description": "Non-negotiable rules that MUST be followed",
+          "description": "Actions that are FORBIDDEN - AI must refuse these",
+          "items": { "type": "string" }
+        },
+        "always": {
+          "type": "array",
+          "description": "Actions that are MANDATORY - AI must always do these",
           "items": { "type": "string" }
         },
         "custom": {
           "type": "array",
-          "description": "Additional project-specific rules",
+          "description": "Additional project-specific guidelines (non-critical)",
           "items": { "type": "string" }
         }
       }

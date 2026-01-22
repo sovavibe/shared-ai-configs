@@ -76,8 +76,6 @@ services:
   mcp:
     hindsight:
       enabled: true
-    pal:
-      enabled: true
     context7:
       enabled: true
 
@@ -110,14 +108,11 @@ languages:
   code: 'English'
 
 # ═══════════════════════════════════════════════════════════════
-# RULES
+# RULES (project-specific only, generic rules are auto-added)
 # ═══════════════════════════════════════════════════════════════
 rules:
   critical:
     - "NEVER edit content in dist/ - it's generated"
-    - 'ALWAYS run `npm run quality` before committing'
-    - 'Use beads (bd) for task tracking'
-    - 'Sync beads before session end: bd sync --flush-only'
 
 # ═══════════════════════════════════════════════════════════════
 # OPTIONS

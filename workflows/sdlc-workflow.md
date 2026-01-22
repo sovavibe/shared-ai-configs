@@ -14,60 +14,6 @@
 
 **Switch model in-session:** `/model sonnet` or `/model haiku`
 
-## PAL Tools Usage Guidelines
-
-**IMPORTANT:** Deep analytical investigations should use **Opus directly**, not external models via PAL.
-
-When using PAL MCP tools, understand their limitations:
-
-### 1. PAL Tool Scope
-
-**Current setup (thinkdeep via GLM):**
-
-- Suitable for: Implementation assistance, additional perspectives, routine tasks
-- **NOT for:** Deep analytical investigations, critical architecture decisions
-- Use as: Second opinion or implementation helper
-
-**Deep analysis = Opus (native Claude Code):**
-
-- Architecture decisions
-- Root cause analysis for complex bugs
-- Security vulnerability investigations
-- Performance optimization strategies
-- System design validation
-
-### 2. When to Use PAL Tools
-
-**Use PAL (GLM-4.7 via thinkdeep) for:**
-
-- Implementation guidance on routine features
-- Quick second opinions on code patterns
-- Standard debugging assistance
-- Additional perspective on straightforward issues
-
-**Skip PAL, use Opus directly for:**
-
-- Critical architectural decisions
-- Complex security analysis
-- Deep system investigations
-- Multi-perspective validation of core decisions
-
-### 3. Document Rationale
-
-When invoking PAL tools, briefly note why external model chosen:
-
-**Example:**
-
-```markdown
-Using thinkdeep (GLM-4.7) for implementation guidance on feature X - routine work, useful second opinion.
-```
-
-**When NOT to use PAL:**
-
-```markdown
-Complex architecture decision → Use Opus directly, or Perles orchestration mode with SDLC Architecture Review workflow.
-```
-
 ## Overview
 
 ```mermaid

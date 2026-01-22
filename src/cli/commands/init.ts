@@ -73,8 +73,6 @@ services:
       enabled: false          # Security scanning
     context7:
       enabled: false          # Library documentation
-    pal:
-      enabled: false          # External AI models
     memory_bank:
       enabled: false          # Session findings storage
     figma:

@@ -62,19 +62,6 @@ mcp__MCP_DOCKER__get-library-docs "/tanstack/query" --topic "mutations"
 ```
 <% } %>
 
-<% if (services?.mcp?.pal?.enabled) { %>
-### PAL (External Models)
-
-Access to external AI models for complex tasks.
-
-**Tools:**
-- `mcp__pal__chat` - General chat
-- `mcp__pal__thinkdeep` - Deep analysis
-- `mcp__pal__debug` - Debugging assistance
-- `mcp__pal__codereview` - Code review
-
-**Note:** Use for routine tasks only. Critical decisions should use Opus directly.
-<% } %>
 
 <% if (services?.mcp?.figma?.enabled) { %>
 ### Figma
@@ -117,8 +104,5 @@ Project-specific memory storage.
 <% } %>
 <% if (services?.mcp?.context7?.enabled) { %>
 4. **Context7** → Library docs
-<% } %>
-<% if (services?.mcp?.pal?.enabled) { %>
-5. **PAL** → External models for complex tasks
 <% } %>
 6. **WebSearch** → External info (last resort)

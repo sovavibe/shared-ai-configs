@@ -19,7 +19,7 @@ alwaysApply: true
 
 ## Key Principles
 
-- **Critical thinking** (architecture, analysis, deep review) = **Claude Code** (Opus or PAL tools)
+- **Critical thinking** (architecture, analysis, deep review) = **Claude Code** (Opus)
 - **Implementation** (writing code, tests, iterating) = **Cursor automode**
 - **Planning** (breaking down, TodoWrite) = **Claude Code Sonnet**
 
@@ -65,13 +65,3 @@ test_plan: "docs/TEST-PLAN.md"
 - ✅ Test writing
 - ✅ Code generation
 - ✅ Routine refactoring
-
-### PAL Tools (external models for complex reasoning)
-
-- ✅ Multi-model consensus for architecture decisions
-- ✅ Deep investigation with `thinkdeep`
-- ✅ Code review validation with `codereview`
-- ✅ Complex debugging with `debug`
-- ✅ Pre-commit validation with `precommit`
-
-**Rule:** Use PAL for tasks that benefit from external model perspective or multi-model consensus. Use local Opus for quick decisions where you already have full context.

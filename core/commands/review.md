@@ -90,28 +90,20 @@ For each acceptance criterion in the plan:
 
 ## Phase 3: Deep Analysis (Optional)
 
-### 3.1 Use PAL Code Review
-
-```
-mcp__pal__codereview
-  step="Review implementation of [FEATURE]"
-  relevant_files=["/path/to/file1.ts", "/path/to/file2.ts"]
-  review_type="full"
-```
-
-### 3.2 Security Scan
+### 3.1 Security Scan
 
 ```
 mcp__Snyk__snyk_code_scan path="[PROJECT_PATH]"
 ```
 
-### 3.3 Pre-commit Validation
+### 3.2 Manual Code Review
 
-```
-mcp__pal__precommit
-  step="Validate changes for [FEATURE]"
-  path="[PROJECT_PATH]"
-```
+Review the implementation focusing on:
+
+- Code quality and readability
+- Security vulnerabilities
+- Performance implications
+- Test coverage
 
 ---
 
@@ -314,7 +306,7 @@ Next:
 
 ## When to Use Deep Review
 
-Use PAL/Snyk analysis when:
+Use Snyk analysis when:
 
 - Security-sensitive changes
 - Complex business logic

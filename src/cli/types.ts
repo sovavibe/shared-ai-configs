@@ -128,7 +128,8 @@ export interface OptionsConfig {
 }
 
 export interface RulesConfig {
-  critical?: string[];
+  never?: string[];
+  always?: string[];
   custom?: string[];
 }
 

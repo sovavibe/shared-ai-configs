@@ -75,10 +75,11 @@ WebSearch "[DOMAIN] system design best practices"
 
 ### 3.3 Deep Analysis (for complex decisions)
 
-```
-mcp__pal__thinkdeep step="Analyze architectural options for [FEATURE]"
-mcp__pal__consensus models=["gpt-5", "glm-4.7"] step="Compare approaches"
-```
+For complex architectural decisions:
+
+- Analyze multiple options systematically
+- Document trade-offs for each approach
+- Consider scalability and maintainability
 
 ---
 

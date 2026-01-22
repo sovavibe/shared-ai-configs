@@ -206,8 +206,6 @@ services:
       enabled: true    # Security scanning
     context7:
       enabled: true    # Library docs
-    pal:
-      enabled: true    # External models
     memory_bank:
       enabled: true    # Allpepper memory
     figma:

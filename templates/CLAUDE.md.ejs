@@ -6,22 +6,38 @@
 
 **IMPORTANT:** These rules are MANDATORY and must ALWAYS be followed:
 
-<% if (rules && rules.critical && rules.critical.length > 0) { -%>
-<% rules.critical.forEach((rule, index) => { -%>
-<%= index + 1 %>. **<%= rule.split(' ')[0] %>** <%= rule.substring(rule.indexOf(' ') + 1) %>
-<% }); -%>
-<% } else { -%>
-1. **NEVER** hardcode secrets - ALWAYS use environment variables
-2. **NEVER** skip quality gates - NO `--no-verify` or `HUSKY=0`
-3. **ALWAYS** run `<%= commands.quality_gates %>` before committing
-<% if (services && services.task_tracking && services.task_tracking.type !== 'none') { -%>
-4. **ALWAYS** use <%= services.task_tracking.type %> for task tracking - NEVER markdown TODOs
+<% let ruleNum = 1; -%>
+<%# Auto-generated rules based on config -%>
+<%= ruleNum++ %>. **NEVER** hardcode secrets - use environment variables
+<% if (commands && commands.quality_gates) { -%>
+<%= ruleNum++ %>. **NEVER** skip quality gates (`--no-verify`, `HUSKY=0`)
 <% } -%>
-5. **ALWAYS** search before creating - check codebase, deps, docs first
-6. **ALWAYS** communicate in <%= languages?.chat || 'English' %><% if (languages?.chat === 'Russian') { %> 🇷🇺<% } %> - Plans, reports, analysis → <%= languages?.chat || 'English' %>; Code comments → <%= languages?.code || 'English' %>
+<%= ruleNum++ %>. **NEVER** use destructive git commands (`reset --hard`, `clean -fd`) without user approval
 <% if (services && services.mcp && services.mcp.memory_bank && services.mcp.memory_bank.enabled) { -%>
-7. **NEVER** create markdown reports in git - Store findings in Memory Bank via MCP instead
+<%= ruleNum++ %>. **NEVER** create markdown reports in git - use Memory Bank MCP
 <% } -%>
+<%# Project-specific NEVER rules -%>
+<% if (rules && rules.never && rules.never.length > 0) { -%>
+<% rules.never.forEach((rule) => { -%>
+<%= ruleNum++ %>. **NEVER** <%= rule %>
+<% }); -%>
+<% } -%>
+<%# Auto-generated ALWAYS rules -%>
+<% if (commands && commands.quality_gates) { -%>
+<%= ruleNum++ %>. **ALWAYS** run `<%= commands.quality_gates %>` before committing
+<% } -%>
+<% if (services && services.task_tracking && services.task_tracking.type && services.task_tracking.type !== 'none') { -%>
+<%= ruleNum++ %>. **ALWAYS** use <%= services.task_tracking.type %> for task tracking
+<% } -%>
+<%= ruleNum++ %>. **ALWAYS** search existing solutions first (codebase, deps, docs)
+<% if (languages && languages.chat && languages.chat !== 'English') { -%>
+<%= ruleNum++ %>. **ALWAYS** communicate in <%= languages.chat %> (code comments in English)
+<% } -%>
+<%# Project-specific ALWAYS rules -%>
+<% if (rules && rules.always && rules.always.length > 0) { -%>
+<% rules.always.forEach((rule) => { -%>
+<%= ruleNum++ %>. **ALWAYS** <%= rule %>
+<% }); -%>
 <% } -%>
 
 <% if (services.mcp && services.mcp.memory_bank && services.mcp.memory_bank.enabled) { -%>

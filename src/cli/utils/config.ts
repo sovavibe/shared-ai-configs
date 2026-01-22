@@ -16,39 +16,38 @@ const schemaPath = join(__dirname, '../../../schema/ai-project.schema.json');
 const CONFIG_DEFAULTS = {
   languages: {
     chat: 'English' as const,
-    code: 'English' as const
+    code: 'English' as const,
   },
   services: {
     ide: {
       dual_mode: false,
       paths: {
         claude: '.claude/',
-        cursor: '.cursor/'
-      }
+        cursor: '.cursor/',
+      },
     },
     vcs: {
-      main_branch: 'main'
+      main_branch: 'main',
     },
     task_tracking: {
       paths: {
         beads: '.beads/',
-        perles: '.perles/'
-      }
+        perles: '.perles/',
+      },
     },
     mcp: {
       hindsight: { enabled: false },
       snyk: { enabled: false },
       context7: { enabled: false },
-      pal: { enabled: false },
       memory_bank: { enabled: false },
       figma: { enabled: false },
-      browser: { enabled: false }
-    }
+      browser: { enabled: false },
+    },
   },
   options: {
     sdd_enabled: false,
     orchestration: false,
-    agentic_workflows: false
+    agentic_workflows: false,
   },
   generation: {
     targets: {
@@ -58,10 +57,10 @@ const CONFIG_DEFAULTS = {
       perles: false,
       ignore_files: true,
       claude_md: true,
-      gitignore_entries: true
+      gitignore_entries: true,
     },
-    strategy: 'generate' as const
-  }
+    strategy: 'generate' as const,
+  },
 };
 
 export function loadConfig(configPath: string): Config {
@@ -110,16 +109,20 @@ function applyDefaults(config: Config): void {
   if (!config.services.ide.paths) {
     config.services.ide.paths = { ...CONFIG_DEFAULTS.services.ide.paths };
   } else {
-    config.services.ide.paths.claude = config.services.ide.paths.claude ?? CONFIG_DEFAULTS.services.ide.paths.claude;
-    config.services.ide.paths.cursor = config.services.ide.paths.cursor ?? CONFIG_DEFAULTS.services.ide.paths.cursor;
+    config.services.ide.paths.claude =
+      config.services.ide.paths.claude ?? CONFIG_DEFAULTS.services.ide.paths.claude;
+    config.services.ide.paths.cursor =
+      config.services.ide.paths.cursor ?? CONFIG_DEFAULTS.services.ide.paths.cursor;
   }
-  config.services.ide.dual_mode = config.services.ide.dual_mode ?? CONFIG_DEFAULTS.services.ide.dual_mode;
+  config.services.ide.dual_mode =
+    config.services.ide.dual_mode ?? CONFIG_DEFAULTS.services.ide.dual_mode;
 
   // VCS
   if (!config.services.vcs) {
     config.services.vcs = {};
   }
-  config.services.vcs.main_branch = config.services.vcs.main_branch ?? CONFIG_DEFAULTS.services.vcs.main_branch;
+  config.services.vcs.main_branch =
+    config.services.vcs.main_branch ?? CONFIG_DEFAULTS.services.vcs.main_branch;
 
   // Task tracking paths
   if (!config.services.task_tracking) {
@@ -128,8 +131,12 @@ function applyDefaults(config: Config): void {
   if (!config.services.task_tracking.paths) {
     config.services.task_tracking.paths = { ...CONFIG_DEFAULTS.services.task_tracking.paths };
   } else {
-    config.services.task_tracking.paths.beads = config.services.task_tracking.paths.beads ?? CONFIG_DEFAULTS.services.task_tracking.paths.beads;
-    config.services.task_tracking.paths.perles = config.services.task_tracking.paths.perles ?? CONFIG_DEFAULTS.services.task_tracking.paths.perles;
+    config.services.task_tracking.paths.beads =
+      config.services.task_tracking.paths.beads ??
+      CONFIG_DEFAULTS.services.task_tracking.paths.beads;
+    config.services.task_tracking.paths.perles =
+      config.services.task_tracking.paths.perles ??
+      CONFIG_DEFAULTS.services.task_tracking.paths.perles;
   }
 
   // MCP defaults
@@ -151,8 +158,10 @@ function applyDefaults(config: Config): void {
     config.options = { ...CONFIG_DEFAULTS.options };
   } else {
     config.options.sdd_enabled = config.options.sdd_enabled ?? CONFIG_DEFAULTS.options.sdd_enabled;
-    config.options.orchestration = config.options.orchestration ?? CONFIG_DEFAULTS.options.orchestration;
-    config.options.agentic_workflows = config.options.agentic_workflows ?? CONFIG_DEFAULTS.options.agentic_workflows;
+    config.options.orchestration =
+      config.options.orchestration ?? CONFIG_DEFAULTS.options.orchestration;
+    config.options.agentic_workflows =
+      config.options.agentic_workflows ?? CONFIG_DEFAULTS.options.agentic_workflows;
   }
 
   // Generation
@@ -216,44 +225,44 @@ export function getDefaultConfig(projectPath: string, stack: string): Partial<Co
       name: projectName,
       short_name: projectName,
       description: 'Project description',
-      role: 'Senior Developer'
+      role: 'Senior Developer',
     },
     languages: CONFIG_DEFAULTS.languages,
     commands: {
       dev: 'npm run dev',
       build: 'npm run build',
       lint: 'npm run lint',
-      test: 'npm run test'
+      test: 'npm run test',
     },
     services: {
       ide: {
         primary: 'Cursor',
         secondary: 'none',
         dual_mode: CONFIG_DEFAULTS.services.ide.dual_mode,
-        paths: CONFIG_DEFAULTS.services.ide.paths
+        paths: CONFIG_DEFAULTS.services.ide.paths,
       },
       vcs: {
         type: 'github',
-        main_branch: CONFIG_DEFAULTS.services.vcs.main_branch
+        main_branch: CONFIG_DEFAULTS.services.vcs.main_branch,
       },
       task_tracking: {
         type: 'none',
-        paths: CONFIG_DEFAULTS.services.task_tracking.paths
+        paths: CONFIG_DEFAULTS.services.task_tracking.paths,
       },
-      mcp: CONFIG_DEFAULTS.services.mcp
+      mcp: CONFIG_DEFAULTS.services.mcp,
     },
     options: {
       dev_server_port: 3000,
-      ...CONFIG_DEFAULTS.options
+      ...CONFIG_DEFAULTS.options,
     },
     architecture: {
       structure: `src/
 ├── app/       # Entry, providers
 ├── pages/     # Route pages
 ├── shared/    # Shared components
-└── index.ts   # Main entry`
+└── index.ts   # Main entry`,
     },
-    generation: CONFIG_DEFAULTS.generation
+    generation: CONFIG_DEFAULTS.generation,
   };
 
   // Stack-specific defaults
@@ -264,24 +273,24 @@ export function getDefaultConfig(projectPath: string, stack: string): Partial<Co
         framework: { name: 'React', version: '18' },
         language: { name: 'TypeScript', version: '5.5' },
         build: { tool: 'Vite', version: '5' },
-        linter: 'ESLint'
-      }
+        linter: 'ESLint',
+      },
     },
     node: {
       stack: {
         type: 'node',
         framework: { name: 'Node.js', version: '20' },
         language: { name: 'TypeScript', version: '5.5' },
-        linter: 'ESLint'
-      }
+        linter: 'ESLint',
+      },
     },
     nextjs: {
       stack: {
         type: 'nextjs',
         framework: { name: 'Next.js', version: '14' },
         language: { name: 'TypeScript', version: '5.5' },
-        linter: 'ESLint'
-      }
+        linter: 'ESLint',
+      },
     },
     java: {
       stack: {
@@ -289,34 +298,34 @@ export function getDefaultConfig(projectPath: string, stack: string): Partial<Co
         framework: { name: 'Spring Boot', version: '3.2' },
         language: { name: 'Java', version: '21' },
         build: { tool: 'Maven', version: '3.9' },
-        linter: 'Checkstyle'
+        linter: 'Checkstyle',
       },
       commands: {
         dev: 'mvn spring-boot:run',
         build: 'mvn package',
         lint: 'mvn checkstyle:check',
-        test: 'mvn test'
-      }
+        test: 'mvn test',
+      },
     },
     python: {
       stack: {
         type: 'python',
         framework: { name: 'FastAPI', version: '0.109' },
         language: { name: 'Python', version: '3.12' },
-        linter: 'Ruff'
+        linter: 'Ruff',
       },
       commands: {
         dev: 'uvicorn main:app --reload',
         build: 'pip install -e .',
         lint: 'ruff check .',
-        test: 'pytest'
-      }
-    }
+        test: 'pytest',
+      },
+    },
   };
 
   return {
     ...baseConfig,
-    ...stackDefaults[stack]
+    ...stackDefaults[stack],
   };
 }
 
