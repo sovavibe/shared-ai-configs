@@ -2,6 +2,28 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Critical Rules
+
+**FORBIDDEN GIT COMMANDS** - Never execute these without explicit user approval:
+
+```bash
+# NEVER DO THIS - destroys uncommitted work
+git reset --hard
+git checkout -- .
+git clean -fd
+git stash drop
+git branch -D
+```
+
+**Why:** Multiple agents may work in parallel. These commands destroy uncommitted changes irreversibly.
+
+**Instead:**
+
+- `git stash` (preserves changes)
+- `git diff` (review first)
+- Ask user before any destructive operation
+- If lint/commit fails, fix the issues instead of resetting
+
 ## Project Overview
 
 NPM package (`shared-ai-configs`) that generates AI-assisted development configurations for Claude Code and Cursor IDE from a single `.ai-project.yaml` config file.
