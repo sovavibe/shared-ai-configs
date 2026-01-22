@@ -34,44 +34,29 @@ Use Hindsight for reflection and learning. Multi-bank architecture for organized
 ### Recall (Facts)
 
 ```
-CallMcpTool({
-  server: "user-hindsight-alice",
-  toolName: "recall",
-  arguments: {
-    bank_id: 'patterns',
-    query: 'Code review patterns',
-    max_tokens: 2048
-  }
-})
+mcp__hindsight-alice__recall \
+  bank_id="patterns" \
+  query="Code review patterns" \
+  max_tokens=2048
 ```
 
 ### Reflect (Synthesis)
 
 ```
-CallMcpTool({
-  server: "user-hindsight-alice",
-  toolName: "reflect",
-  arguments: {
-    bank_id: 'reflections',
-    query: 'What patterns emerge from recent work?',
-    budget: 'mid'  // low/mid/high - all work
-  }
-})
+mcp__hindsight-alice__reflect \
+  bank_id="reflections" \
+  query="What patterns emerge from recent work?" \
+  budget="mid"  # low/mid/high - all work
 ```
 
 ### Retain (Store)
 
 ```
-CallMcpTool({
-  server: "user-hindsight-alice",
-  toolName: "retain",
-  arguments: {
-    bank_id: 'lessons',
-    content: 'Key insight from this task',
-    context: 'work',
-    async_processing: true
-  }
-})
+mcp__hindsight-alice__retain \
+  bank_id="lessons" \
+  content="Key insight from this task" \
+  context="work" \
+  async_processing=true
 ```
 
 ## Decision Tree
@@ -88,7 +73,7 @@ Need specific facts?
 
 1. **Always specify bank_id** - prevents wrong storage
 2. **Targeted queries** - "React Query patterns" not "all patterns"
-3. **Set max_tokens** - 2048-4096 for control
+3. **Set max_tokens** - range 2048-4096 for control
 4. **Use async_processing: true** - for heavy operations
 5. **Store immediately** - after decisions are made
 

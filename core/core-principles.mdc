@@ -17,7 +17,7 @@ alwaysApply: false
 | 3    | Search `.cursor/rules/` for patterns   |
 | 4    | Only then create custom solution       |
 
-See: @existing-solutions-first.mdc
+See: @existing-solutions.mdc
 
 ## AI-First Workflow: Minimize Scripts
 
@@ -139,17 +139,15 @@ Always include Jira task key.
 
 ## Date Handling
 
-**CRITICAL**: NEVER use `dayjs` directly. ALWAYS use `date` wrapper from `shared/date`.
+**CRITICAL**: Use project's date wrapper (if exists) instead of raw date library calls.
 
-```typescript
-// ✅ Good
-import { date, DateFormats } from 'shared/date'
-date(value).format(DateFormats.DD_MM_YYYY)
+| Practice | Rationale |
+| -------- | --------- |
+| Use project wrapper | Centralized config (locale, timezone, plugins) |
+| Consistent formats | Use project's format constants |
+| Avoid raw library | Prevents config drift across codebase |
 
-// ❌ Bad
-import dayjs from 'dayjs'
-dayjs(value).format('DD.MM.YYYY')
-```
+Check `shared/date` or `shared/utils/date` for project-specific wrapper before using date libraries directly.
 
 ## Language
 

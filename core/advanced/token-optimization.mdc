@@ -7,12 +7,12 @@ alwaysApply: false
 
 ## Baseline vs Target
 
-| Aspect | Before | Target | Method |
-|--------|--------|--------|--------|
-| Session overhead | 11-19K tokens | 3-5K tokens | Progressive loading |
+| Aspect | Before (2025) | Target (2026) | Method |
+|--------|---------------|---------------|--------|
+| Session overhead | 5-8K tokens | 3-5K tokens | Progressive loading |
 | MCP discovery | 8K tokens | <2K tokens | Tool Search feature |
 | Rules loaded | 3-4K tokens | 1-2K tokens | Glob-based auto-load |
-| **Total context budget** | **~20-30K** | **~5-8K** | **60-70% reduction** |
+| **Total context budget** | **~15-20K** | **~5-8K** | **60-70% reduction** |
 
 ## Strategy 1: Glob-Based Auto-Loading
 
@@ -21,7 +21,7 @@ alwaysApply: false
 **Solution**: Load rules matching file type
 
 ```yaml
-# .cursor/rules/INDEX.mdc updates:
+# shared-ai-configs/core/INDEX.mdc updates:
 010-049:  # Context rules - auto-load by glob
   - glob: "src/**/*.tsx"
     rules: [@tanstack-query, @ant-design]
@@ -99,8 +99,8 @@ When implementing authentication, consider:
 ## Verification
 
 ```bash
-# Before optimization:
-# Session starts, 11-19K overhead
+# Before optimization (2025):
+# Session starts, 5-8K overhead
 
 # After optimization:
 # Session starts, 3-5K overhead

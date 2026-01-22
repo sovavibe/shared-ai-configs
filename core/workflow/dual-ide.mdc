@@ -19,7 +19,7 @@ alwaysApply: true
 
 ## Key Principles
 
-- **Critical thinking** (architecture, analysis, deep review) = **Claude Code Opus only**
+- **Critical thinking** (architecture, analysis, deep review) = **Claude Code** (Opus or PAL tools)
 - **Implementation** (writing code, tests, iterating) = **Cursor automode**
 - **Planning** (breaking down, TodoWrite) = **Claude Code Sonnet**
 
@@ -52,12 +52,12 @@ test_plan: "docs/TEST-PLAN.md"
 
 ## Model Selection Strategy
 
-### Opus (Direct, NOT via PAL)
+### Opus (Direct - quick decisions with full context)
 
-- ✅ Architectural decisions
-- ✅ Deep code review
-- ✅ Critical bug analysis
-- ✅ Security decisions
+- ✅ Quick architectural decisions when you have all context
+- ✅ Initial code review pass
+- ✅ Rapid bug triage
+- ✅ Security spot-checks
 
 ### Sonnet/Haiku (for standard work)
 
@@ -66,11 +66,12 @@ test_plan: "docs/TEST-PLAN.md"
 - ✅ Code generation
 - ✅ Routine refactoring
 
-### PAL Tools (external models for routine only)
+### PAL Tools (external models for complex reasoning)
 
-- ✅ Routine research
-- ✅ Quick second opinion
-- ❌ NOT for architecture
-- ❌ NOT for security analysis
+- ✅ Multi-model consensus for architecture decisions
+- ✅ Deep investigation with `thinkdeep`
+- ✅ Code review validation with `codereview`
+- ✅ Complex debugging with `debug`
+- ✅ Pre-commit validation with `precommit`
 
-**Rule:** If you're tempted to use PAL, first ask: "Is this a critical decision?" If yes → use Opus directly.
+**Rule:** Use PAL for tasks that benefit from external model perspective or multi-model consensus. Use local Opus for quick decisions where you already have full context.

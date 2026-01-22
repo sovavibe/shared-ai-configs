@@ -11,9 +11,9 @@ alwaysApply: false
 
 **🔴 CRITICAL**: For all work requests and tasks:
 
-1. **ALWAYS create Beads task** first
-2. **ALWAYS create Markdown reports** in Beads with all details
-3. Communicate in chat AND store reports in Beads
+1. **ALWAYS create Beads task** first for tracking
+2. **NEVER create Markdown reports in git** - use Memory Bank MCP for findings
+3. Communicate progress in chat, store findings in Memory Bank
 
 ## DO
 
@@ -26,13 +26,13 @@ alwaysApply: false
 
 ## DON'T
 
-| ❌ Never                           | Reason                        |
-| ---------------------------------- | ----------------------------- |
-| Create `*-REPORT.md` in repository | Store in Beads instead        |
-| Generate `ANALYSIS-*.md` in repo   | Store in Beads instead        |
-| Create `SUMMARY.md` in repo        | Store in Beads instead        |
-| Start work without Beads task      | Always create task first      |
-| Skip reports in Beads              | Always document work in Beads |
+| ❌ Never                           | Reason                           |
+| ---------------------------------- | -------------------------------- |
+| Create `*-REPORT.md` in repository | Store in Memory Bank MCP instead |
+| Generate `ANALYSIS-*.md` in repo   | Store in Memory Bank MCP instead |
+| Create `SUMMARY.md` in repo        | Store in Memory Bank MCP instead |
+| Start work without Beads task      | Always create task first         |
+| Skip progress updates              | Always communicate in chat       |
 
 ## When Documentation IS Appropriate
 
@@ -43,55 +43,60 @@ alwaysApply: false
 
 ## Context Storage
 
-**🔴 CRITICAL**: Store all temporary artifacts in Beads task descriptions. NEVER create markdown files for reports.
+**🔴 CRITICAL**: Store all findings in Memory Bank MCP. NEVER create markdown files for reports in git.
 
 **Where to store information:**
 
-| Type                      | Storage                | Tool/Command                              | When to Use                                                                       |
-| ------------------------- | ---------------------- | ----------------------------------------- | --------------------------------------------------------------------------------- |
-| **Work reports**          | Beads task description | `bd update <id> --description`            | ALL work reports, analysis, progress (Markdown format)                            |
-| **Research & analysis**   | Beads task description | `bd update <id> --description`            | Temporary artifacts, research results, analysis reports (all in task description) |
-| **Reflections**           | Hindsight MCP          | `reflect`                                 | Deep analysis, reasoning, patterns                                                |
-| **Experience & memories** | Hindsight MCP          | `retain`                                  | Long-term memory, lessons learned, opinions, patterns                             |
-| **Team tasks**            | Jira MCP               | `jira_create_issue` / `jira_update_issue` | High-level context, team coordination                                             |
-| **Quick updates**         | Chat                   | Direct message                            | Quick updates, questions                                                          |
+| Type                      | Storage         | Tool/Command                              | When to Use                                               |
+| ------------------------- | --------------- | ----------------------------------------- | --------------------------------------------------------- |
+| **Session findings**      | Memory Bank MCP | `mcp__allpepper-memory-bank__memory_bank_write` | Analysis, research, reports - multi-session reuse   |
+| **Task tracking**         | Beads           | `bd create`, `bd update`, `bd close`      | Issue tracking, status, dependencies                      |
+| **Reflections**           | Hindsight MCP   | `reflect`                                 | Deep analysis, reasoning, patterns                        |
+| **Experience & memories** | Hindsight MCP   | `retain`                                  | Long-term memory, lessons learned, opinions, patterns     |
+| **Team tasks**            | Jira MCP        | `jira_create_issue` / `jira_update_issue` | High-level context, team coordination                     |
+| **Quick updates**         | Chat            | Direct message                            | Quick updates, questions                                  |
 
 **❌ NEVER create**:
 
 - `*-REPORT.md` in repository
 - `*-ANALYSIS.md` in repository
+- `YYYY-MM-DD-*.md` session summaries in git
 
 **✅ ALWAYS use**:
 
-- Research/analysis/reports → Beads task description (`bd update <id> --description`)
-- Reflections → Hindsight MCP (`user-hindsight-alice`, `reflect`)
-- Experience/memories/patterns → Hindsight MCP (`user-hindsight-alice`, `retain`)
-- Team tasks → Jira MCP (`user-MCP_DOCKER`)
+- Session findings/analysis/reports → Memory Bank MCP (`mcp__allpepper-memory-bank__memory_bank_write`)
+- Task tracking → Beads (`bd create`, `bd update`, `bd close`)
+- Reflections → Hindsight MCP (`reflect`)
+- Experience/memories/patterns → Hindsight MCP (`retain`)
+- Team tasks → Jira MCP
 
 **Workflow for Context Storage**:
 
 ```bash
-# 1. Create task
+# 1. Create task for tracking
 bd create "Work description" --type=task -p 1
 
-# 2. Store work report/research/analysis in Beads task description
-bd update <id> --description="$(cat /tmp/report.md)"
-# Or append to existing description
-bd update <id> --description="$(cat current-description.md research-findings.md)"
+# 2. Store findings/analysis in Memory Bank (NOT in git)
+mcp__allpepper-memory-bank__memory_bank_write \
+  projectName="ProjectName" \
+  fileName="analysis-feature-name.md" \
+  content="## Analysis Findings\n\n[details...]"
 
 # 3. Store reflection in Hindsight MCP (if deep analysis needed)
-CallMcpTool({
-  server: "user-hindsight-alice",
-  toolName: "reflect",
-  arguments: { query: "What patterns emerged?", bank_id: "patterns", budget: "low", max_tokens: 2048 }
-})
+mcp__hindsight-alice__reflect \
+  query="What patterns emerged?" \
+  bank_id="patterns"
 
 # 4. Store experience/memories/patterns in Hindsight MCP (if extracted)
-CallMcpTool({
-  server: "user-hindsight-alice",
-  toolName: "retain",
-  arguments: { bank_id: "patterns", content: "Lesson learned...", context: "work", async_processing: true }
-})
+mcp__hindsight-alice__retain \
+  bank_id="patterns" \
+  content="Lesson learned..." \
+  context="work"
+
+# 5. Query findings later
+mcp__allpepper-memory-bank__memory_bank_read \
+  projectName="ProjectName" \
+  fileName="analysis-feature-name.md"
 ```
 
 ## Response Format

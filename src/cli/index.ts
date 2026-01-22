@@ -36,6 +36,7 @@ program
   .option('-o, --output <dir>', 'Output directory', '.')
   .option('--dry-run', 'Show what would be generated without writing files')
   .option('--force', 'Overwrite existing files')
+  .option('--clean', 'Remove all generated directories before regenerating')
   .action(generateCommand);
 
 program
@@ -44,10 +45,7 @@ program
   .option('-c, --config <path>', 'Path to config file', '.ai-project.yaml')
   .action(validateCommand);
 
-program
-  .command('doctor')
-  .description('Check dependencies and configuration')
-  .action(doctorCommand);
+program.command('doctor').description('Check dependencies and configuration').action(doctorCommand);
 
 program
   .command('status')

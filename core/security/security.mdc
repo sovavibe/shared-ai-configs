@@ -1,5 +1,5 @@
 ---
-description: 'Security: Azure AD OAuth, RBAC, input validation, API security'
+description: 'Security: OAuth authentication, RBAC, input validation, API security'
 version: '1.0.0'
 lastUpdated: '2026-01-20'
 alwaysApply: false
@@ -13,19 +13,22 @@ Security guidelines and best practices for this project.
 
 ## Authentication & Authorization
 
-### Azure AD OAuth 2.0
+### OAuth 2.0 / OIDC
 
 ```tsx
-// Authentication setup
+// Authentication configuration - always use environment variables
 const authConfig = {
-  clientId: process.env.REACT_APP_CLIENT_ID,
-  authority: process.env.REACT_APP_AUTHORITY,
+  clientId: process.env.AUTH_CLIENT_ID,      // Never hardcode
+  authority: process.env.AUTH_AUTHORITY,      // Provider-specific
   redirectUri: window.location.origin,
+  scopes: ['openid', 'profile', 'email'],
 }
 
-// Usage
-const login = async () => {
-  await msalInstance.loginRedirect(authConfig)
+// Token handling - store securely, never in localStorage for sensitive apps
+const getAccessToken = async (): Promise<string> => {
+  // Use your auth library's token acquisition method
+  // Handle token refresh automatically
+  return authProvider.getToken(authConfig.scopes)
 }
 ```
 
@@ -68,13 +71,22 @@ function sanitizeHTML(html: string): string {
 ### API Client Security
 
 ```ts
-const apiClient = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
-  },
-})
+// Secure API client setup
+const createApiClient = (getToken: () => Promise<string>) => {
+  const client = axios.create({
+    baseURL: process.env.API_BASE_URL,  // Use env vars, not hardcoded URLs
+    headers: { 'Content-Type': 'application/json' },
+  })
+
+  // Add auth token via interceptor (don't store in default headers)
+  client.interceptors.request.use(async (config) => {
+    const token = await getToken()
+    config.headers.Authorization = `Bearer ${token}`
+    return config
+  })
+
+  return client
+}
 ```
 
 ### Error Handling
@@ -121,18 +133,17 @@ apiClient.interceptors.response.use(
 - Audit access logs
 - Review permissions regularly
 
-## Security Commands
+## Security Checklist
 
-```bash
-# Run security scans
-npm run security:scan
+Before deploying, verify:
 
-# Check dependencies for vulnerabilities
-npm run security:audit
-
-# Test authentication flows
-npm run security:test-auth
-```
+- [ ] All secrets are in environment variables (not in code)
+- [ ] Dependencies scanned for vulnerabilities (`npm audit` or equivalent)
+- [ ] Authentication tokens handled securely (not in localStorage)
+- [ ] HTTPS enforced in production
+- [ ] CORS configured appropriately
+- [ ] Input validation on all user inputs
+- [ ] Error messages don't leak sensitive information
 
 ## Related
 

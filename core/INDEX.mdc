@@ -76,8 +76,7 @@ core/
 | `@semantic-search`     | Semantic code search                 |
 | `@token-optimization`  | 60-70% token reduction               |
 | `@skills-patterns`     | Skills hot-reload composition        |
-
-> **Note:** Cursor 2.2 patterns in `content/agents/cursor/cursor-2.2-patterns.mdc`
+| `@cursor-2.2-patterns` | Cloud Agents, Shadow Workspace, Tab++|
 
 ### Security & Performance
 

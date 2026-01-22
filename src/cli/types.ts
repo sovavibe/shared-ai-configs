@@ -220,6 +220,7 @@ export interface GenerateOptions {
   output: string;
   dryRun?: boolean;
   force?: boolean;
+  clean?: boolean;
 }
 
 export interface InitOptions {

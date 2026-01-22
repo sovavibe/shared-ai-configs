@@ -32,26 +32,24 @@ bd create "Implement: [component]" --deps epic:$EPIC -p 2
 CallMcpTool({
   server: "user-MCP_DOCKER",
   toolName: "resolve-library-id",
-  arguments: { libraryName: "secret-scanning" }
+  arguments: { libraryName: "<your-problem-domain>" }
 })
-// Result: Secretlint (Trust Score: 90.3), Gitleaks (Trust Score: 89.9)
 
-// Step 2: Get documentation
+// Step 2: Get documentation for top result
 CallMcpTool({
   server: "user-MCP_DOCKER",
   toolName: "get-library-docs",
   arguments: {
-    context7CompatibleLibraryID: "/secretlint/secretlint",
+    context7CompatibleLibraryID: "/<org>/<library>",
     topic: "setup",
     tokens: 5000
   }
 })
 
-// Step 3: Use existing solution
-npm install --save-dev secretlint @secretlint/secretlint-rule-preset-recommend
+// Step 3: Use existing solution from search results
 
 // ❌ WRONG workflow
-// Creating custom check-secrets.sh script without searching first
+// Creating custom scripts without searching first
 ```
 
 **2. Search order (MCP-first approach):**
@@ -93,22 +91,6 @@ npm install --save-dev secretlint @secretlint/secretlint-rule-preset-recommend
 - ✅ **Check transport/plugin ecosystem** - Many libraries have official/community extensions
 - ✅ **Review API reference** - Look for configuration options that solve your need
 
-**Example - Winston File Logging**:
-
-```typescript
-// ❌ WRONG: Manual archiving logic
-const archiveOldLogs = () => {
-  // Reading directory, checking dates, deleting files...
-}
-
-// ✅ CORRECT: Use Winston's built-in rotation
-new winston.transports.File({
-  filename: 'logs/scripts.log',
-  maxsize: 10 * 1024 * 1024, // Winston automatically rotates
-  maxFiles: 5, // Winston automatically deletes old files
-})
-```
-
 **Pattern**: Trust the ecosystem. Libraries are designed to handle common use cases. Only add custom logic if there's a genuine gap.
 
 **4. Only create custom solutions if:**
@@ -120,17 +102,12 @@ new winston.transports.File({
 
 ## Examples
 
-### ❌ Wrong: Custom Secret Scanner
-
-**✅ Correct**: Use Secretlint (found via context7)
-
-### ❌ Wrong: Custom Validation
-
-**✅ Correct**: Use Zod (already in project)
-
-### ❌ Wrong: Custom HTTP Client
-
-**✅ Correct**: Use Axios (already in project)
+| Instead of... | Search for... |
+|---------------|---------------|
+| Custom secret scanner | Existing secret scanning tools via Context7 |
+| Custom validation logic | Schema validation libraries in project deps |
+| Custom HTTP wrapper | HTTP client already in project dependencies |
+| Manual file rotation | Built-in library features (check docs first) |
 
 ## Why This Matters
 
@@ -140,31 +117,16 @@ new winston.transports.File({
 4. **Security**: Established tools have security audits and updates
 5. **Community support**: Popular tools have active communities
 
-## Common Patterns
+## Common Categories to Search
 
-### Security Tools
+When searching for existing solutions, consider these categories:
 
-- **Secret scanning**: Secretlint, Gitleaks, TruffleHog
-- **Dependency scanning**: Snyk, npm audit
-- **Code scanning**: SonarQube, ESLint security plugins
+- **Security**: Secret scanning, dependency auditing, code analysis
+- **Validation**: Type checking, runtime validation, form validation
+- **Testing**: Unit tests, E2E tests, API mocking
+- **Build/Tooling**: Bundlers, transpilers, code generators
 
-### Validation
-
-- **TypeScript**: Built-in type system
-- **Runtime validation**: Zod (already in project)
-- **Form validation**: React Hook Form + Zod
-
-### Testing
-
-- **Unit tests**: Vitest (already in project)
-- **E2E tests**: Playwright, Cypress
-- **API testing**: MSW (already in project)
-
-### Build Tools
-
-- **Bundler**: Vite (already in project)
-- **Type checking**: TypeScript (already in project)
-- **Code generation**: Orval (already in project)
+Use Context7 `resolve-library-id` to find established tools in each category.
 
 ## Workflow Checklist
 

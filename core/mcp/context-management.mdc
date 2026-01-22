@@ -23,12 +23,12 @@ Use four pillars systematically:
 | Source        | Tokens     | Priority     | Loading Strategy                                                                               |
 | ------------- | ---------- | ------------ | ---------------------------------------------------------------------------------------------- |
 | **Beads**     | 2-5k       | 🔴 Critical  | Always load first, check ready/in-progress, includes all research/reports in task descriptions |
-| **Hindsight** | 5-10k      | 🟡 Important | 2-3 targeted queries with max_tokens limit (2048-4096), optimized for small/medium banks       |
+| **Hindsight** | 2-4k       | 🟡 Important | 2-3 targeted queries with max_tokens limit (2048-4096), optimized for small/medium banks       |
 | **Jira**      | 3-8k       | 🟢 Optional  | Load only when specifically mentioned or needed for team coordination                          |
 | **Context7**  | 5-10k      | 🟢 Optional  | Load when researching libraries (used daily, high priority when needed)                        |
 | **Total**     | **15-28k** |              | Load systematically, progressive expansion                                                     |
 
-**Key Optimization:** Hindsight uses only 5-10k tokens (vs 15-40k in previous version) - **~67% token reduction!** Targeted queries with max_tokens limits are much more efficient.
+**Key Optimization:** Hindsight uses only 2-4k tokens (vs 15-40k in previous version) - **~85% token reduction!** Targeted queries with max_tokens limits are much more efficient.
 
 ## ⚙️ Standard Context Loading Protocol
 
@@ -72,7 +72,7 @@ bd show <id> --json
 - **Refactor**: Refactor + code quality patterns
 - **Review**: Code review patterns
 
-**Token budget:** 5-10k tokens (targeted, efficient queries).
+**Token budget:** 2-4k tokens (targeted, efficient queries).
 
 **ALWAYS** specify correct `bank_id` (patterns/lessons/session/alice/reflections) when storing/recalling.
 
@@ -98,7 +98,7 @@ Load when researching libraries (used daily, high priority when needed). Use `re
 
 **Success metrics:**
 
-- Total context: 15-40k tokens
+- Total context: 15-28k tokens
 - Relevance: 80%+ useful content
 - Loading time: <30 seconds
 - Overflow rate: <10%

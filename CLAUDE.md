@@ -4,25 +4,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Critical Rules
 
-**FORBIDDEN GIT COMMANDS** - Never execute these without explicit user approval:
+### ЗАПРЕЩЕНО: Деструктивные Git-команды
+
+**НИКОГДА не выполнять автономно — ВСЕГДА сначала спросить пользователя:**
 
 ```bash
-# NEVER DO THIS - destroys uncommitted work
 git reset --hard
 git checkout -- .
+git checkout <file>
 git clean -fd
 git stash drop
 git branch -D
+git push --force
 ```
 
-**Why:** Multiple agents may work in parallel. These commands destroy uncommitted changes irreversibly.
+**Перед выполнением ОБЯЗАТЕЛЬНО спросить:**
 
-**Instead:**
+> "Эта команда удалит незакоммиченные изменения безвозвратно. Вы уверены? (да/нет)"
 
-- `git stash` (preserves changes)
-- `git diff` (review first)
-- Ask user before any destructive operation
-- If lint/commit fails, fix the issues instead of resetting
+**Почему критично:**
+
+- Несколько агентов могут работать параллельно в одном репо
+- Незакоммиченная работа других агентов будет потеряна НАВСЕГДА
+- Восстановить невозможно
+
+**Что делать вместо:**
+
+- `git stash` — сохраняет изменения, можно восстановить
+- `git diff` — сначала посмотреть что будет потеряно
+- Если lint/commit падает — **исправить ошибки**, НЕ сбрасывать
 
 ## Project Overview
 

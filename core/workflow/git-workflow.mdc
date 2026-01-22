@@ -87,6 +87,37 @@ git commit --no-verify
 
 **If push fails**: Fix ALL errors, run `npm run quality:gates`, then push.
 
+## 🔴 CRITICAL: Destructive Commands — ASK FIRST
+
+**NEVER execute autonomously. ALWAYS ask user explicitly:**
+
+```bash
+# ❌ ЗАПРЕЩЕНО без подтверждения пользователя
+git reset --hard
+git checkout -- .
+git checkout <file>     # откат файла
+git clean -fd
+git stash drop
+git branch -D
+git push --force
+```
+
+**Before executing, MUST ask:**
+
+> "This command will permanently delete uncommitted changes. Are you sure? (yes/no)"
+
+**Why critical:**
+
+- Multiple agents may work in parallel in same repo
+- Uncommitted work from other agents will be LOST FOREVER
+- No recovery possible
+
+**Instead:**
+
+- `git stash` — preserves changes, recoverable
+- `git diff` — review what will be lost first
+- If lint/commit fails — **fix the errors**, DON'T reset
+
 ## Common Commands
 
 ```bash
