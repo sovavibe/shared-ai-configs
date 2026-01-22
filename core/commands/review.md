@@ -102,7 +102,7 @@ mcp__pal__codereview
 ### 3.2 Security Scan
 
 ```
-mcp__Snyk__snyk_code_scan path="/Users/ap/work/Front"
+mcp__Snyk__snyk_code_scan path="[PROJECT_PATH]"
 ```
 
 ### 3.3 Pre-commit Validation
@@ -110,7 +110,7 @@ mcp__Snyk__snyk_code_scan path="/Users/ap/work/Front"
 ```
 mcp__pal__precommit
   step="Validate changes for [FEATURE]"
-  path="/Users/ap/work/Front"
+  path="[PROJECT_PATH]"
 ```
 
 ---

@@ -235,7 +235,7 @@ bd update VP-task1 --labels="full-sdlc"
 **Шаг 2: Запусти Perles**
 
 ```bash
-cd /Users/ap/work/Front
+cd [PROJECT_PATH]
 perles
 
 # В Perles TUI:

@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+
+# Backups
+*.backup
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test output
+/tmp/
+coverage/
+
+# Progress notes (temporary)
+PROGRESS.md

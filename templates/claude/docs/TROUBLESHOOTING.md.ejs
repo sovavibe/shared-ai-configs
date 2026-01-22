@@ -1,0 +1,114 @@
+# Troubleshooting Guide
+
+> Generated from .ai-project.yaml
+
+## Common Issues
+
+### Build Failures
+
+**Symptoms:** `<%= commands?.build || 'npm run build' %>` fails
+
+**Solutions:**
+1. Clear cache: `rm -rf node_modules/.cache`
+2. Reinstall deps: `rm -rf node_modules && npm install`
+3. Check TypeScript: `<%= commands?.typecheck || 'npm run typecheck' %>`
+
+### Test Failures
+
+**Symptoms:** `<%= commands?.test || 'npm run test' %>` fails
+
+**Solutions:**
+1. Run single test: `npm run test -- --run <file>`
+2. Update snapshots: `npm run test -- -u`
+3. Check mocks: Verify MSW handlers
+
+### Lint Errors
+
+**Symptoms:** `<%= commands?.lint || 'npm run lint' %>` fails
+
+**Solutions:**
+1. Auto-fix: `npm run lint -- --fix`
+2. Check specific rule: `npm run lint -- --rule <rule>`
+
+<% if (services?.task_tracking?.type === 'beads') { %>
+## Beads Issues
+
+### bd command not found
+
+```bash
+# Check if bd is installed
+which bd
+
+# If not, install via npm
+npm install -g @anthropic/beads
+```
+
+### Sync failures
+
+```bash
+# Reset sync state
+bd doctor
+
+# Force flush
+bd sync --flush-only --force
+```
+<% } %>
+
+<% if (services?.mcp?.hindsight?.enabled) { %>
+## Hindsight Issues
+
+### MCP server not responding
+
+```bash
+# Check server health
+/mcp
+
+# Restart Hindsight
+# Usually automatic on IDE restart
+```
+
+### Context not loading
+
+```bash
+# Manual recall
+mcp__hindsight-alice__recall "context for <%= project?.name || 'project' %>"
+```
+<% } %>
+
+## IDE Issues
+
+### Claude Code not responding
+
+1. Check `/mcp` for server health
+2. Run `/compact` if context is full
+3. Restart session: `claude --resume`
+
+### Cursor agent stuck
+
+1. Cancel current operation (Esc)
+2. Clear chat history
+3. Restart agent mode
+
+## Quality Gates
+
+### Pre-commit hook fails
+
+```bash
+# Skip hooks (ONLY for emergencies)
+git commit --no-verify -m "emergency: reason"
+
+# Fix the actual issue
+<%= commands?.lint || 'npm run lint' %> --fix
+<%= commands?.test || 'npm run test' %> --run
+```
+
+## Getting Help
+
+1. Check existing patterns in codebase (Glob, Grep)
+<% if (services?.mcp?.hindsight?.enabled) { %>
+2. Search past decisions: `mcp__hindsight-alice__recall "how do we handle X"`
+<% } %>
+<% if (services?.mcp?.context7?.enabled) { %>
+3. Check library docs: `mcp__MCP_DOCKER__get-library-docs`
+<% } %>
+4. Ask for help in team chat

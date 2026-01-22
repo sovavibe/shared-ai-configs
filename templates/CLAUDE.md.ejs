@@ -1,0 +1,654 @@
+# Claude Code Instructions
+
+> <%= project.role || 'Senior Developer' %><% if (stack.framework && stack.framework.name) { %> | <%= stack.framework.name %> <%= stack.framework.version || '' %><% } %><% if (stack.language && stack.language.name) { %> | <%= stack.language.name %> <%= stack.language.version || '' %><% } %><% if (stack.ui && stack.ui.library) { %> | <%= stack.ui.library %> <%= stack.ui.version || '' %><% } %>
+
+## CRITICAL: Non-Negotiable Rules
+
+**IMPORTANT:** These rules are MANDATORY and must ALWAYS be followed:
+
+<% if (rules && rules.critical && rules.critical.length > 0) { -%>
+<% rules.critical.forEach((rule, index) => { -%>
+<%= index + 1 %>. **<%= rule.split(' ')[0] %>** <%= rule.substring(rule.indexOf(' ') + 1) %>
+<% }); -%>
+<% } else { -%>
+1. **NEVER** hardcode secrets - ALWAYS use environment variables
+2. **NEVER** skip quality gates - NO `--no-verify` or `HUSKY=0`
+3. **ALWAYS** run `<%= commands.quality_gates %>` before committing
+<% if (services && services.task_tracking && services.task_tracking.type !== 'none') { -%>
+4. **ALWAYS** use <%= services.task_tracking.type %> for task tracking - NEVER markdown TODOs
+<% } -%>
+5. **ALWAYS** search before creating - check codebase, deps, docs first
+6. **ALWAYS** communicate in <%= languages?.chat || 'English' %><% if (languages?.chat === 'Russian') { %> 🇷🇺<% } %> - Plans, reports, analysis → <%= languages?.chat || 'English' %>; Code comments → <%= languages?.code || 'English' %>
+<% if (services && services.mcp && services.mcp.memory_bank && services.mcp.memory_bank.enabled) { -%>
+7. **NEVER** create markdown reports in git - Store findings in Memory Bank via MCP instead
+<% } -%>
+<% } -%>
+
+<% if (services.mcp && services.mcp.memory_bank && services.mcp.memory_bank.enabled) { -%>
+### Rule #8 Explanation: Knowledge Storage Strategy
+
+**Where to store what:**
+
+| Information Type | Storage Location | Tool | Why |
+|------------------|------------------|------|-----|
+| **Session findings** | Memory Bank | `mcp__allpepper-memory-bank__memory_bank_write` | Multi-session reuse, no git pollution |
+| **Architecture decisions** | `<%= services.ide.paths.claude %>docs/decisions.md` | Manual edit | Persistent, searchable, version-controlled |
+<% if (services.mcp.hindsight && services.mcp.hindsight.enabled) { -%>
+| **Important learnings** | Hindsight | `mcp__hindsight-alice__retain` | Auto-recalled next session via TEMPR |
+<% } -%>
+<% if (services.task_tracking.type !== 'none') { -%>
+| **Task tracking** | <%= services.task_tracking.type %> | `<%= commands.task_create %>`, `<%= commands.task_close %>` | Issue database, dependencies, status |
+<% } -%>
+| **Analysis reports** | Memory Bank | `mcp__allpepper-memory-bank__memory_bank_write` | Temporary analysis, NOT git |
+| **Reference docs** | `docs/guides/` | Version-controlled | Documentation, patterns, examples |
+
+**Pattern:**
+
+```bash
+# ✅ DO: Store temporary analysis in Memory Bank
+mcp__allpepper-memory-bank__memory_bank_write \
+  projectName="<%= project.short_name || project.name %>" \
+  fileName="analysis-api-patterns.md" \
+  content="## API Error Handling Analysis\n\n[findings...]"
+
+<% if (services.mcp.hindsight && services.mcp.hindsight.enabled) { -%>
+# ✅ DO: Auto-recall via Hindsight next session
+mcp__hindsight-alice__retain "Decision: Use X pattern for API errors because [reason]"
+
+<% } -%>
+<% if (services.task_tracking.type !== 'none') { -%>
+# ✅ DO: Track work in <%= services.task_tracking.type %>
+<%= commands.task_create %> --title="Fix API error handling" --type=task
+
+<% } -%>
+# ❌ DON'T: Create YYYY-MM-DD report files
+# Bad: docs/FINDINGS_2026-01-21.md
+
+# ❌ DON'T: Session end summaries in markdown
+# Bad: Session summary report commit
+```
+
+**Query findings later:**
+
+```bash
+# Retrieve previous analysis
+mcp__allpepper-memory-bank__memory_bank_read \
+  projectName="<%= project.short_name || project.name %>" \
+  fileName="analysis-api-patterns.md"
+
+<% if (services.mcp.hindsight && services.mcp.hindsight.enabled) { -%>
+# Or use Hindsight for semantic search
+mcp__hindsight-alice__recall "API error handling decisions in <%= project.short_name || project.name %> project"
+<% } -%>
+```
+
+**Benefits:**
+
+- 📦 Keeps git history clean
+- 🔍 Findings searchable via MCP, not commit history
+- 🔄 Accessible across sessions without git noise
+- 📝 No temporary files cluttering repository
+
+<% } -%>
+## Quick Start
+
+```bash
+# Essential commands - memorize these
+<%= commands.dev %>           # Dev server (<%= options.dev_server_port || '' %>)
+<%= commands.quality_gates %> # MANDATORY before commit
+<%= commands.codegen %>       # Generate API types
+<% if (services.task_tracking.type !== 'none') { -%>
+<%= commands.task_ready %>              # Check available work
+<% } -%>
+```
+
+**Keyboard shortcuts:**
+
+- **`#`** - Type `#` to see file/symbol suggestions in prompts
+- **`@`** - Reference files or symbols directly
+- **`/`** - Access slash commands (analyze, architect, plan, review)
+
+## Project Overview
+
+**<%= project.name %>**<% if (project.description) { %> - <%= project.description %><% } %>
+
+<% if (architecture && architecture.structure) { -%>
+```text
+<%= architecture.structure %>
+```
+<% } -%>
+
+**Stack:**<% if (stack.build && stack.build.tool) { %> <%= stack.build.tool %> <%= stack.build.version || '' %> |<% } %><% if (stack.framework && stack.framework.name) { %> <%= stack.framework.name %> <%= stack.framework.version || '' %><% } %><% if (stack.language && stack.language.name) { %> | <%= stack.language.name %> <%= stack.language.version || '' %><% } %><% if (stack.state) { %> | <%= stack.state.server || '' %> | <%= stack.state.client || '' %><% } %><% if (stack.ui && stack.ui.library) { %> | <%= stack.ui.library %> <%= stack.ui.version || '' %><% if (stack.ui.styling) { %> | <%= stack.ui.styling %><% } %><% } %><% if (stack.api && stack.api.codegen) { %> | <%= stack.api.codegen %><% if (stack.api.mocks) { %> | <%= stack.api.mocks %><% } %><% } %><% if (stack.testing) { %> | <%= stack.testing %><% } %>
+
+<% if (options.token_optimization) { -%>
+## Token Optimization Strategy
+
+**Target:** <%= options.token_optimization %> token reduction per session
+
+```mermaid
+graph LR
+    A["Session Start<br/>11-19K tokens"] -->|Glob-based rule loading| B["3-5K tokens<br/>Context overhead"]
+    A -->|MCP Tool Search| C["<2K tokens<br/>Tool discovery"]
+    A -->|Progressive loading| D["Only load<br/>what's needed"]
+    B --> E["✅ Optimized<br/>5-8K total"]
+    C --> E
+    D --> E
+```
+
+**Techniques:**
+
+- Glob-based auto-loading: Load only rules matching file type (e.g., `.cursor/rules/*react*.mdc`)
+- MCP Tool Search: Dynamically load 3-5 relevant tools per task (vs preloading all)
+- Decision tree compression: Use diagrams/tables instead of explanations (87% savings)
+- Progressive loading: Don't load everything at session start
+
+<% } -%>
+<% if (options.sdd_enabled) { -%>
+## Specification-Driven Development (SDD)
+
+**Pattern:** Write executable specs BEFORE code generation (2026 paradigm)
+
+```mermaid
+graph LR
+    A["Write Spec<br/>(requirements.md)"] -->|Binding Contract| B["AI Agents"]
+    B -->|Implement against<br/>spec contract| C["Code Generation"]
+    B -->|Reference spec<br/>to stay aligned| D["Verification Agents"]
+    D -->|Validate against<br/>spec| E["✅ Approved"]
+```
+
+**Files:**
+
+- `requirements.md` - What to build (immutable spec)
+- `design.md` - Architecture decisions (why React, not Vue?)
+- `tasks.md` - Actionable breakdown with dependencies
+
+**Benefit:** Specs survive context switches (5K tokens saved vs recreating understanding)
+
+<% } -%>
+## Workflow Commands
+
+### Development
+
+```bash
+<%= commands.dev %>           # Dev server
+<%= commands.build %>         # Production build
+<%= commands.lint %>          # <%= stack.linter %>
+<%= commands.test %>          # <%= stack.testing || 'Tests' %>
+<%= commands.codegen %>       # Generate API (<%= stack.api && stack.api.codegen ? stack.api.codegen.split(' ')[0] : 'Codegen' %>)
+```
+
+<% if (services.task_tracking.type !== 'none') { -%>
+### Task Management (<%= services.task_tracking.type %>)
+
+```bash
+<%= commands.task_ready %>                           # Find available work
+<%= commands.task_update %> <id> --status=in_progress # Claim task
+<%= commands.task_close %> <id>                      # Complete task
+<%= commands.task_sync %>               # Export to JSONL
+```
+
+<% if (isTaskTracking('beads')) { -%>
+### Beads Sync (AI-Assisted)
+
+**Environment:** `BD_ENABLED=1` in `.env.development.local` enables integration.
+
+**AI should automatically:**
+
+1. **At session start:** `bd ready` + `bd blocked` for context
+2. **When creating tasks:** `bd create --title="..." --type=task`
+3. **When completing work:** `bd close <id>` + `bd sync --flush-only`
+4. **Before commit:** ensure `bd sync --flush-only` is executed
+
+**For colleagues WITHOUT BD_ENABLED:** beads is invisible, `issues.jsonl` file doesn't change in their commits.
+
+<% } -%>
+<% } -%>
+### Session End (MANDATORY)
+
+```bash
+# 1. Run quality gates
+<%= commands.quality_gates %>
+
+# 2. If gates FAIL - fix issues, re-run (see <%= services.ide.paths.claude %>TROUBLESHOOTING.md)
+
+# 3. Only after gates pass:
+git add <files> && git commit -m "type(scope): description"
+<% if (services.task_tracking.type !== 'none') { -%>
+<%= commands.task_sync %>
+<% } -%>
+```
+
+<% if (services.mcp && services.mcp.hindsight && services.mcp.hindsight.enabled) { -%>
+## Memory & Context
+
+### Session Start (Auto via hooks)
+
+The session-start hook automatically loads context. Manually refresh with:
+
+```bash
+<% if (services.task_tracking.type !== 'none') { -%>
+<%= commands.task_ready %>                                    # Available tasks
+<% } -%>
+mcp__hindsight-alice__recall "<%= project.short_name || project.name %> project context"
+/mcp                                        # Check server health
+```
+
+### During Work
+
+- **ALWAYS** use TodoWrite for multi-step tasks
+- Use `retain` to save important decisions
+<% if (services.mcp.context7 && services.mcp.context7.enabled) { -%>
+- Use Context7 before implementing unfamiliar APIs
+<% } -%>
+- Use `reflect` for complex decisions requiring synthesis
+
+### Session End
+
+```bash
+mcp__hindsight-alice__retain "Session summary: [what was done]"
+<% if (services.task_tracking.type !== 'none') { -%>
+<%= commands.task_sync %>
+<% } -%>
+```
+
+<% } -%>
+<% if (options.agentic_workflows) { -%>
+## Agentic Workflows & Verification Swarms (2026)
+
+**Pattern:** Multi-agent verification before merge
+
+```mermaid
+graph TB
+    A["Coder Agent<br/>(Sonnet)"] -->|Implementation| B["Security Agent<br/>(gpt-5-codex)"]
+    B -->|Checks CVEs<br/>validation| C["Architecture Agent<br/>(gpt-5-codex)"]
+    C -->|Validates patterns<br/>design| D{"All Approve?"}
+    D -->|Yes| E["✅ Merge"]
+    D -->|No| A
+```
+
+**Reduces PR review cycle by 40%** - agents catch issues before human review.
+
+<% } -%>
+<% if (services?.ide?.dual_mode) { -%>
+## Context Handoff Protocol (<%= services.ide.secondary %> ↔ <%= services.ide.primary %>)
+
+**Problem:** 5K tokens wasted per IDE switch without structured protocol
+
+```mermaid
+graph LR
+    A["<%= services.ide.secondary %><br/>(Opus)"] -->|context-handoff.md| B["<%= services.ide.primary %><br/>(Agent)"]
+    B -->|Implementation| C["Changes"]
+    C -->|Commit| D["Back to Claude"]
+    D -->|Review| E["✅ Approved"]
+
+    style A fill:#4a90e2
+    style B fill:#f39c12
+```
+
+**Setup:**
+
+```yaml
+# <%= services.ide.paths.claude %>context-handoff/current.md
+phase: "implementation"
+task_id: "<%= services.task_tracking.key_prefix %>xyz"
+scope: "Only modify src/pages/auth/ - don't touch generated API"
+api_contract: "docs/API-CONTRACT.md"
+test_plan: "docs/TEST-PLAN.md"
+```
+
+<% } -%>
+## SDLC Workflow
+
+<% if (services?.ide?.dual_mode) { -%>
+```mermaid
+graph LR
+    A["Analyze<br/>(Opus)"] -->|Requirements| B["Architect<br/>(Opus)"]
+    B -->|Design| C["Plan<br/>(Sonnet)"]
+    C -->|Tasks| D["Implement<br/>(<%= services.ide.primary %>)"]
+    D -->|Code| E["Review<br/>(Opus)"]
+    E -->|Approved| F["✅ Merge"]
+    E -->|Issues| D
+
+    style A fill:#e3f2fd
+    style B fill:#e3f2fd
+    style C fill:#f3e5f5
+    style D fill:#fff3e0
+    style E fill:#e3f2fd
+```
+
+<% } -%>
+<% if (options.model_switching) { -%>
+**Model switching:** <%= options.model_switching %>
+
+<% } -%>
+**Skip rules:**
+
+- New feature: All 5 phases
+<% if (options.skip_rules) { -%>
+- Enhancement: <%= options.skip_rules.enhancement %>
+- Bug fix: <%= options.skip_rules.bugfix %>
+- Simple fix: <%= options.skip_rules.simple_fix %>
+<% } else { -%>
+- Enhancement: Plan → Implement → Review
+- Bug fix: Plan → Implement
+- Simple fix: Implement only
+<% } -%>
+
+<% if (options.orchestration) { -%>
+## Orchestration Mode (Complex Tasks)
+
+**Three workflows for different scenarios:**
+
+| Workflow                  | When to Use                                                           | Trigger                      |
+| ------------------------- | --------------------------------------------------------------------- | ---------------------------- |
+| **Interactive SDLC**      | From idea to implementation: clarifications → structure → Full SDLC   | `from-prompt` or via Perles  |
+| **Full SDLC**             | Complete cycle: analyze → architect → plan → implement → test → review | `full-sdlc` + parent epic    |
+| **Epic Batches**          | Epic with multiple subtasks for parallel execution                    | `epic-batches` + parent epic |
+
+**Access:** `perles` → Ctrl+O → Ctrl+P → select workflow
+
+### Interactive SDLC from Prompt
+
+**Start with idea** → coordinator asks clarifying questions → creates epic/tasks → runs Full SDLC.
+
+**3 entry points:**
+
+1. **From prompt** - describe your idea → clarifications → auto-create structure → SDLC
+2. **From existing epic** - `<%= commands.task_show %> <%= services.task_tracking.key_prefix %>epic1` → skips clarifications → starts SDLC immediately
+3. **Resume after failure** - continues from stopping point using labels
+
+**Example:**
+
+```bash
+perles
+# Ctrl+O → Ctrl+P → "Interactive SDLC from Prompt"
+# Coordinator: "What do you want to build?"
+# You: "I want to add dark mode"
+# Coordinator asks questions → creates structure → launches SDLC
+```
+
+### Full SDLC Cycle
+
+6 agents execute sequentially:
+
+- Analyze (Opus) - understand requirements
+- Architect (Opus) - system design
+- Plan (Opus) - implementation planning
+- Implement (Sonnet) - code implementation
+- Test (Sonnet) - testing and validation
+- Review (Opus) - quality assurance
+
+**Trigger:** `<%= commands.task_update %> <%= services.task_tracking.key_prefix %>task --labels="full-sdlc"` (requires parent epic)
+
+**Resume:** Automatically continues from last phase using labels
+
+### Epic Parallel Batches
+
+Splits epic into batches for parallel execution (up to 5 Sonnet workers).
+
+**Trigger:** `<%= commands.task_update %> <%= services.task_tracking.key_prefix %>epic --labels="epic-batches"` (label on epic, not on tasks)
+
+### Resume After Failure
+
+**Automatic recovery:**
+
+```bash
+# 1. Check progress
+<%= commands.task_show %> <%= services.task_tracking.key_prefix %>epic1  # Check labels: phase-sdlc-implement
+
+# 2. In Perles TUI
+# Shift+J → "SDLC Progress Tracking" view
+# Find issue → Ctrl+O → select same workflow
+
+# 3. Coordinator automatically continues from stopping point
+```
+
+**Tracking via labels:**
+
+- `phase-clarify` - clarification phase
+- `phase-create-structure` - epic/task creation
+- `phase-sdlc-analyze` - requirements analysis
+- `phase-sdlc-architect` - architecture design
+- `phase-sdlc-plan` - implementation planning
+- `phase-sdlc-implement` - code implementation
+- `phase-sdlc-test` - testing and validation
+- `phase-sdlc-review` - quality review
+- `phase-complete` - workflow complete
+
+### Key Points
+
+- Full SDLC and Epic Batches require a parent epic
+- Interactive SDLC creates epic automatically
+- Use orchestration for ~10% of complex tasks
+- Use single-agent for ~90% of routine tasks
+- Can resume after any failure (network, system restart)
+
+**Full guide:** `<%= services.ide.paths.claude %>PERLES-ORCHESTRATION-GUIDE.md` (538 lines with examples)
+
+<% if (services.mcp && services.mcp.pal && services.mcp.pal.enabled) { -%>
+### PAL Tools Usage
+
+**IMPORTANT:** Deep analysis = Opus directly, not external models via PAL.
+
+- **thinkdeep (GLM-4.7)** - Implementation guidance, routine tasks only
+- **NOT for:** Critical architecture, deep investigations, security analysis
+- **Deep work:** Use Opus directly or Perles orchestration mode
+
+<% } -%>
+<% } -%>
+## MCP Tools
+
+**Full guide:** `docs/guides/mcp-tools-complete.md`
+
+| Server               | Tools                                         | Use For                          |
+| -------------------- | --------------------------------------------- | -------------------------------- |
+<% if (services.mcp && services.mcp.hindsight && services.mcp.hindsight.enabled) { -%>
+| **hindsight-alice**  | `recall`, `reflect`, `retain`                 | Long-term memory                 |
+<% } -%>
+<% if (services.mcp && services.mcp.context7 && services.mcp.context7.enabled) { -%>
+| **MCP_DOCKER**       | Context7, Jira, Confluence                    | Docs & project mgmt              |
+<% } -%>
+<% if (services.mcp && services.mcp.pal && services.mcp.pal.enabled) { -%>
+| **pal**              | `chat`, `thinkdeep`, `debug`, `codereview`    | External models (GPT-5, GLM-4.7) |
+<% } -%>
+<% if (services.mcp && services.mcp.snyk && services.mcp.snyk.enabled) { -%>
+| **Snyk**             | `snyk_code_scan`, `snyk_sca_scan`             | Security scanning                |
+<% } -%>
+| **zread**            | `search_doc`, `read_file`                     | GitHub repos                     |
+| **Figma**            | `get_design_context`                          | Design to code                   |
+| **zai-mcp-server**   | `ui_to_artifact`, `diagnose_error_screenshot` | Image analysis                   |
+| **claude-in-chrome** | `navigate`, `computer`, `read_page`           | Browser automation               |
+
+### MCP Priority Order
+
+<% if (services.task_tracking.type !== 'none') { -%>
+1. **<%= services.task_tracking.type %>** → Task context (`<%= commands.task_ready %>`)
+<% } -%>
+2. **Codebase** → Existing patterns (Glob, Grep)
+<% if (services.mcp && services.mcp.hindsight && services.mcp.hindsight.enabled) { -%>
+3. **Hindsight** → Past decisions (`recall`, `reflect`)
+<% } -%>
+<% if (services.mcp && services.mcp.context7 && services.mcp.context7.enabled) { -%>
+4. **Context7** → Library docs (`resolve-library-id` → `get-library-docs`)
+<% } -%>
+<% if (services.mcp && services.mcp.pal && services.mcp.pal.enabled) { -%>
+5. **PAL** → External models for complex tasks
+<% } -%>
+6. **WebSearch** → External info (last resort)
+
+<% if (services.mcp && (services.mcp.hindsight?.enabled || services.mcp.context7?.enabled || services.mcp.snyk?.enabled)) { -%>
+### Quick MCP Commands
+
+```bash
+<% if (services.mcp.context7 && services.mcp.context7.enabled) { -%>
+# Library docs
+mcp__MCP_DOCKER__resolve-library-id "tanstack query"
+mcp__MCP_DOCKER__get-library-docs "/tanstack/query" --topic "mutations"
+
+<% } -%>
+<% if (services.mcp.hindsight && services.mcp.hindsight.enabled) { -%>
+# Memory
+mcp__hindsight-alice__recall "How do we handle errors?"
+mcp__hindsight-alice__retain "Decision: Use X because Y"
+
+<% } -%>
+<% if (services.mcp.pal && services.mcp.pal.enabled) { -%>
+# External model for complex task
+mcp__pal__thinkdeep --hypothesis "Root cause of bug" --model gpt-5.1-codex
+
+<% } -%>
+<% if (services.mcp.snyk && services.mcp.snyk.enabled) { -%>
+# Security scan before commit
+mcp__Snyk__snyk_code_scan --path "<%= project.path %>/src" --severity_threshold "high"
+<% } -%>
+```
+
+<% } -%>
+<% if (services.mcp && services.mcp.context7 && services.mcp.context7.enabled) { -%>
+### When to Use Context7 vs WebSearch
+
+**Context7** (Library Documentation Lookup):
+
+- ✅ Looking up API documentation for known libraries (React, TanStack Query, Zustand)
+- ✅ Checking specific method signatures or parameters
+- ✅ Understanding library patterns and best practices
+- ✅ Finding examples from official library docs
+- ❌ NOT for current events, external data, or non-library info
+
+**WebSearch** (External Information):
+
+- ✅ Current framework updates or latest versions
+- ✅ External API documentation not in project
+- ✅ Community best practices and discussions
+- ✅ Problem solutions from Stack Overflow or blogs
+- ❌ NOT for project-internal patterns (use Hindsight instead)
+
+**Pattern:**
+
+```bash
+# Unknown library API? → Context7
+mcp__MCP_DOCKER__resolve-library-id "name-of-library"
+mcp__MCP_DOCKER__get-library-docs "/org/project" --topic "what-you-need"
+
+# Need current info? → WebSearch
+mcp__web-search-prime__webSearchPrime search_query="latest react patterns 2026"
+
+# Need project decision? → Hindsight (not WebSearch)
+mcp__hindsight-alice__recall "How do we handle [pattern] in this project?"
+```
+
+<% } -%>
+## Documentation
+
+| Topic            | Location                                                       |
+| ---------------- | -------------------------------------------------------------- |
+| **MCP guide**    | `<%= services.ide.paths.claude %>MCP-GUIDE.md`                                         |
+| Session protocol | `<%= services.ide.paths.claude %>SESSION-PROTOCOL.md`                                  |
+| Troubleshooting  | `<%= services.ide.paths.claude %>TROUBLESHOOTING.md`                                   |
+| SDLC workflow    | `<%= services.ide.paths.claude %>SDLC-WORKFLOW.md`                                     |
+| Hooks config     | `<%= services.ide.paths.claude %>settings.json`                                        |
+<% if (services?.ide?.paths?.cursor || true) { -%>
+| Cursor rules     | `<%= (services.ide?.paths?.cursor || '.cursor/') %>rules/INDEX.mdc` (41 rules, also work in Claude Code) |
+<% } -%>
+
+<% if (services.task_tracking.type !== 'none') { -%>
+## Sprint/Milestone Close
+
+```bash
+# Quick cleanup - delete temp banks, prune old docs
+<%= commands.task_sync %>
+CUTOFF=$(date -v-7d +%Y-%m-%d)
+curl -X DELETE "http://localhost:8888/v1/default/banks/reflections"
+curl -X DELETE "http://localhost:8888/v1/default/banks/session"
+```
+
+<% } -%>
+## Tips for Efficiency
+
+1. **Use `#` key** to quickly reference files when asking questions
+2. **Name sessions** with `/rename <task>` for easy resume
+3. **Check `/mcp`** if tools stop responding
+<% if (services.mcp && services.mcp.hindsight && services.mcp.hindsight.enabled) { -%>
+4. **Use `reflect`** for complex decisions requiring synthesis
+<% } -%>
+5. **Compact context** with `/compact` when responses slow down
+6. **Resume sessions** with `claude --continue` or `claude --resume <name>`
+
+<% if (services?.ide?.dual_mode) { -%>
+## Dual-IDE Workflow: <%= services.ide.secondary %> & <%= services.ide.primary %> Synchronization
+
+**CRITICAL:** We work in two IDEs simultaneously. All rules, conventions, and workflows must be identical.
+
+### Split SDLC Between IDEs
+
+| SDLC Phase | IDE | Model | Use When |
+|-----------|-----|-------|----------|
+| **Analyze** | <%= services.ide.secondary %> | **Opus** | Breaking down requirements, understanding scope |
+| **Architect** | <%= services.ide.secondary %> | **Opus** | Design decisions, system architecture, deep analysis |
+| **Plan** | <%= services.ide.secondary %> | Sonnet | Detailed planning, TodoWrite, task breakdown |
+| **Implement** | **<%= services.ide.primary %>** | Agent mode | Code generation, fast iterations, automode |
+| **Review** | <%= services.ide.secondary %> | **Opus** | Code quality, security review, Snyk integration |
+| **Fix Issues** | <%= services.ide.secondary %> → <%= services.ide.primary %> | Opus → Agent | Analysis in Opus, implementation in <%= services.ide.primary %> |
+
+**Key Principle:**
+
+- 🧠 **Critical thinking** (architecture, analysis, deep review) = **<%= services.ide.secondary %> Opus only**
+- 💻 **Implementation** (writing code, tests, iterating) = **<%= services.ide.primary %> automode**
+- 📋 **Planning** (breaking down, TodoWrite) = **<%= services.ide.secondary %> Sonnet**
+
+### Why Split?
+
+- **<%= services.ide.secondary %> Opus:** Best for analysis, architecture, decision-making (context awareness, reasoning depth)
+- **<%= services.ide.primary %> Agent:** Best for implementation, iteration, code generation (speed, reflex reactions)
+- **Synergy:** Complex analysis in <%= services.ide.secondary %> → optimized code generation in <%= services.ide.primary %>
+
+### IDE Synchronization Rules
+
+1. **Rules Parity:** All 41 rules from `<%= (services.ide?.paths?.cursor || '.cursor/') + 'rules/' %>INDEX.mdc` apply to both IDEs
+2. **Git Workflow:** Both IDEs use stealth mode (no auto-push, no auto-commit)
+<% if (services.task_tracking.type !== 'none') { -%>
+3. **<%= services.task_tracking.type %> Integration:** Both IDEs use `BD_ENABLED=1` for issue tracking
+<% } -%>
+4. **Quality Gates:** Both IDEs enforce `<%= commands.quality_gates %>` before commit
+5. **Changes Sync:** Updates to `<%= (services.ide?.paths?.cursor || '.cursor/') + 'rules/' %>` must be reflected in `<%= services.ide.paths.claude %>` documentation
+
+### Language Preference
+
+**All strategic documentation (plans, roadmaps, architectural decisions) must be in <%= languages?.chat || 'English' %>** for improved team readability and comprehension. Code comments remain in English per ESLint rules.
+
+### Model Selection Strategy: Opus vs PAL vs Sonnet
+
+**When to use each model:**
+
+#### 🧠 **Opus (Direct, NOT via PAL)**
+
+- ✅ Architectural decisions
+- ✅ Deep code review
+- ✅ Critical bug analysis
+- ✅ Security decisions
+- ❌ NOT via PAL - use direct Opus for quality
+
+#### 📊 **Sonnet/Haiku (for standard work)**
+
+- ✅ Implementation
+- ✅ Test writing
+- ✅ Code generation
+- ✅ Routine refactoring
+
+<% if (services.mcp && services.mcp.pal && services.mcp.pal.enabled) { -%>
+#### 🔄 **PAL Tools (GLM-4.7 for routine only)**
+
+- ✅ Routine research
+- ✅ Quick second opinion
+- ✅ Simple investigations
+- ❌ NOT for architecture
+- ❌ NOT for security analysis
+- ❌ NOT for critical code review
+
+<% } -%>
+**Rule:** If you're tempted to use PAL, first ask: "Is this a critical decision?" If yes → use Opus directly.
+
+<% } -%>
+---
+
+_Code style enforced by <%= stack.linter %> - no need to memorize rules._

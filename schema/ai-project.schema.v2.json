@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "AI Project Configuration",
+  "title": "AI Project Configuration v2",
   "description": "Configuration schema for shared-ai-configs with services grouping",
   "type": "object",
   "required": ["project", "stack", "commands"],
@@ -12,25 +12,8 @@
         "name": { "type": "string", "description": "Full project name" },
         "short_name": { "type": "string", "description": "Short name for templates" },
         "description": { "type": "string" },
-        "role": { "type": "string", "default": "Senior Developer" }
-      }
-    },
-    "languages": {
-      "type": "object",
-      "description": "Language settings for AI communication and code",
-      "properties": {
-        "chat": {
-          "type": "string",
-          "enum": ["Russian", "English"],
-          "default": "English",
-          "description": "Language for AI communication (plans, analysis, reports)"
-        },
-        "code": {
-          "type": "string",
-          "enum": ["English"],
-          "default": "English",
-          "description": "Language for code comments (always English per ESLint)"
-        }
+        "role": { "type": "string", "default": "Senior Developer" },
+        "language": { "type": "string", "enum": ["Russian", "English"], "default": "English" }
       }
     },
     "stack": {
@@ -154,31 +137,45 @@
           "properties": {
             "hindsight": {
               "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
+              "properties": {
+                "enabled": { "type": "boolean", "default": false }
+              }
             },
             "snyk": {
               "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
+              "properties": {
+                "enabled": { "type": "boolean", "default": false }
+              }
             },
             "context7": {
               "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
+              "properties": {
+                "enabled": { "type": "boolean", "default": false }
+              }
             },
             "pal": {
               "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
+              "properties": {
+                "enabled": { "type": "boolean", "default": false }
+              }
             },
             "memory_bank": {
               "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
+              "properties": {
+                "enabled": { "type": "boolean", "default": false }
+              }
             },
             "figma": {
               "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
+              "properties": {
+                "enabled": { "type": "boolean", "default": false }
+              }
             },
             "browser": {
               "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
+              "properties": {
+                "enabled": { "type": "boolean", "default": false }
+              }
             }
           }
         }
@@ -186,7 +183,7 @@
     },
     "commands": {
       "type": "object",
-      "description": "Project CLI commands (just strings, generator doesn't interpret them)",
+      "description": "Project CLI commands (just strings, no semantic meaning)",
       "required": ["dev", "build"],
       "properties": {
         "dev": { "type": "string", "description": "Development server" },
@@ -234,125 +231,26 @@
         }
       }
     },
-    "plugins": {
-      "type": "object",
-      "description": "CLI tools and plugins to install",
-      "properties": {
-        "install": {
-          "type": "array",
-          "description": "Plugins to install during setup",
-          "items": {
-            "type": "object",
-            "required": ["name"],
-            "properties": {
-              "name": { "type": "string", "description": "Plugin name (bd, jlab, gha, bits)" },
-              "version": { "type": "string" },
-              "source": {
-                "type": "string",
-                "enum": ["npm", "cargo", "pip", "brew", "binary"],
-                "description": "Installation source"
-              },
-              "config": {
-                "type": "object",
-                "description": "Plugin-specific configuration",
-                "additionalProperties": true
-              }
-            }
-          }
-        },
-        "platform": {
-          "type": "object",
-          "description": "Platform-specific overrides",
-          "properties": {
-            "darwin": {
-              "type": "object",
-              "description": "macOS-specific plugin configuration"
-            },
-            "linux": {
-              "type": "object",
-              "description": "Linux-specific plugin configuration"
-            }
-          }
-        }
-      }
-    },
     "generation": {
       "type": "object",
-      "description": "Multi-target generation configuration",
+      "description": "What to generate",
       "properties": {
         "targets": {
           "type": "object",
-          "description": "IDE/Agent targets. Each target is independent - enabled targets get ALL their features",
           "properties": {
-            "claude": {
-              "oneOf": [
-                { "type": "boolean", "description": "Simple enable/disable (legacy)" },
-                {
-                  "type": "object",
-                  "description": "Claude Code target - generates .claude/, CLAUDE.md, hooks (bash)",
-                  "properties": {
-                    "enabled": { "type": "boolean", "default": true, "description": "Enable Claude Code generation" },
-                    "output_dir": { "type": "string", "default": ".claude" },
-                    "features": {
-                      "type": "array",
-                      "description": "What to generate for Claude Code",
-                      "items": { "type": "string", "enum": ["rules", "hooks", "commands", "docs", "settings", "main"] },
-                      "default": ["rules", "hooks", "commands", "docs", "settings", "main"]
-                    }
-                  }
-                }
-              ]
-            },
-            "cursor": {
-              "oneOf": [
-                { "type": "boolean", "description": "Simple enable/disable (legacy)" },
-                {
-                  "type": "object",
-                  "description": "Cursor IDE target - generates .cursor/, skills, agents, notepads, hooks (js)",
-                  "properties": {
-                    "enabled": { "type": "boolean", "default": true, "description": "Enable Cursor generation" },
-                    "output_dir": { "type": "string", "default": ".cursor" },
-                    "features": {
-                      "type": "array",
-                      "description": "What to generate for Cursor",
-                      "items": { "type": "string", "enum": ["rules", "hooks", "commands", "skills", "agents", "notepads", "mcp", "cursorrules"] },
-                      "default": ["rules", "hooks", "commands", "skills", "agents", "notepads", "mcp", "cursorrules"]
-                    }
-                  }
-                }
-              ]
-            },
-            "kilo": {
-              "oneOf": [
-                { "type": "boolean", "description": "Simple enable/disable" },
-                {
-                  "type": "object",
-                  "description": "Kilo agent target (future)",
-                  "properties": {
-                    "enabled": { "type": "boolean", "default": false },
-                    "output_dir": { "type": "string", "default": ".kilo" }
-                  }
-                }
-              ]
-            }
-          }
-        },
-        "common": {
-          "type": "object",
-          "description": "Common content shared across all enabled targets",
-          "properties": {
-            "sdlc_workflow": { "type": "boolean", "default": true, "description": "SDLC workflow (analyze → architect → plan → implement → review)" },
-            "beads_tracking": { "type": "boolean", "default": true, "description": "Beads task tracking integration" },
-            "quality_gates": { "type": "boolean", "default": true, "description": "Quality gates hooks" },
-            "mcp_integration": { "type": "boolean", "default": true, "description": "MCP tools integration" }
+            "claude": { "type": "boolean", "default": true, "description": ".claude/ directory" },
+            "cursor": { "type": "boolean", "default": true, "description": ".cursor/ directory" },
+            "beads": { "type": "boolean", "default": false, "description": ".beads/ directory" },
+            "perles": { "type": "boolean", "default": false, "description": ".perles/ directory" },
+            "ignore_files": { "type": "boolean", "default": true, "description": ".cursorignore, etc" },
+            "claude_md": { "type": "boolean", "default": true, "description": "CLAUDE.md root file" }
           }
         },
         "strategy": {
           "type": "string",
           "enum": ["generate", "symlink", "copy"],
           "default": "generate"
-        },
-        "gitignore_entries": { "type": "boolean", "default": true, "description": "Add generated paths to .gitignore" }
+        }
       }
     }
   }

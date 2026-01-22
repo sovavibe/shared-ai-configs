@@ -1,0 +1,101 @@
+# Session Protocol
+
+> Generated from .ai-project.yaml
+
+## Session Start
+
+<% if (services?.task_tracking?.type === 'beads') { %>
+### 1. Check Available Work (Beads)
+
+```bash
+bd ready              # Find tasks ready to work
+bd list --status=open # All open issues
+bd blocked            # Check blocked items
+```
+<% } %>
+
+<% if (services?.mcp?.hindsight?.enabled) { %>
+### 2. Load Context (Hindsight)
+
+```bash
+mcp__hindsight-alice__recall "<%= project?.name || 'project' %> context"
+```
+<% } %>
+
+### 3. Verify Environment
+
+```bash
+<%= commands?.dev || 'npm run dev' %> # Start dev server
+/mcp                  # Check MCP servers health
+```
+
+## During Work
+
+<% if (services?.task_tracking?.type === 'beads') { %>
+### Task Management
+
+```bash
+# Claim task
+bd update <id> --status=in_progress
+
+# Create subtask
+bd create --title="[subtask] description" --type=task
+
+# Add dependency
+bd dep add <child> <parent>
+```
+<% } %>
+
+### Progress Tracking
+
+Use `TodoWrite` for multi-step tasks within a session.
+
+<% if (services?.mcp?.hindsight?.enabled) { %>
+### Save Important Decisions
+
+```bash
+mcp__hindsight-alice__retain "Decision: [what] because [why]"
+```
+<% } %>
+
+## Session End
+
+<% if (services?.task_tracking?.type === 'beads') { %>
+### 1. Close Completed Tasks
+
+```bash
+bd close <id1> <id2> ...  # Close multiple at once
+bd sync --flush-only      # Export to JSONL
+```
+<% } %>
+
+### 2. Quality Gates
+
+```bash
+<%= commands?.lint || 'npm run lint' %>
+<%= commands?.test || 'npm run test' %>
+npm run quality:gates  # If available
+```
+
+<% if (services?.mcp?.hindsight?.enabled) { %>
+### 3. Session Summary
+
+```bash
+mcp__hindsight-alice__retain "Session summary: [what was accomplished]"
+```
+<% } %>
+
+### 4. Commit Changes
+
+```bash
+git add <files>
+git commit -m "type(scope): description"
+```
+
+<% if (services?.task_tracking?.type === 'beads') { %>
+### 5. Final Sync
+
+```bash
+bd sync --flush-only  # CRITICAL: Export before closing
+```
+<% } %>

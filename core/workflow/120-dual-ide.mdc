@@ -1,0 +1,73 @@
+---
+description: Dual IDE workflow with Claude Code and Cursor
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Dual IDE Workflow: Claude Code + Cursor
+
+## Split SDLC Between IDEs
+
+| SDLC Phase | IDE | Model | Use When |
+|-----------|-----|-------|----------|
+| **Analyze** | Claude Code | **Opus** | Breaking down requirements, understanding scope |
+| **Architect** | Claude Code | **Opus** | Design decisions, system architecture, deep analysis |
+| **Plan** | Claude Code | Sonnet | Detailed planning, TodoWrite, task breakdown |
+| **Implement** | **Cursor** | Agent mode | Code generation, fast iterations, automode |
+| **Review** | Claude Code | **Opus** | Code quality, security review, Snyk integration |
+| **Fix Issues** | Claude Code → Cursor | Opus → Agent | Analysis in Opus, implementation in Cursor |
+
+## Key Principles
+
+- **Critical thinking** (architecture, analysis, deep review) = **Claude Code Opus only**
+- **Implementation** (writing code, tests, iterating) = **Cursor automode**
+- **Planning** (breaking down, TodoWrite) = **Claude Code Sonnet**
+
+## Why Split?
+
+- **Claude Code Opus:** Best for analysis, architecture, decision-making (context awareness, reasoning depth)
+- **Cursor Agent:** Best for implementation, iteration, code generation (speed, reflex reactions)
+- **Synergy:** Complex analysis in Claude Code → optimized code generation in Cursor
+
+## IDE Synchronization Rules
+
+1. **Rules Parity:** All rules from `.cursor/rules/` apply to both IDEs
+2. **Git Workflow:** Both IDEs use stealth mode (no auto-push, no auto-commit)
+3. **Beads Integration:** Both IDEs use `BD_ENABLED=1` for issue tracking
+4. **Quality Gates:** Both IDEs enforce `npm run quality:gates` before commit
+5. **Changes Sync:** Updates to `.cursor/rules/` must be reflected in `.claude/` documentation
+
+## Context Handoff Protocol
+
+When switching between IDEs, use structured handoff:
+
+```yaml
+# .claude/context-handoff/current.md
+phase: "implementation"
+task_id: "beads-xyz"
+scope: "Only modify src/pages/auth/ - don't touch generated API"
+api_contract: "docs/API-CONTRACT.md"
+test_plan: "docs/TEST-PLAN.md"
+```
+
+## Model Selection Strategy
+
+### Opus (Direct, NOT via PAL)
+- ✅ Architectural decisions
+- ✅ Deep code review
+- ✅ Critical bug analysis
+- ✅ Security decisions
+
+### Sonnet/Haiku (for standard work)
+- ✅ Implementation
+- ✅ Test writing
+- ✅ Code generation
+- ✅ Routine refactoring
+
+### PAL Tools (external models for routine only)
+- ✅ Routine research
+- ✅ Quick second opinion
+- ❌ NOT for architecture
+- ❌ NOT for security analysis
+
+**Rule:** If you're tempted to use PAL, first ask: "Is this a critical decision?" If yes → use Opus directly.

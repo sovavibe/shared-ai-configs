@@ -1,0 +1,113 @@
+---
+description: GitLab Merge Request workflow and commands
+globs: ["**/*"]
+alwaysApply: false
+---
+
+# GitLab MR Workflow
+
+## Available Skills (Slash Commands)
+
+| Command | Description |
+|---------|-------------|
+| `/gitlab-view-mr <MR>` | View MR details and status |
+| `/gitlab-review-mr <MR>` | Conduct comprehensive code review |
+| `/gitlab-get-comments <MR>` | Fetch all comments from MR |
+| `/gitlab-process-comments <MR>` | Process and respond to feedback |
+| `/gitlab-reply <MR>` | Reply to specific discussion thread |
+| `/gitlab-update-description <MR>` | Update MR description |
+
+## MR Review Workflow
+
+### 1. Gather Context
+```bash
+# Get MR info via CLI
+glab mr view <MR_NUMBER>
+glab mr diff <MR_NUMBER>
+
+# Or via skill
+/gitlab-view-mr <MR_NUMBER>
+```
+
+### 2. Review Process
+```bash
+# Run quality checks first
+npm run lint
+npm run typecheck
+npm run test -- --run
+
+# Then conduct review
+/gitlab-review-mr <MR_NUMBER>
+```
+
+### 3. Process Feedback
+```bash
+# Get existing comments
+/gitlab-get-comments <MR_NUMBER>
+
+# Process and fix issues
+/gitlab-process-comments <MR_NUMBER>
+
+# Reply when done
+/gitlab-reply <MR_NUMBER>
+```
+
+## Priority Ranking for Issues
+
+| Priority | Criteria | Action |
+|----------|----------|--------|
+| **P0 Blocker** | Security, data corruption, broken builds | MUST FIX before merge |
+| **P1 Critical** | Type safety, missing error handling | MUST FIX before merge |
+| **P2 Important** | React hooks, architecture issues | Should fix in this round |
+| **P3 Nice to Have** | Style, docs, minor optimizations | Can defer to later |
+
+## Adding Inline Comments
+
+Use MCP for inline comments on specific lines:
+
+```bash
+# Via glab CLI
+glab mr comment <MR> --message "Comment text" --line <LINE> --file <PATH>
+```
+
+## Creating Tasks from Review
+
+For each significant issue found:
+
+1. Create Beads task:
+```bash
+bd create --title="[MR-N] Fix: issue description" --type=task --priority=2
+```
+
+2. Link to MR in description
+
+## MR Description Template
+
+When updating MR description, use:
+
+```markdown
+## Summary
+<1-3 bullet points>
+
+## Changes
+- List of changes
+
+## Test Plan
+- [ ] How to test
+
+## Related Issues
+- Closes #ISSUE_NUMBER
+```
+
+## Integration with Beads
+
+When working on MR-related tasks:
+
+```bash
+# Check for MR-related work
+bd list --status=open | grep -i "MR-"
+
+# Update status when done
+bd update <id> --status=in_progress
+bd close <id> --reason="Fixed in MR-X"
+```

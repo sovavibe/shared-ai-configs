@@ -1,0 +1,124 @@
+# SDLC Workflow
+
+> Generated from .ai-project.yaml
+
+## Standard Workflow
+
+```mermaid
+graph LR
+    A["Analyze"] --> B["Plan"]
+    B --> C["Implement"]
+    C --> D["Review"]
+    D --> E["Merge"]
+```
+
+| Phase | IDE | Model | Description |
+|-------|-----|-------|-------------|
+<% if (services?.ide?.dual_mode) { %>
+| Analyze | Claude Code | Opus | Requirements analysis |
+| Architect | Claude Code | Opus | System design |
+| Plan | Claude Code | Sonnet | Task breakdown |
+| Implement | Cursor | Agent | Code generation |
+| Review | Claude Code | Opus | Quality review |
+<% } else { %>
+| Analyze | <%= services?.ide?.primary || 'Cursor' %> | Sonnet | Requirements analysis |
+| Plan | <%= services?.ide?.primary || 'Cursor' %> | Sonnet | Task breakdown |
+| Implement | <%= services?.ide?.primary || 'Cursor' %> | Sonnet | Code generation |
+| Review | <%= services?.ide?.primary || 'Cursor' %> | Sonnet | Quality review |
+<% } %>
+
+## Skip Rules
+
+| Task Type | Phases to Run |
+|-----------|---------------|
+| New Feature | All 5 phases |
+| Enhancement | Plan → Implement → Review |
+| Bug Fix | Plan → Implement |
+| Simple Fix | Implement only |
+
+<% if (options?.orchestration) { %>
+## Orchestration Mode
+
+For complex multi-agent tasks, use Perles orchestration:
+
+### Available Workflows
+
+| Workflow | When to Use | Trigger |
+|----------|-------------|---------|
+| **Interactive SDLC** | From idea to implementation | `from-prompt` |
+| **Full SDLC** | Complete cycle with epic | `full-sdlc` + parent epic |
+| **Epic Batches** | Parallel execution | `epic-batches` + parent epic |
+
+### Starting Orchestration
+
+```bash
+perles
+# Ctrl+O → Ctrl+P → select workflow
+```
+
+### Resume After Failure
+
+Progress tracked via labels:
+- `phase-clarify` - clarification phase
+- `phase-sdlc-analyze` - requirements analysis
+- `phase-sdlc-implement` - implementation
+- `phase-complete` - workflow complete
+
+```bash
+# Check progress
+bd show <epic-id>
+
+# Resume in Perles TUI
+# Shift+J → "SDLC Progress Tracking" view
+```
+<% } %>
+
+<% if (services?.ide?.dual_mode) { %>
+## Context Handoff Protocol
+
+When switching between Claude Code and Cursor:
+
+```yaml
+# .claude/context-handoff/current.md
+phase: "implementation"
+task_id: "beads-xyz"
+scope: "Only modify src/pages/auth/"
+api_contract: "docs/API-CONTRACT.md"
+```
+
+### Key Principles
+
+- 🧠 **Critical thinking** = Claude Code Opus
+- 💻 **Implementation** = Cursor Agent
+- 📋 **Planning** = Claude Code Sonnet
+<% } %>
+
+## Model Selection
+
+<% if (services?.ide?.dual_mode) { %>
+### Opus (Direct)
+- ✅ Architectural decisions
+- ✅ Deep code review
+- ✅ Security analysis
+- ❌ NOT via PAL
+
+### Sonnet/Haiku
+- ✅ Implementation
+- ✅ Test writing
+- ✅ Routine refactoring
+<% } else { %>
+### When to Use Which Model
+
+- **Complex tasks**: Use Opus for analysis
+- **Standard work**: Sonnet is sufficient
+- **Quick fixes**: Haiku for speed
+<% } %>
+
+<% if (services?.mcp?.pal?.enabled) { %>
+### PAL (External Models)
+
+- ✅ Routine research
+- ✅ Quick second opinion
+- ❌ NOT for architecture
+- ❌ NOT for security
+<% } %>

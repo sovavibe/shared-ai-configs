@@ -1,0 +1,29 @@
+# Documentation Index
+
+> Generated from .ai-project.yaml
+
+## Quick Links
+
+| Document | Description |
+|----------|-------------|
+| [CLAUDE.md](../../../CLAUDE.md) | Main instructions |
+<% if (services?.task_tracking?.type === 'beads') { %>
+| [SESSION-PROTOCOL.md](SESSION-PROTOCOL.md) | Session workflow |
+<% } %>
+| [MCP-GUIDE.md](MCP-GUIDE.md) | MCP tools reference |
+| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Problem solving |
+| [SDLC-WORKFLOW.md](SDLC-WORKFLOW.md) | Development phases |
+
+## Project: <%= project?.name || 'Project' %>
+
+**Stack:** <%= stack?.type || 'unknown' %>
+**IDE:** <%= services?.ide?.primary || 'Cursor' %><% if (services?.ide?.dual_mode) { %> + <%= services?.ide?.secondary %><% } %>
+<% if (services?.vcs?.type) { %>
+**VCS:** <%= services.vcs.type %>
+<% } %>
+
+## Getting Started
+
+1. Read [CLAUDE.md](../../../CLAUDE.md) for project overview
+2. Check [SESSION-PROTOCOL.md](SESSION-PROTOCOL.md) for workflow
+3. Use [MCP-GUIDE.md](MCP-GUIDE.md) for tool reference

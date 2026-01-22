@@ -1,0 +1,124 @@
+# MCP Tools Guide
+
+> Generated from .ai-project.yaml - do not edit directly
+
+## Available MCP Servers
+
+<% if (services?.mcp?.hindsight?.enabled) { %>
+### Hindsight Memory
+
+Long-term memory and context retention.
+
+**Tools:**
+- `mcp__hindsight-alice__recall` - Search past conversations
+- `mcp__hindsight-alice__retain` - Save important decisions
+- `mcp__hindsight-alice__reflect` - Synthesize complex topics
+
+**Usage:**
+```bash
+# Recall past context
+mcp__hindsight-alice__recall "How do we handle errors?"
+
+# Save important decision
+mcp__hindsight-alice__retain "Decision: Use X because Y"
+```
+<% } %>
+
+<% if (services?.mcp?.snyk?.enabled) { %>
+### Snyk Security
+
+Security scanning for code and dependencies.
+
+**Tools:**
+- `mcp__Snyk__snyk_code_scan` - SAST scanning
+- `mcp__Snyk__snyk_sca_scan` - Dependency scanning
+
+**Usage:**
+```bash
+# Scan code for vulnerabilities
+mcp__Snyk__snyk_code_scan --path "<%= project?.path || '.' %>/src" --severity_threshold "high"
+
+# Scan dependencies
+mcp__Snyk__snyk_sca_scan --path "<%= project?.path || '.' %>"
+```
+<% } %>
+
+<% if (services?.mcp?.context7?.enabled) { %>
+### Context7 (Library Docs)
+
+Official library documentation lookup.
+
+**Tools:**
+- `resolve-library-id` - Find library ID
+- `get-library-docs` - Get documentation
+
+**Usage:**
+```bash
+# Look up library
+mcp__MCP_DOCKER__resolve-library-id "tanstack query"
+
+# Get specific docs
+mcp__MCP_DOCKER__get-library-docs "/tanstack/query" --topic "mutations"
+```
+<% } %>
+
+<% if (services?.mcp?.pal?.enabled) { %>
+### PAL (External Models)
+
+Access to external AI models for complex tasks.
+
+**Tools:**
+- `mcp__pal__chat` - General chat
+- `mcp__pal__thinkdeep` - Deep analysis
+- `mcp__pal__debug` - Debugging assistance
+- `mcp__pal__codereview` - Code review
+
+**Note:** Use for routine tasks only. Critical decisions should use Opus directly.
+<% } %>
+
+<% if (services?.mcp?.figma?.enabled) { %>
+### Figma
+
+Design to code integration.
+
+**Tools:**
+- `mcp__Figma__get_design_context` - Get design specs
+- `mcp__Figma__get_screenshot` - Capture design screenshots
+<% } %>
+
+<% if (services?.mcp?.browser?.enabled) { %>
+### Browser Automation
+
+Chrome browser control for testing and automation.
+
+**Tools:**
+- `mcp__claude-in-chrome__navigate` - Navigate to URL
+- `mcp__claude-in-chrome__computer` - Mouse/keyboard actions
+- `mcp__claude-in-chrome__read_page` - Read page content
+<% } %>
+
+<% if (services?.mcp?.memory_bank?.enabled) { %>
+### Memory Bank
+
+Project-specific memory storage.
+
+**Tools:**
+- `mcp__allpepper-memory-bank__memory_bank_read` - Read memory
+- `mcp__allpepper-memory-bank__memory_bank_write` - Write memory
+- `mcp__allpepper-memory-bank__list_project_files` - List stored files
+<% } %>
+
+## MCP Priority Order
+
+1. **Beads** → Task context (`bd ready`)
+2. **Codebase** → Existing patterns (Glob, Grep)
+<% if (services?.mcp?.hindsight?.enabled) { %>
+3. **Hindsight** → Past decisions (`recall`, `reflect`)
+<% } %>
+<% if (services?.mcp?.context7?.enabled) { %>
+4. **Context7** → Library docs
+<% } %>
+<% if (services?.mcp?.pal?.enabled) { %>
+5. **PAL** → External models for complex tasks
+<% } %>
+6. **WebSearch** → External info (last resort)

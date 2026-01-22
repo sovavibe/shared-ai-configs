@@ -1,0 +1,35 @@
+# Slash Commands Guide
+
+## Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `/analyze` | Analyze requirements |
+| `/architect` | Design architecture |
+| `/plan` | Create implementation plan |
+| `/review` | Review code changes |
+<% if (services?.vcs?.type === 'gitlab') { %>
+| `/gitlab-view-mr` | View MR details |
+| `/gitlab-review-mr` | Review MR |
+| `/gitlab-process-comments` | Process feedback |
+<% } %>
+<% if (services?.vcs?.type === 'github') { %>
+| `/pr-create` | Create pull request |
+| `/pr-review` | Review PR |
+<% } %>
+
+## Usage
+
+Type `/` in chat to see available commands.
+
+### Example: Code Review
+
+```
+/review src/components/Button.tsx
+```
+
+### Example: Architecture
+
+```
+/architect "Add user authentication"
+```

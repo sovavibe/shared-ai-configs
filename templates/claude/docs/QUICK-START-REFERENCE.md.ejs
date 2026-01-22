@@ -1,0 +1,37 @@
+# Quick Start Reference
+
+## Essential Commands
+
+```bash
+# Development
+<%= commands?.dev || 'npm run dev' %>
+<%= commands?.build || 'npm run build' %>
+<%= commands?.lint || 'npm run lint' %>
+<%= commands?.test || 'npm run test' %>
+```
+
+<% if (services?.task_tracking?.type === 'beads') { %>
+## Beads Commands
+
+```bash
+bd ready              # Find available work
+bd update <id> --status=in_progress
+bd close <id>
+bd sync --flush-only  # Before session end
+```
+<% } %>
+
+<% if (services?.mcp?.hindsight?.enabled) { %>
+## Memory Commands
+
+```bash
+mcp__hindsight-alice__recall "query"
+mcp__hindsight-alice__retain "important decision"
+```
+<% } %>
+
+## Quality Gates
+
+```bash
+npm run quality:gates  # Run before commit
+```
