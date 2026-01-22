@@ -1,6 +1,11 @@
 # shared-ai-configs
 
-NPM package for generating AI-assisted development configurations for Claude Code and Cursor IDE.
+[![npm version](https://img.shields.io/npm/v/shared-ai-configs.svg)](https://www.npmjs.com/package/shared-ai-configs)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
+[![CI](https://github.com/sovavibe/shared-ai-configs/actions/workflows/quality.yml/badge.svg)](https://github.com/sovavibe/shared-ai-configs/actions)
+
+Generate AI-assisted development configurations for Claude Code and Cursor IDE from a single YAML config.
 
 ## Features
 
@@ -248,19 +253,41 @@ npm run build
 # Watch mode
 npm run watch
 
-# Test
+# Run tests
 npm run test
 
-# Lint
-npm run lint
+# Quality checks (lint, format, markdown)
+npm run quality
+
+# Auto-fix issues
+npm run quality:fix
 ```
+
+Or use the Makefile:
+
+```bash
+make help       # Show all commands
+make build      # Compile TypeScript
+make test       # Run tests
+make quality    # Run all quality checks
+make fix        # Auto-fix lint/format issues
+make link       # npm link for local development
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development guide.
+
+## Documentation
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) — Development setup and contribution guide
+- [CHANGELOG.md](CHANGELOG.md) — Version history
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — System design
+- [docs/PRINCIPLES.md](docs/PRINCIPLES.md) — Core design principles
 
 ## Related
 
-- [Claude Code](https://claude.ai/claude-code) — Anthropic's CLI
+- [Claude Code](https://claude.ai/code) — Anthropic's AI coding assistant
 - [Cursor](https://cursor.sh) — AI-powered IDE
-- [Beads](https://github.com/your-org/beads) — Local task tracking
 
 ## License
 
-MIT
+MIT — See [LICENSE](LICENSE) for details.

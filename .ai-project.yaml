@@ -1,0 +1,135 @@
+# .ai-project.yaml - shared-ai-configs (dogfooding)
+# This project generates AI configs, and uses itself for AI guidance
+# Version: 1.0.0
+
+# ═══════════════════════════════════════════════════════════════
+# PROJECT METADATA
+# ═══════════════════════════════════════════════════════════════
+project:
+  name: 'shared-ai-configs'
+  short_name: 'sac'
+  description: 'NPM package for generating AI-assisted development configurations for Claude Code and Cursor IDE'
+  role: 'Full-Stack DevTools Engineer'
+
+# ═══════════════════════════════════════════════════════════════
+# TECH STACK
+# ═══════════════════════════════════════════════════════════════
+stack:
+  type: 'node'
+
+  framework:
+    name: 'Commander.js'
+    version: '12'
+
+  language:
+    name: 'TypeScript'
+    version: '5.3'
+
+  build:
+    tool: 'tsc'
+
+  testing: 'Vitest'
+  linter: 'ESLint'
+
+# ═══════════════════════════════════════════════════════════════
+# ARCHITECTURE
+# ═══════════════════════════════════════════════════════════════
+architecture:
+  type: 'Modular'
+  structure: |
+    src/cli/
+    ├── commands/      # init, generate, validate, status, doctor
+    ├── utils/         # config, template, logger
+    └── types.ts       # TypeScript interfaces
+    core/              # Universal .mdc rules (28 files)
+    stacks/            # Stack-specific rules (react/, node/)
+    integrations/      # Tool integrations (beads/, github/, gitlab/)
+    templates/         # EJS templates for generation
+    content/           # Commands, skills, agents, notepads
+    hooks/             # Shell/JS hooks for Claude/Cursor
+    schema/            # JSON Schema for .ai-project.yaml
+
+  import_rule: 'commands → utils → types (never reverse)'
+
+# ═══════════════════════════════════════════════════════════════
+# SERVICES
+# ═══════════════════════════════════════════════════════════════
+services:
+  ide:
+    primary: 'Cursor'
+    secondary: 'Claude Code'
+    dual_mode: true
+    paths:
+      claude: '.claude/'
+      cursor: '.cursor/'
+
+  vcs:
+    type: 'github'
+    main_branch: 'master'
+
+  task_tracking:
+    type: 'beads'
+    key_prefix: 'SAC-'
+    paths:
+      beads: '.beads/'
+
+  mcp:
+    hindsight:
+      enabled: true
+    pal:
+      enabled: true
+    context7:
+      enabled: true
+
+# ═══════════════════════════════════════════════════════════════
+# COMMANDS
+# ═══════════════════════════════════════════════════════════════
+commands:
+  dev: 'npm run watch'
+  build: 'npm run build'
+  lint: 'npm run lint'
+  test: 'npm run test'
+  quality_gates: 'npm run quality'
+
+  # Task tracking (beads)
+  task_ready: 'bd ready'
+  task_update: 'bd update'
+  task_close: 'bd close'
+  task_sync: 'bd sync --flush-only'
+
+# ═══════════════════════════════════════════════════════════════
+# LANGUAGES
+# ═══════════════════════════════════════════════════════════════
+languages:
+  chat: 'Russian'
+  code: 'English'
+
+# ═══════════════════════════════════════════════════════════════
+# RULES
+# ═══════════════════════════════════════════════════════════════
+rules:
+  critical:
+    - "NEVER edit content in dist/ - it's generated"
+    - 'ALWAYS run `npm run quality` before committing'
+    - 'Use beads (bd) for task tracking'
+    - 'Sync beads before session end: bd sync --flush-only'
+
+# ═══════════════════════════════════════════════════════════════
+# OPTIONS
+# ═══════════════════════════════════════════════════════════════
+options:
+  orchestration: false
+  agentic_workflows: false
+  sdd_enabled: false
+
+# ═══════════════════════════════════════════════════════════════
+# GENERATION
+# ═══════════════════════════════════════════════════════════════
+generation:
+  targets:
+    claude: true
+    cursor: false
+    beads: true
+    claude_md: true
+    gitignore_entries: true
+  strategy: 'generate'

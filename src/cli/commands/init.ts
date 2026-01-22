@@ -1,6 +1,5 @@
 import { writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
-import yaml from 'js-yaml';
 import { logger } from '../utils/logger.js';
 import { getDefaultConfig } from '../utils/config.js';
 import type { InitOptions } from '../types.js';
@@ -141,6 +140,6 @@ generation:
   logger.list([
     'Edit .ai-project.yaml to match your project',
     'Run: npx shared-ai-configs generate',
-    'Add generated files to .gitignore'
+    'Add generated files to .gitignore',
   ]);
 }

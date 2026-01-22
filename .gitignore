@@ -23,5 +23,25 @@ npm-debug.log*
 /tmp/
 coverage/
 
-# Progress notes (temporary)
-PROGRESS.md
+# Environment
+.env
+.env.local
+
+# AI Generated (by shared-ai-configs) - DO NOT EDIT
+# Regenerate with: npx shared-ai-configs generate
+
+# Memory Bank (stored in MCP, not in git)
+.memory
+memory-bank/
+
+# Claude Code (generated rules, not tracked)
+.claude/
+# Note: CLAUDE.md is hand-written for this project and IS tracked
+
+# Beads (local database - issues.jsonl is tracked)
+.beads/*.db
+.beads/*.db-*
+
+# Future IDE support
+.kilo/
+.jb-ai/

@@ -2,6 +2,7 @@ import ejs from 'ejs';
 import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { globSync } from 'glob';
 import type { Config } from '../types.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -48,42 +49,51 @@ function createTemplateContext(config: Config): TemplateContext {
 
   // Determine task tracking commands based on type
   const taskType = services.task_tracking?.type || 'none';
-  const taskCommands = taskType === 'beads' ? {
-    task_create: 'bd create',
-    task_close: 'bd close',
-    task_ready: 'bd ready',
-    task_update: 'bd update',
-    task_show: 'bd show',
-    task_sync: 'bd sync --flush-only',
-  } : taskType === 'jira' ? {
-    task_create: 'jira create',
-    task_close: 'jira close',
-    task_ready: 'jira list --status=ready',
-    task_update: 'jira update',
-    task_show: 'jira show',
-    task_sync: 'jira sync',
-  } : taskType === 'linear' ? {
-    task_create: 'linear issue create',
-    task_close: 'linear issue close',
-    task_ready: 'linear issue list --status=todo',
-    task_update: 'linear issue update',
-    task_show: 'linear issue view',
-    task_sync: 'linear sync',
-  } : taskType === 'github-issues' ? {
-    task_create: 'gh issue create',
-    task_close: 'gh issue close',
-    task_ready: 'gh issue list --state=open',
-    task_update: 'gh issue edit',
-    task_show: 'gh issue view',
-    task_sync: 'gh issue list --json number,title,state',
-  } : {
-    task_create: '',
-    task_close: '',
-    task_ready: '',
-    task_update: '',
-    task_show: '',
-    task_sync: '',
-  };
+  const taskCommands =
+    taskType === 'beads'
+      ? {
+          task_create: 'bd create',
+          task_close: 'bd close',
+          task_ready: 'bd ready',
+          task_update: 'bd update',
+          task_show: 'bd show',
+          task_sync: 'bd sync --flush-only',
+        }
+      : taskType === 'jira'
+        ? {
+            task_create: 'jira create',
+            task_close: 'jira close',
+            task_ready: 'jira list --status=ready',
+            task_update: 'jira update',
+            task_show: 'jira show',
+            task_sync: 'jira sync',
+          }
+        : taskType === 'linear'
+          ? {
+              task_create: 'linear issue create',
+              task_close: 'linear issue close',
+              task_ready: 'linear issue list --status=todo',
+              task_update: 'linear issue update',
+              task_show: 'linear issue view',
+              task_sync: 'linear sync',
+            }
+          : taskType === 'github-issues'
+            ? {
+                task_create: 'gh issue create',
+                task_close: 'gh issue close',
+                task_ready: 'gh issue list --state=open',
+                task_update: 'gh issue edit',
+                task_show: 'gh issue view',
+                task_sync: 'gh issue list --json number,title,state',
+              }
+            : {
+                task_create: '',
+                task_close: '',
+                task_ready: '',
+                task_update: '',
+                task_show: '',
+                task_sync: '',
+              };
 
   return {
     // Spread config first
@@ -108,14 +118,11 @@ function createTemplateContext(config: Config): TemplateContext {
     hasFeature: (feature: string) => {
       const options = config.options as unknown as Record<string, unknown>;
       return options?.[feature] === true;
-    }
+    },
   };
 }
 
-export async function renderTemplate(
-  templateName: string,
-  config: Config
-): Promise<string> {
+export async function renderTemplate(templateName: string, config: Config): Promise<string> {
   const templatePath = join(templatesDir, templateName);
 
   if (!existsSync(templatePath)) {
@@ -128,7 +135,7 @@ export async function renderTemplate(
   try {
     const result = ejs.render(template, context, {
       filename: templatePath, // For includes
-      rmWhitespace: false,    // Preserve formatting
+      rmWhitespace: false, // Preserve formatting
     });
 
     // Clean up extra blank lines (more than 2 consecutive)
@@ -140,9 +147,8 @@ export async function renderTemplate(
 }
 
 export function listTemplates(): string[] {
-  const glob = require('glob');
   const pattern = join(templatesDir, '**/*.ejs');
-  return glob.sync(pattern).map((p: string) => p.replace(templatesDir + '/', ''));
+  return globSync(pattern).map((p: string) => p.replace(templatesDir + '/', ''));
 }
 
 export function getTemplateOutputPath(templateName: string): string {
