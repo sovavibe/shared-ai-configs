@@ -85,6 +85,22 @@ While rules share the same content, some features are IDE-specific:
 | Agents | N/A | `agents/*.md` |
 | Notepads | N/A | `notepads/*.md` |
 
+### 5. Git Tracking Strategy
+
+**Principle:** Generated files are ignored, config sources are tracked.
+
+| File/Directory | Git Status | Reason |
+|----------------|------------|--------|
+| `.ai-project.yaml` | **Tracked** | Config source, shared with team |
+| `.beads/issues.jsonl` | **Tracked** | Task database, collaborative |
+| `.claude/` | Ignored | Generated |
+| `.cursor/` | Ignored | Generated |
+| `CLAUDE.md` | Ignored | Generated |
+| `.perles/` | Ignored | Generated |
+| `.beads/*.db` | Ignored | Local SQLite cache |
+
+The generator automatically updates `.gitignore` with appropriate entries.
+
 ## System Architecture
 
 ```
