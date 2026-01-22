@@ -148,7 +148,7 @@ Native integration with the Beads issue tracking system:
 services:
   task_tracking:
     type: "beads"
-    key_prefix: "PROJ-"
+    key_prefix: "{PREFIX}-"
     paths:
       beads: ".beads/"
 ```
@@ -455,7 +455,7 @@ Coordinated workflows between IDEs:
 ```yaml
 # .claude/context-handoff/current.md
 phase: "implementation"
-task_id: "PROJ-xyz"
+task_id: "{PREFIX}-xyz"
 scope: "Only modify src/pages/auth/"
 api_contract: "docs/API-CONTRACT.md"
 ```

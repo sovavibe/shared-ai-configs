@@ -86,7 +86,7 @@ git commit -m "fix: [bug description]
 Root cause: [explanation]
 - Fix: [what was changed]
 - Test: [added regression test]
-Refs: PROJ-XXX"
+Refs: {PREFIX}-XXX"
 ```
 
 ## References

@@ -151,8 +151,8 @@ CallMcpTool({
 
 ```bash
 # Create Beads Epic IMMEDIATELY
-PARENT_EPIC=$(bd create "Epic: PROJ-XXX - MR-xx Round N" --type=epic -p 1 --json | jq -r '.id')
-bd update $PARENT_EPIC --description="Jira: PROJ-XXX
+PARENT_EPIC=$(bd create "Epic: {PREFIX}-XXX - MR-xx Round N" --type=epic -p 1 --json | jq -r '.id')
+bd update $PARENT_EPIC --description="Jira: {PREFIX}-XXX
 Type: MR Review
 Round: N"
 ```
@@ -169,7 +169,7 @@ For each thread:
 
 ```bash
 # 1. Create task
-TASK=$(bd create "PROJ-XXX: [title]" --deps epic:$PARENT_EPIC -p 1 --json | jq -r '.id')
+TASK=$(bd create "{PREFIX}-XXX: [title]" --deps epic:$PARENT_EPIC -p 1 --json | jq -r '.id')
 
 # 2. Description = structured ТЗ
 bd update $TASK --description="## Задача
@@ -183,7 +183,7 @@ bd update $TASK --description="## Задача
 - GitLab Discussion ID: [id]
 - Note ID: [note_id] (more stable)
 - File: [path]:[line]
-- Jira: PROJ-XXX
+- Jira: {PREFIX}-XXX
 
 ## Before Reply
 ⚠️ VALIDATE Discussion ID before GitLab reply!
@@ -235,7 +235,7 @@ CallMcpTool({
 CallMcpTool({
   server: 'user-MCP_DOCKER',
   toolName: 'jira_get_issue',
-  arguments: { issue_key: 'PROJ-XXX' },
+  arguments: { issue_key: '{PREFIX}-XXX' },
 })
 
 // 4. Context7 - документация (если нужно)
@@ -333,7 +333,7 @@ CallMcpTool({
   server: 'user-MCP_DOCKER',
   toolName: 'jira_add_comment',
   arguments: {
-    issue_key: 'PROJ-XXX',
+    issue_key: '{PREFIX}-XXX',
     body: `## Что сделано
 [Детальное описание]
 
@@ -397,8 +397,8 @@ npm run gitlab:mr:add-comment -- --mr xx --body "✅ **Code Review Round N - Com
 
 | Thread | Status | Jira |
 |--------|--------|------|
-| [Thread 1] | ✅ Fixed | PROJ-XXX |
-| [Thread 2] | ✅ Fixed | PROJ-XXX |
+| [Thread 1] | ✅ Fixed | {PREFIX}-XXX |
+| [Thread 2] | ✅ Fixed | {PREFIX}-XXX |
 
 ## Проверка
 - ✅ ESLint passed
@@ -418,12 +418,12 @@ CallMcpTool({
   server: 'user-MCP_DOCKER',
   toolName: 'jira_add_comment',
   arguments: {
-    issue_key: 'PROJ-XXX',
+    issue_key: '{PREFIX}-XXX',
     body: `## Итог Round N
 
 ### Выполненные задачи
-- PROJ-XXX: [описание] ✅
-- PROJ-XXX: [описание] ✅
+- {PREFIX}-XXX: [описание] ✅
+- {PREFIX}-XXX: [описание] ✅
 
 ### Ключевые изменения
 [Общее описание]
@@ -453,7 +453,7 @@ git push
 CallMcpTool({
   server: 'user-MCP_DOCKER',
   toolName: 'jira_transition_issue',
-  arguments: { issue_key: 'PROJ-XXX', transition_id: '71' },
+  arguments: { issue_key: '{PREFIX}-XXX', transition_id: '71' },
 })
 ```
 

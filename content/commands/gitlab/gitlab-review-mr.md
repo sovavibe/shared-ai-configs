@@ -462,13 +462,13 @@ npm run gitlab:inline-comment \
   --file <FILE_PATH> \
   --line <LINE_NUMBER> \
   --side new \
-  --body "🔴 **[PROJ-XXX] [Category] Title**
+  --body "🔴 **[{PREFIX}-XXX] [Category] Title**
 
 **Что не так**: [Clear description]
 **Как исправить**: [Specific solution]
 **Почему это важно**: [Impact]
 
-**Jira**: PROJ-XXX"
+**Jira**: {PREFIX}-XXX"
 ```
 
 **Then create MR summary:**
@@ -836,7 +836,7 @@ When using with GPT-4 or other models:
 ```bash
 # Beads: No existing tasks for MR-321
 # Hindsight: Recall patterns for TypeScript strict mode
-# Jira: PROJ-123 is parent task
+# Jira: {PREFIX}-123 is parent task
 # Context7: Not needed (TypeScript issue)
 ```
 
@@ -852,7 +852,7 @@ const userData: any = fetchUserData()
 **Step 3: Create Tasks**
 
 ```bash
-# Create Jira Task → PROJ-456
+# Create Jira Task → {PREFIX}-456
 # Create Beads Epic → bd-zabc
 # Create Beads Subtasks → "Add User interface", "Add type guard"
 ```
@@ -865,13 +865,13 @@ npm run gitlab:inline-comment \
   --file src/widgets/UserProfile.tsx \
   --line 23 \
   --side new \
-  --body "🔴 **[PROJ-456] Type Safety: Using 'any' type**
+  --body "🔴 **[{PREFIX}-456] Type Safety: Using 'any' type**
 
 **Что не так**: Использование типа 'any' отключает проверку типов TypeScript
 **Как исправить**: Заменить на интерфейс User с типизацией полей
 **Почему это важно**: Может привести к runtime ошибкам, потеря.type safety
 
-**Jira**: PROJ-456"
+**Jira**: {PREFIX}-456"
 ```
 
 ### Example 2: Local Mode - React Hooks Issue

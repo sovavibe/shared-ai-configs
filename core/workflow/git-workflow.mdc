@@ -14,7 +14,7 @@ alwaysApply: false
 
 <body>
 
-Refs: PROJ-XXX
+Refs: {PREFIX}-XXX
 ```
 
 **🔴 CRITICAL**: ALL commits MUST be in English.
@@ -40,14 +40,14 @@ Refs: PROJ-XXX
 ## Branch Naming
 
 ```bash
-feat/PROJ-123-cargo-bulk-import
-fix/PROJ-456-table-sorting
-hotfix/PROJ-999-critical-bug
+feat/{PREFIX}-123-cargo-bulk-import
+fix/{PREFIX}-456-table-sorting
+hotfix/{PREFIX}-999-critical-bug
 ```
 
 ## PR Guidelines
 
-**Title**: `feat(cargo): add bulk import [PROJ-123]`
+**Title**: `feat(cargo): add bulk import [{PREFIX}-123]`
 
 **GitLab Templates**: Use templates from `.gitlab/merge_request_templates/`:
 

@@ -448,8 +448,8 @@ perles
 # → Epic Parallel Batches
 
 # Or tag issue for direct workflow
-bd update PROJ-123 --labels="full-sdlc"
-bd update PROJ-456 --labels="epic-batches"
+bd update {PREFIX}-123 --labels="full-sdlc"
+bd update {PREFIX}-456 --labels="epic-batches"
 ```
 
 ---
@@ -660,7 +660,7 @@ flowchart LR
 
 ### Reference Format
 
-- **Bead title:** `PROJ-XXX: Task description`
+- **Bead title:** `{PREFIX}-XXX: Task description`
 - **Jira description:** Include `Beads ID: bd-xxxx`
 
 ### Commands

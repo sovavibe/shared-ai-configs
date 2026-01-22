@@ -130,7 +130,7 @@ bd sync                               # Sync with git
 **All Beads tasks:**
 
 ```
-Jira: PROJ-XXX (or N/A for local)
+Jira: {PREFIX}-XXX (or N/A for local)
 Status: To Do
 Type: MR Review | Feature | Bug | Local Initiative
 ```

@@ -3,7 +3,7 @@
 # Checks if there are open beads/tasks remaining
 #
 # Usage:
-#   LOOP_EPIC_ID=PROJ-xxx ./beads-completion-check.sh  # Check specific epic children
+#   LOOP_EPIC_ID={PREFIX}-xxx ./beads-completion-check.sh  # Check specific epic children
 #   ./beads-completion-check.sh                         # Check all open issues
 #
 # Exit codes:

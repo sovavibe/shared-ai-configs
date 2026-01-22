@@ -11,7 +11,7 @@ Autonomous workflow orchestration for Claude Code with Beads task management.
 LOOP_ENABLED=1 LOOP_MAX_ITER=30 claude
 
 # Or with a specific epic
-LOOP_ENABLED=1 LOOP_EPIC_ID=PROJ-xxx claude
+LOOP_ENABLED=1 LOOP_EPIC_ID={PREFIX}-xxx claude
 ```
 
 ### Manual Execution (without loop mode)
@@ -56,7 +56,7 @@ claude --prompt workflow/epic-workflow.md
 Work through all tasks until complete:
 
 ```bash
-LOOP_ENABLED=1 LOOP_EPIC_ID=PROJ-xxx claude \
+LOOP_ENABLED=1 LOOP_EPIC_ID={PREFIX}-xxx claude \
   --prompt .claude/workflow/epic-workflow.md
 ```
 

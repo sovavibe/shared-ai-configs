@@ -99,7 +99,7 @@ CallMcpTool({
 echo "✅ Context recovered + work completed:
 
 Task: bd-XX - 'Task title'
-Jira: PROJ-XXX
+Jira: {PREFIX}-XXX
 
 Done:
 - Changed: `path/to/file.tsx`

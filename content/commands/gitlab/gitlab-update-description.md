@@ -140,7 +140,7 @@ CallMcpTool({
 
 ## Related Issues
 
-[Jira ticket links if applicable, e.g., PROJ-XXX]
+[Jira ticket links if applicable, e.g., {PREFIX}-XXX]
 
 ## Changes
 
@@ -332,7 +332,7 @@ Implements schedule timeline feature with Gantt chart visualization for voyage s
 
 ## Related Issues
 
-[PROJ-456](https://your-org.atlassian.net/browse/PROJ-456)
+[{PREFIX}-456](https://your-org.atlassian.net/browse/{PREFIX}-456)
 
 ## Changes
 
@@ -423,7 +423,7 @@ Fixes date parsing issue in Safari browser where date strings from API were not 
 
 ## Related Issues
 
-[PROJ-457](https://your-org.atlassian.net/browse/PROJ-457)
+[{PREFIX}-457](https://your-org.atlassian.net/browse/{PREFIX}-457)
 
 ## Changes
 

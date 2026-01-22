@@ -4,7 +4,7 @@ Multi-round documentation review workflow for MD/MDC files.
 
 ## Environment
 
-- **Epic ID**: PROJ-xxxx (Documentation Review)
+- **Epic ID**: {PREFIX}-xxxx (Documentation Review)
 - **Round**: `{{REVIEW_ROUND}}` (default: 1)
 - **Agent ID**: `{{AGENT_ID}}` (e.g., "opus-1", "sonnet-2")
 
@@ -27,7 +27,7 @@ For each file, evaluate:
 
 ```bash
 # Find unclaimed tasks for this round
-bd list --parent=PROJ-xxxx --status=open -n 1
+bd list --parent={PREFIX}-xxxx --status=open -n 1
 
 # Or check all ready tasks
 bd ready | grep "Review:"
@@ -133,7 +133,7 @@ Check:
 
 ```bash
 # Count tasks without this round's label
-bd list --parent=PROJ-xxxx --status=open -n 0 | wc -l
+bd list --parent={PREFIX}-xxxx --status=open -n 0 | wc -l
 ```
 
 ## Example Review Output

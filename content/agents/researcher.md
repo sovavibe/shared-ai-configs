@@ -95,7 +95,7 @@ Jira: jira_search("project = <JIRA_PROJECT> AND type = Bug")
 
 ### Past Patterns (Hindsight)
 
-- Similar task completed in PROJ-123: used approach X
+- Similar task completed in {PREFIX}-123: used approach X
 - Decision rationale: performance over simplicity
 
 ### Recommendations

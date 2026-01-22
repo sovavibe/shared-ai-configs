@@ -109,11 +109,11 @@ CallMcpTool({
 
 # Create Beads Epic IMMEDIATELY
 PARENT_EPIC=$(bd create "Epic: Review MR-<MR_NUMBER>" --type=epic -p 1 --json | jq -r '.id')
-bd update $PARENT_EPIC --description="Jira: PROJ-XXX
+bd update $PARENT_EPIC --description="Jira: {PREFIX}-XXX
 Type: MR Review"
 
 # Per thread → Beads ticket
-TASK=$(bd create "PROJ-YYY: ${thread.title}" --deps epic:$PARENT_EPIC -p 1 --json | jq -r '.id')
+TASK=$(bd create "{PREFIX}-YYY: ${thread.title}" --deps epic:$PARENT_EPIC -p 1 --json | jq -r '.id')
 bd update $TASK --description="GitLab Discussion ID: ${thread.id}
 File: ${thread.file}:${thread.line}"
 ```
@@ -134,8 +134,8 @@ CallMcpTool({
 })
 
 # Create Beads Epic IMMEDIATELY
-PARENT_EPIC=$(bd create "Epic: PROJ-XXX: Implement user auth" --type=epic -p 1 --json | jq -r '.id')
-bd update $PARENT_EPIC --description="Jira: PROJ-XXX
+PARENT_EPIC=$(bd create "Epic: {PREFIX}-XXX: Implement user auth" --type=epic -p 1 --json | jq -r '.id')
+bd update $PARENT_EPIC --description="Jira: {PREFIX}-XXX
 Type: Feature"
 
 # Decompose into steps

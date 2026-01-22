@@ -93,10 +93,10 @@ graph LR
 ### Beads Tasks to Create
 
 ```bash
-bd create --title="[PROJ-XXX] Define types for Feature" --type=task --priority=2
-bd create --title="[PROJ-XXX] Create useFeature hook" --type=task --priority=2
-bd create --title="[PROJ-XXX] Build Feature UI component" --type=task --priority=2
-bd create --title="[PROJ-XXX] Add tests for Feature" --type=task --priority=2
+bd create --title="[{PREFIX}-XXX] Define types for Feature" --type=task --priority=2
+bd create --title="[{PREFIX}-XXX] Create useFeature hook" --type=task --priority=2
+bd create --title="[{PREFIX}-XXX] Build Feature UI component" --type=task --priority=2
+bd create --title="[{PREFIX}-XXX] Add tests for Feature" --type=task --priority=2
 ```
 
 ```

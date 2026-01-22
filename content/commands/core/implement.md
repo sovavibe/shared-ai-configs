@@ -64,7 +64,7 @@ flowchart TD
 
 ## Triggers
 
-- Jira task reference (PROJ-XXX)
+- Jira task reference ({PREFIX}-XXX)
 - New task description
 - Feature request
 - Bug fix request

@@ -15,7 +15,7 @@ alwaysApply: false
 3. **MANDATORY WHY, TODO & TASK**: Every suppression MUST include:
    - Clear justification (`-- WHY:`)
    - Brief explanation why refactoring is not feasible now
-   - **TODO** with Jira task reference (`PROJ-XXX`) for future fixing
+   - **TODO** with Jira task reference (`{PREFIX}-XXX`) for future fixing
 
 ## Unified Format
 
@@ -24,7 +24,7 @@ alwaysApply: false
 **Format**:
 
 ```
-// eslint-disable-next-line <rule> -- WHY: <reason>. TODO(PROJ-XXX): <fix_description>
+// eslint-disable-next-line <rule> -- WHY: <reason>. TODO({PREFIX}-XXX): <fix_description>
 ```
 
 **Components** (ALL REQUIRED):
@@ -33,14 +33,14 @@ alwaysApply: false
 | ------------------- | ------------------------------ | ------------------------------------ |
 | `<rule>`            | Specific ESLint rule name      | `@typescript-eslint/no-explicit-any` |
 | `WHY:`              | Clear reason from allowed list | `WHY: MSW handler types require any` |
-| `TODO(PROJ-XXX):`   | Jira task reference            | `TODO(PROJ-345): Fix MSW types`      |
+| `TODO({PREFIX}-XXX):`   | Jira task reference            | `TODO({PREFIX}-345): Fix MSW types`      |
 | `<fix_description>` | What needs to be done          | `Update MSW to v3`                   |
 
 **Example**:
 
 ```typescript
 // ✅ GOOD: Complete format
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- WHY: MSW handler types require any. TODO(PROJ-345): Update MSW to v3
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- WHY: MSW handler types require any. TODO({PREFIX}-345): Update MSW to v3
 
 // ❌ BAD: Missing TODO
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- WHY: MSW handler types
@@ -57,14 +57,14 @@ alwaysApply: false
 **Format**:
 
 ```javascript
-'<rule>': 'off', // WHY: <reason>. TODO(PROJ-XXX): <fix_description>
+'<rule>': 'off', // WHY: <reason>. TODO({PREFIX}-XXX): <fix_description>
 ```
 
 **Requirements**:
 
 1. Each rule MUST have its own inline comment
 2. Suppressions MUST be isolated to specific directories via `overrides`
-3. Comment MUST include `WHY:` and `TODO(PROJ-XXX):`
+3. Comment MUST include `WHY:` and `TODO({PREFIX}-XXX):`
 
 **Example**:
 
@@ -73,8 +73,8 @@ alwaysApply: false
 {
   files: ['scripts/gitlab/**/*.ts'],
   rules: {
-    '@typescript-eslint/no-explicit-any': 'off', // WHY: GitBeaker types are poorly resolved. TODO(PROJ-345): Create type definitions
-    '@typescript-eslint/no-unsafe-assignment': 'off', // WHY: External library types incorrect. TODO(PROJ-345): Fix types
+    '@typescript-eslint/no-explicit-any': 'off', // WHY: GitBeaker types are poorly resolved. TODO({PREFIX}-345): Create type definitions
+    '@typescript-eslint/no-unsafe-assignment': 'off', // WHY: External library types incorrect. TODO({PREFIX}-345): Fix types
   }
 }
 
@@ -118,18 +118,18 @@ Lint warning? → Can refactor? → YES → DO IT
 
 | Reason                 | When to use                          | Example TODO                             |
 | ---------------------- | ------------------------------------ | ---------------------------------------- |
-| **External API**       | Untyped response, no types available | `TODO(PROJ-XXX): Add API types`            |
-| **Library limitation** | Library doesn't support strict types | `TODO(PROJ-XXX): Update library`           |
-| **Legacy migration**   | Migration in progress                | `TODO(PROJ-XXX): Complete migration`       |
-| **Performance**        | Measured bottleneck                  | `TODO(PROJ-XXX): Optimize after profiling` |
-| **Framework contract** | Required by yargs/zod/MSW/etc.       | `TODO(PROJ-XXX): Wait for library update`  |
+| **External API**       | Untyped response, no types available | `TODO({PREFIX}-XXX): Add API types`            |
+| **Library limitation** | Library doesn't support strict types | `TODO({PREFIX}-XXX): Update library`           |
+| **Legacy migration**   | Migration in progress                | `TODO({PREFIX}-XXX): Complete migration`       |
+| **Performance**        | Measured bottleneck                  | `TODO({PREFIX}-XXX): Optimize after profiling` |
+| **Framework contract** | Required by yargs/zod/MSW/etc.       | `TODO({PREFIX}-XXX): Wait for library update`  |
 
 ## Banned
 
 - Blanket `// eslint-disable` (must specify rule)
 - Bulk suppressions in config without per-rule comments
 - Missing `WHY:` explanation
-- Missing `TODO(PROJ-XXX):` reference
+- Missing `TODO({PREFIX}-XXX):` reference
 - Vague reasons: "fix later", "temporary", "doesn't work otherwise"
 - Suppressing without trying to refactor first
 - Global rule disabling without directory isolation
@@ -138,7 +138,7 @@ Lint warning? → Can refactor? → YES → DO IT
 
 - [ ] Tried refactoring first?
 - [ ] WHY reason is from allowed list?
-- [ ] Format is `-- WHY: <reason>. TODO(PROJ-XXX): <fix>`?
+- [ ] Format is `-- WHY: <reason>. TODO({PREFIX}-XXX): <fix>`?
 - [ ] Specific rule, not blanket disable?
 - [ ] Jira task exists for fixing this?
 - [ ] Config suppressions are directory-isolated?

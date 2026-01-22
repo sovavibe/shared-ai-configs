@@ -72,7 +72,7 @@ echo "# Feature Spec: [Name]" > docs/specs/feature.spec.md
 # Add requirements and acceptance criteria
 
 # Run Perles from spec
-bd update PROJ-123 --labels="from-spec"
+bd update {PREFIX}-123 --labels="from-spec"
 perles  # → Select "Specification-Driven Implementation"
 ```
 
@@ -135,7 +135,7 @@ Spec Written → Code Generated → Verification:
 ```bash
 bd create --title="Feature: User Onboarding" --type=feature
 # Add requirements to spec
-bd update PROJ-123 --labels="from-spec"
+bd update {PREFIX}-123 --labels="from-spec"
 perles  # Select "Specification-Driven"
 ```
 

@@ -28,7 +28,7 @@ jira_search "project = <JIRA_PROJECT> AND status != Done ORDER BY updated DESC"
 
 For each bead, check:
 
-1. Does it reference a Jira ticket (PROJ-XXX in title)?
+1. Does it reference a Jira ticket ({PREFIX}-XXX in title)?
 2. If yes, compare status and description
 3. If no, should it be created in Jira?
 
@@ -49,7 +49,7 @@ For each open Jira ticket:
 
 ### Step 4: Update References
 
-- Add Jira key to bead title: `PROJ-XXX: Task description`
+- Add Jira key to bead title: `{PREFIX}-XXX: Task description`
 - Add Beads ID to Jira description: `Beads ID: bd-xxxx`
 
 ## Command Execution
@@ -63,7 +63,7 @@ When user runs `/sync-jira`:
 
 2. **Build comparison table:**
 
-   - Match by PROJ-XXX reference or similar title
+   - Match by {PREFIX}-XXX reference or similar title
    - Identify mismatches
 
 3. **Present diff to user:**
@@ -94,15 +94,15 @@ When user runs `/sync-jira`:
 
 ```
 Bead bd-zhgs (blocked): "Delete GitLab scripts"
-→ Create PROJ-503 in Jira with BLOCKED status
-→ Update bead title: "PROJ-503: Delete GitLab scripts"
+→ Create {PREFIX}-503 in Jira with BLOCKED status
+→ Update bead title: "{PREFIX}-503: Delete GitLab scripts"
 ```
 
 ### Close Jira from completed bead
 
 ```
-Bead bd-abc (closed): "PROJ-123: Fix bug"
-Jira PROJ-123: status = "In Progress"
+Bead bd-abc (closed): "{PREFIX}-123: Fix bug"
+Jira {PREFIX}-123: status = "In Progress"
 → Transition Jira to Done
 ```
 
