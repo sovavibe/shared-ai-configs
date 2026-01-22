@@ -287,26 +287,40 @@ function checkMCPServers(config: Config): CheckResult[] {
 
   if (!mcp) return results;
 
-  // Check common MCP-related tools/servers
-  const mcpChecks: { name: string; key: string; checkCommand?: string }[] = [
+  // MCP services with their required env vars
+  const mcpChecks: { name: string; key: string; envVar?: string; checkCommand?: string }[] = [
     { name: 'Hindsight', key: 'hindsight' },
-    { name: 'Snyk', key: 'snyk', checkCommand: 'snyk --version' },
+    { name: 'Snyk', key: 'snyk', envVar: 'SNYK_TOKEN', checkCommand: 'snyk --version' },
     { name: 'Context7', key: 'context7' },
-    { name: 'PAL', key: 'pal' },
     { name: 'Memory Bank', key: 'memory_bank' },
-    { name: 'Figma', key: 'figma' },
+    { name: 'Figma', key: 'figma', envVar: 'FIGMA_API_KEY' },
     { name: 'Browser', key: 'browser' }
   ];
 
   for (const check of mcpChecks) {
     if (mcp[check.key]?.enabled) {
+      // Check env var if required
+      if (check.envVar) {
+        const hasEnvVar = !!process.env[check.envVar];
+        if (!hasEnvVar) {
+          results.push({
+            name: `MCP: ${check.name}`,
+            status: 'warn',
+            message: `Enabled but ${check.envVar} not set`,
+            fix: `export ${check.envVar}="your-token" # Add to ~/.zshrc or .env.local`
+          });
+          continue;
+        }
+      }
+
+      // Check CLI if applicable
       if (check.checkCommand) {
         try {
           execSync(check.checkCommand, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
           results.push({
             name: `MCP: ${check.name}`,
             status: 'ok',
-            message: 'Enabled and CLI available'
+            message: check.envVar ? `Enabled, ${check.envVar} set` : 'Enabled and CLI available'
           });
         } catch {
           results.push({
@@ -320,7 +334,7 @@ function checkMCPServers(config: Config): CheckResult[] {
         results.push({
           name: `MCP: ${check.name}`,
           status: 'ok',
-          message: 'Enabled in config'
+          message: check.envVar ? `Enabled, ${check.envVar} set` : 'Enabled in config'
         });
       }
     }
