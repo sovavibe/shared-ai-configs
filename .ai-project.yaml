@@ -87,9 +87,14 @@ services:
 commands:
   dev: 'npm run watch'
   build: 'npm run build'
-  lint: 'npm run lint'
   test: 'npm run test'
+  lint: 'npm run lint'
+  lint_fix: 'npm run lint:fix'
+  lint_md: 'npm run lint:md'
+  format: 'npm run format'
+  format_check: 'npm run format:check'
   quality_gates: 'npm run quality'
+  quality_fix: 'npm run quality:fix'
 
   # Task tracking (beads)
   task_ready: 'bd ready'
