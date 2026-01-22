@@ -6,10 +6,6 @@ Scripts for AI-assisted development workflows. These scripts can be used by AI a
 
 ```
 scripts/
-├── cursor/           # Cursor IDE metrics & version management
-│   ├── collect-metrics.ts    # Collect codebase metrics
-│   ├── update-versions.ts    # Update rule versions
-│   └── metrics/              # Metric analyzers
 ├── gitlab/           # GitLab MR automation (for old GitLab without MCP)
 │   ├── core/                 # API client, MR operations
 │   ├── comments/             # Comment management
@@ -45,16 +41,6 @@ npx tsx scripts/gitlab/core/update-mr-description.ts --mr 123 --description "New
 ```bash
 # Run all MCP health checks
 npx tsx scripts/mcp-doctor/summary.ts
-```
-
-### Cursor Metrics
-
-```bash
-# Collect codebase metrics
-npx tsx scripts/cursor/collect-metrics.ts
-
-# Update rule versions
-npx tsx scripts/cursor/update-versions.ts
 ```
 
 ## Environment Variables

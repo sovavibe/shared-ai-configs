@@ -126,7 +126,7 @@ expect(results).toHaveLength(EXPECTED_COUNT)
 
 ## File Organization (from Cursor Directory)
 
-- **Group by feature/domain**: Organize scripts by purpose (e.g., `scripts/gitlab/`, `scripts/cursor/`, `scripts/quality/`)
+- **Group by feature/domain**: Organize scripts by purpose (e.g., `scripts/gitlab/`, `scripts/mcp-doctor/`, `scripts/shared/`)
 - **One export per file**: Maintain clarity with single exports
 - **Reflect project structure**: Folder structure should mirror logical organization
 
