@@ -8,6 +8,22 @@ lastUpdated: '2026-01-16'
 
 **Continue work session by restoring context from four pillars:**
 
+## Integration Mode
+
+**Check `.ai-project.yaml` for Jira integration mode:**
+
+```yaml
+services:
+  task_tracking:
+    type: 'jira'
+    integration_mode: 'cli'  # 'mcp' or 'cli'
+```
+
+| Mode | Jira Commands | Server |
+|------|---------------|--------|
+| `mcp` | `jira_*` MCP tools | `mcp-atlassian` |
+| `cli` | `jira issue ...` Bash | N/A |
+
 ## Core Principle
 
 **Jira** = sync with team ("what I'm doing")
@@ -74,10 +90,12 @@ CallMcpTool({
 
 ### 3. Check Jira Context
 
-```bash
-# Search for active tasks
+<details>
+<summary><b>MCP Mode</b></summary>
+
+```typescript
 CallMcpTool({
-  server: "user-MCP_DOCKER",
+  server: "mcp-atlassian",
   toolName: "jira_search",
   arguments: {
     jql: 'project = <JIRA_PROJECT> AND assignee = currentUser() AND status != Done',
@@ -85,6 +103,17 @@ CallMcpTool({
   }
 })
 ```
+
+</details>
+
+<details>
+<summary><b>CLI Mode</b></summary>
+
+```bash
+jira issue list --raw -q "project = <JIRA_PROJECT> AND assignee = currentUser() AND status != Done"
+```
+
+</details>
 
 ### 4. Continue Implementation
 
@@ -122,7 +151,7 @@ Done:
    - Store experience and opinions
    - Recall patterns from previous work
 
-3. **Jira MCP** (`user-MCP_DOCKER`):
+3. **Jira** (MCP: `mcp-atlassian` | CLI: `jira issue ...`):
    - Update task status/comments if team task
    - ✅ NOT local files
 

@@ -6,6 +6,22 @@ description: 'Auto-detect and create tasks: Jira for team sync, Beads for local 
 
 **Core**: Jira = team sync | Beads = local management
 
+## Integration Mode
+
+**Check `.ai-project.yaml` first:**
+
+```yaml
+services:
+  task_tracking:
+    type: 'jira'
+    integration_mode: 'cli'  # 'mcp' or 'cli'
+```
+
+| Mode | Jira Commands | Server |
+|------|---------------|--------|
+| `mcp` | `jira_*` MCP tools | `mcp-atlassian` |
+| `cli` | `jira issue ...` Bash | N/A |
+
 ## Workflow
 
 ```mermaid
@@ -76,16 +92,16 @@ git branch --show-current
 glab mr list --source-branch=$(git branch --show-current)
 npm run gitlab:mr:get-unresolved -- --mr <MR_NUMBER>
 
-# Check/Create Jira Task
+# Check/Create Jira Task (use appropriate mode)
+
+# MCP Mode (integration_mode: 'mcp'):
 CallMcpTool({
-  server: "user-MCP_DOCKER",
+  server: "mcp-atlassian",
   toolName: "jira_search",
   arguments: { jql: 'project = <JIRA_PROJECT> AND labels = mr-<MR> AND issuetype = Task AND status != Done' }
 })
-
-# Create Jira Task (if needed)
 CallMcpTool({
-  server: "user-MCP_DOCKER",
+  server: "mcp-atlassian",
   toolName: "jira_create_issue",
   arguments: {
     project_key: "<JIRA_PROJECT>",
@@ -94,6 +110,10 @@ CallMcpTool({
     labels: ["mr-<MR_NUMBER>", "code-review", "round-1"]
   }
 })
+
+# CLI Mode (integration_mode: 'cli'):
+jira issue list --raw -q "project = <JIRA_PROJECT> AND labels = mr-<MR> AND issuetype = Task AND status != Done"
+jira issue create --no-input -t "Task" -s "[MR-<MR_NUMBER>] Code Review Round 1" -l "mr-<MR_NUMBER>" -l "code-review" -l "round-1"
 
 # Create Beads Epic IMMEDIATELY
 PARENT_EPIC=$(bd create "Epic: Review MR-<MR_NUMBER>" --type=epic -p 1 --json | jq -r '.id')
@@ -109,9 +129,11 @@ File: ${thread.file}:${thread.line}"
 ### Scenario 2: Feature/Bug
 
 ```bash
-# Create Jira Task
+# Create Jira Task (use appropriate mode)
+
+# MCP Mode:
 CallMcpTool({
-  server: "user-MCP_DOCKER",
+  server: "mcp-atlassian",
   toolName: "jira_create_issue",
   arguments: {
     project_key: "<JIRA_PROJECT>",
@@ -120,6 +142,9 @@ CallMcpTool({
     labels: ["feature"]
   }
 })
+
+# CLI Mode:
+jira issue create --no-input -t "Task" -s "Implement user auth" -l "feature"
 
 # Create Beads Epic IMMEDIATELY
 PARENT_EPIC=$(bd create "Epic: {PREFIX}-XXX: Implement user auth" --type=epic -p 1 --json | jq -r '.id')

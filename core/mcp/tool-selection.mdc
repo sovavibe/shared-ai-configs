@@ -29,8 +29,10 @@ What do you need?
 ├─ PAST DECISIONS/PATTERNS
 │  └─ Use: Hindsight (recall for facts, reflect for analysis)
 │
-├─ TEAM/EXTERNAL TASKS
-│  └─ Use: Jira (jira_search, jira_get_issue)
+├─ TEAM/EXTERNAL TASKS (JIRA)
+│  ├─ Check: .ai-project.yaml → services.task_tracking.integration_mode
+│  ├─ MCP mode → mcp-atlassian (jira_search, jira_create_issue)
+│  └─ CLI mode → jira issue list/create/move (Bash)
 │
 ├─ EXTERNAL INFORMATION
 │  └─ Use: WebSearch
@@ -41,15 +43,40 @@ What do you need?
 
 ## MCP Tool Selection Matrix
 
-| Need               | Primary Tool        | Fallback                |
-| ------------------ | ------------------- | ----------------------- |
-| Task requirements  | `bd show <id>`      | Read task description   |
-| Library API docs   | Context7            | WebSearch, node_modules |
-| Past patterns      | Hindsight `recall`  | Grep codebase           |
-| Analysis/reasoning | Hindsight `reflect` | Manual analysis         |
-| Team task sync     | Jira MCP            | Manual Jira check       |
-| Security issues    | Snyk                | `npm audit`             |
-| Design specs       | Figma               | Ask for screenshots     |
+| Need               | Primary Tool                        | Fallback                |
+| ------------------ | ----------------------------------- | ----------------------- |
+| Task requirements  | `bd show <id>`                      | Read task description   |
+| Library API docs   | Context7                            | WebSearch, node_modules |
+| Past patterns      | Hindsight `recall`                  | Grep codebase           |
+| Analysis/reasoning | Hindsight `reflect`                 | Manual analysis         |
+| Team task sync     | Jira (MCP or CLI based on config)   | Manual Jira check       |
+| Security issues    | Snyk                                | `npm audit`             |
+| Design specs       | Figma                               | Ask for screenshots     |
+
+## Jira Integration Mode Selection
+
+**Check `.ai-project.yaml` → `services.task_tracking.integration_mode`**
+
+| Mode  | Tool                | Server            | When to Use                    |
+| ----- | ------------------- | ----------------- | ------------------------------ |
+| `mcp` | `jira_*` MCP tools  | `mcp-atlassian`   | IDE/AI workflows, persistence  |
+| `cli` | `jira issue ...`    | N/A (Bash)        | Scripts, CI/CD, simpler setup  |
+
+**MCP Mode (`mcp-atlassian`):**
+
+```typescript
+CallMcpTool({
+  server: 'mcp-atlassian',
+  toolName: 'jira_search',
+  arguments: { jql: 'project = VP AND status != Done' }
+})
+```
+
+**CLI Mode (`jira-cli`):**
+
+```bash
+jira issue list --raw -q "project = VP AND status != Done"
+```
 
 ## Codebase Search Strategy
 

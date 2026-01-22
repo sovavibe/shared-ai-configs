@@ -59,9 +59,14 @@ export async function doctorCommand(): Promise<void> {
 
   // Task tracking checks
   const taskTracking = config?.services?.task_tracking?.type;
-  const beadsPath = config?.services?.task_tracking?.paths?.beads || CONFIG_DEFAULTS.services.task_tracking.paths.beads;
+  const beadsPath =
+    config?.services?.task_tracking?.paths?.beads ||
+    CONFIG_DEFAULTS.services.task_tracking.paths.beads;
   if (taskTracking === 'beads' || existsSync(beadsPath)) {
     checks.push(checkBeads());
+  }
+  if (taskTracking === 'jira') {
+    checks.push(checkJira(config));
   }
 
   // MCP checks (if any enabled)
@@ -116,20 +121,20 @@ function checkNodeVersion(): CheckResult {
       return {
         name: 'Node.js',
         status: 'error',
-        message: `Version ${version} is too old. Requires Node.js 18+`
+        message: `Version ${version} is too old. Requires Node.js 18+`,
       };
     }
 
     return {
       name: 'Node.js',
       status: 'ok',
-      message: version
+      message: version,
     };
   } catch {
     return {
       name: 'Node.js',
       status: 'error',
-      message: 'Not found'
+      message: 'Not found',
     };
   }
 }
@@ -140,13 +145,13 @@ function checkPackageManager(): CheckResult {
     return {
       name: 'npm',
       status: 'ok',
-      message: `v${npmVersion}`
+      message: `v${npmVersion}`,
     };
   } catch {
     return {
       name: 'npm',
       status: 'error',
-      message: 'Not found'
+      message: 'Not found',
     };
   }
 }
@@ -158,14 +163,14 @@ function checkConfigFile(): CheckResult {
     return {
       name: 'Config',
       status: 'ok',
-      message: '.ai-project.yaml found'
+      message: '.ai-project.yaml found',
     };
   }
 
   return {
     name: 'Config',
     status: 'warn',
-    message: '.ai-project.yaml not found. Run: npx shared-ai-configs init'
+    message: '.ai-project.yaml not found. Run: npx shared-ai-configs init',
   };
 }
 
@@ -175,25 +180,26 @@ function checkClaudeCode(): CheckResult {
     return {
       name: 'Claude Code',
       status: 'ok',
-      message: version
+      message: version,
     };
   } catch {
     return {
       name: 'Claude Code',
       status: 'warn',
-      message: 'Not installed. Install: npm install -g @anthropics/claude-code'
+      message: 'Not installed. Install: npm install -g @anthropics/claude-code',
     };
   }
 }
 
 function checkCursor(config: Config | null): CheckResult {
-  const cursorPath = config?.services?.ide?.paths?.cursor || CONFIG_DEFAULTS.services.ide.paths.cursor;
+  const cursorPath =
+    config?.services?.ide?.paths?.cursor || CONFIG_DEFAULTS.services.ide.paths.cursor;
 
   if (existsSync(cursorPath)) {
     return {
       name: 'Cursor',
       status: 'ok',
-      message: `${cursorPath} directory found`
+      message: `${cursorPath} directory found`,
     };
   }
 
@@ -201,24 +207,27 @@ function checkCursor(config: Config | null): CheckResult {
     name: 'Cursor',
     status: 'warn',
     message: `${cursorPath} directory not found`,
-    fix: `mkdir -p ${cursorPath}`
+    fix: `mkdir -p ${cursorPath}`,
   };
 }
 
 function checkBeads(): CheckResult {
   try {
-    const result = execSync('bd --version', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
+    const result = execSync('bd --version', {
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    }).trim();
     return {
       name: 'Beads',
       status: 'ok',
-      message: result || 'installed'
+      message: result || 'installed',
     };
   } catch {
     return {
       name: 'Beads',
       status: 'warn',
       message: '.beads directory found but bd command not available',
-      fix: 'npm install -g @anthropic/beads'
+      fix: 'npm install -g @anthropic/beads',
     };
   }
 }
@@ -231,34 +240,37 @@ function checkGitHubCLI(): CheckResult {
     return {
       name: 'GitHub CLI (gh)',
       status: 'ok',
-      message: version
+      message: version,
     };
   } catch {
     return {
       name: 'GitHub CLI (gh)',
       status: 'warn',
       message: 'Not installed',
-      fix: IS_MACOS ? 'brew install gh' : 'sudo apt install gh'
+      fix: IS_MACOS ? 'brew install gh' : 'sudo apt install gh',
     };
   }
 }
 
 function checkGitLabCLI(): CheckResult {
   try {
-    const version = execSync('glab --version', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] })
+    const version = execSync('glab --version', {
+      encoding: 'utf-8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    })
       .split('\n')[0]
       .trim();
     return {
       name: 'GitLab CLI (glab)',
       status: 'ok',
-      message: version
+      message: version,
     };
   } catch {
     return {
       name: 'GitLab CLI (glab)',
       status: 'warn',
       message: 'Not installed',
-      fix: IS_MACOS ? 'brew install glab' : 'sudo apt install glab'
+      fix: IS_MACOS ? 'brew install glab' : 'sudo apt install glab',
     };
   }
 }
@@ -269,15 +281,89 @@ function checkGit(): CheckResult {
     return {
       name: 'Git',
       status: 'ok',
-      message: version
+      message: version,
     };
   } catch {
     return {
       name: 'Git',
       status: 'error',
       message: 'Not installed',
-      fix: IS_MACOS ? 'xcode-select --install' : 'sudo apt install git'
+      fix: IS_MACOS ? 'xcode-select --install' : 'sudo apt install git',
     };
+  }
+}
+
+function checkJira(config: Config | null): CheckResult {
+  const integrationMode = config?.services?.task_tracking?.integration_mode || 'cli';
+
+  if (integrationMode === 'cli') {
+    // Check jira-cli
+    try {
+      execSync('which jira', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
+
+      // Check if authenticated
+      try {
+        execSync('jira me', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], timeout: 10000 });
+        return {
+          name: 'Jira CLI',
+          status: 'ok',
+          message: 'Installed and authenticated',
+        };
+      } catch {
+        return {
+          name: 'Jira CLI',
+          status: 'warn',
+          message: 'Installed but not authenticated',
+          fix: 'jira init',
+        };
+      }
+    } catch {
+      return {
+        name: 'Jira CLI',
+        status: 'warn',
+        message: 'Not installed (integration_mode: cli)',
+        fix: IS_MACOS
+          ? 'brew install jira-cli'
+          : 'go install github.com/ankitpokhrel/jira-cli/cmd/jira@latest',
+      };
+    }
+  } else {
+    // Check mcp-atlassian requirements
+    try {
+      execSync('which uvx', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
+
+      // Check env vars
+      const hasJiraUrl = !!process.env.JIRA_URL;
+      const hasJiraUser = !!process.env.JIRA_USERNAME;
+      const hasJiraToken = !!process.env.JIRA_API_TOKEN;
+
+      if (hasJiraUrl && hasJiraUser && hasJiraToken) {
+        return {
+          name: 'Jira MCP',
+          status: 'ok',
+          message: 'uvx installed, environment configured',
+        };
+      }
+
+      const missing: string[] = [];
+      if (!hasJiraUrl) missing.push('JIRA_URL');
+      if (!hasJiraUser) missing.push('JIRA_USERNAME');
+      if (!hasJiraToken) missing.push('JIRA_API_TOKEN');
+
+      return {
+        name: 'Jira MCP',
+        status: 'warn',
+        message: `uvx installed, missing: ${missing.join(', ')}`,
+        fix: 'Add to .env.development.local',
+      };
+    } catch {
+      return {
+        name: 'Jira MCP',
+        status: 'warn',
+        message: 'uvx not installed (integration_mode: mcp)',
+        fix: IS_MACOS ? 'brew install uv' : 'pip install uv',
+      };
+    }
   }
 }
 
@@ -294,7 +380,7 @@ function checkMCPServers(config: Config): CheckResult[] {
     { name: 'Context7', key: 'context7' },
     { name: 'Memory Bank', key: 'memory_bank' },
     { name: 'Figma', key: 'figma', envVar: 'FIGMA_API_KEY' },
-    { name: 'Browser', key: 'browser' }
+    { name: 'Browser', key: 'browser' },
   ];
 
   for (const check of mcpChecks) {
@@ -307,7 +393,7 @@ function checkMCPServers(config: Config): CheckResult[] {
             name: `MCP: ${check.name}`,
             status: 'warn',
             message: `Enabled but ${check.envVar} not set`,
-            fix: `export ${check.envVar}="your-token" # Add to ~/.zshrc or .env.local`
+            fix: `export ${check.envVar}="your-token" # Add to ~/.zshrc or .env.local`,
           });
           continue;
         }
@@ -320,21 +406,21 @@ function checkMCPServers(config: Config): CheckResult[] {
           results.push({
             name: `MCP: ${check.name}`,
             status: 'ok',
-            message: check.envVar ? `Enabled, ${check.envVar} set` : 'Enabled and CLI available'
+            message: check.envVar ? `Enabled, ${check.envVar} set` : 'Enabled and CLI available',
           });
         } catch {
           results.push({
             name: `MCP: ${check.name}`,
             status: 'warn',
             message: 'Enabled but CLI not found (may still work via MCP)',
-            fix: check.key === 'snyk' ? 'npm install -g snyk' : undefined
+            fix: check.key === 'snyk' ? 'npm install -g snyk' : undefined,
           });
         }
       } else {
         results.push({
           name: `MCP: ${check.name}`,
           status: 'ok',
-          message: check.envVar ? `Enabled, ${check.envVar} set` : 'Enabled in config'
+          message: check.envVar ? `Enabled, ${check.envVar} set` : 'Enabled in config',
         });
       }
     }
