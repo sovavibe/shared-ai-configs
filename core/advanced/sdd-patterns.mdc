@@ -17,6 +17,7 @@ alwaysApply: false
 **Location**: `docs/specs/feature-name.spec.md`
 
 **Structure**:
+
 ```markdown
 # Feature Spec: [Name]
 
@@ -57,12 +58,14 @@ alwaysApply: false
 ## Pattern 2: Specification as Contract
 
 **Process**:
+
 1. Write spec BEFORE code
 2. Pass spec to implementation agent
 3. Agent writes code to satisfy spec
 4. Verification: Does code satisfy spec?
 
 **Tool**: Use Perles "from-spec" workflow
+
 ```bash
 # Create spec file
 echo "# Feature Spec: [Name]" > docs/specs/feature.spec.md
@@ -90,6 +93,7 @@ Spec Written → Code Generated → Verification:
 ### Example: Add Pagination to Table
 
 **Spec** (docs/specs/table-pagination.spec.md):
+
 ```markdown
 # Feature Spec: Table Pagination
 
@@ -110,6 +114,7 @@ Spec Written → Code Generated → Verification:
 ```
 
 **Implementation**:
+
 - Code reads spec file
 - Implements pagination logic
 - Tests verify all R1, R2, R3 requirements
@@ -117,6 +122,7 @@ Spec Written → Code Generated → Verification:
 ## Integration with Perles
 
 **Perles "Specification-Driven" workflow**:
+
 1. Coordinator reads spec
 2. Plans implementation tasks
 3. Coder implements to spec
@@ -125,6 +131,7 @@ Spec Written → Code Generated → Verification:
 6. If complete: merges
 
 **Usage**:
+
 ```bash
 bd create --title="Feature: User Onboarding" --type=feature
 # Add requirements to spec

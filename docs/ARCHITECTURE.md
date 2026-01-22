@@ -67,7 +67,9 @@ Templates include/exclude sections based on config:
 bd ready           # Find work
 bd close <id>      # Complete task
 ```
+
 <% } %>
+
 ```
 
 ### 4. IDE-Specific Adaptations
@@ -86,6 +88,7 @@ While rules share the same content, some features are IDE-specific:
 ## System Architecture
 
 ```
+
 ┌─────────────────────────────────────────────────────────────────┐
 │                    .ai-project.yaml                              │
 │                    (Project Config)                              │
@@ -132,11 +135,13 @@ While rules share the same content, some features are IDE-specific:
 │                 │ │             │ │             │
 │  CLAUDE.md      │ │.cursorrules │ │             │
 └─────────────────┘ └─────────────┘ └─────────────┘
+
 ```
 
 ## Directory Structure
 
 ```
+
 shared-ai-configs/
 ├── bin/
 │   └── cli.js                    # CLI entry point
@@ -157,46 +162,78 @@ shared-ai-configs/
 ├── schema/
 │   └── ai-project.schema.json    # JSON Schema for validation
 │
+├── core/                         # Universal rules (semantic names)
+│   ├── persona.mdc               # Role, constraints
+│   ├── quality.mdc               # Quality gates
+│   ├── core-principles.mdc       # Core principles
+│   ├── mcp/                      # MCP tool rules
+│   │   ├── hindsight.mdc
+│   │   ├── tool-selection.mdc
+│   │   └── ...
+│   ├── workflow/                 # Workflow rules
+│   │   ├── git-workflow.mdc
+│   │   ├── task-management.mdc
+│   │   └── ...
+│   ├── security/                 # Security & performance
+│   │   ├── security.mdc
+│   │   ├── performance.mdc
+│   │   └── ...
+│   └── advanced/                 # 2026 patterns
+│       ├── sdd-patterns.mdc
+│       └── ...
+│
+├── stacks/                       # Stack-specific rules
+│   ├── react/
+│   │   ├── tech-stack.mdc
+│   │   ├── architecture.mdc
+│   │   └── ...
+│   └── node/
+│       ├── functional-patterns.mdc
+│       └── ...
+│
 ├── content/
-│   ├── rules/                    # MDC rules (single source)
-│   │   ├── core/                 # Always-load rules (001-009)
-│   │   ├── workflow/             # Workflow rules (110-119)
-│   │   ├── mcp/                  # MCP tool rules (100-109)
-│   │   ├── integrations/         # VCS & tracking (005, 119)
-│   │   └── stacks/               # Stack-specific rules
-│   │       ├── react/
-│   │       ├── node/
-│   │       └── python/
-│   │
+│   ├── agents/                   # Agent-specific content
+│   │   ├── claude/               # Claude-specific patterns
+│   │   └── cursor/               # Cursor-specific patterns
+│   │       ├── bugbot.md
+│   │       └── cursor-2.2-patterns.mdc
 │   ├── commands/                 # Slash commands (MD)
-│   │   ├── sdlc/                 # analyze, architect, plan, review
-│   │   ├── session/              # start, end
-│   │   └── integrations/         # gitlab-*, github-*
-│   │
-│   ├── hooks/
-│   │   ├── claude/               # Bash hooks for Claude Code
-│   │   └── cursor/               # JS hooks for Cursor
-│   │
-│   └── cursor-only/              # Cursor-specific content
-│       ├── skills/
-│       ├── agents/
-│       └── notepads/
+│   │   ├── core/                 # debug, implement, etc.
+│   │   └── gitlab/               # gitlab-* commands
+│   ├── skills/                   # Skill definitions
+│   └── notepads/                 # Reference materials
+│
+├── hooks/                        # IDE hooks
+│   ├── claude/                   # Bash hooks for Claude Code
+│   │   ├── session-start.sh
+│   │   ├── pre-commit.sh
+│   │   └── ...
+│   └── cursor/                   # JS hooks for Cursor
+│       ├── accept-check.js
+│       └── ...
+│
+├── integrations/                 # Third-party integrations
+│   ├── beads/
+│   │   └── beads.mdc
+│   ├── gitlab/
+│   │   └── gitlab-mr.mdc
+│   └── github/
+│       └── github-pr.mdc
 │
 ├── templates/
 │   ├── CLAUDE.md.ejs             # Main Claude instructions
-│   ├── cursorrules.ejs           # Main Cursor rules
 │   ├── claude/
 │   │   ├── settings.json.ejs
 │   │   └── docs/                 # Documentation templates
-│   └── cursor/
-│       ├── hooks.json.ejs
-│       └── mcp.json.ejs
+│   ├── cursor/
+│   └── mcp/
+│       └── mcp.json.ejs          # Shared MCP template
 │
 └── docs/
     ├── ARCHITECTURE.md           # This file
     ├── PRINCIPLES.md             # Core principles
-    ├── MULTI-TARGET-ARCHITECTURE.md
-    └── CONTRIBUTING.md
+    └── MULTI-TARGET-ARCHITECTURE.md
+
 ```
 
 ## Generation Process
@@ -227,12 +264,12 @@ function getRulesToInclude(config: Config): RuleSpec[] {
 
   // MCP rules based on enabled services
   if (config.services?.mcp?.hindsight?.enabled) {
-    rules.push({ source: 'content/rules/mcp/100-hindsight.mdc', target: '100-hindsight.mdc' });
+    rules.push({ source: 'core/mcp/hindsight.mdc', target: 'hindsight.mdc' });
   }
 
   // VCS rules
   if (config.services?.vcs?.type === 'gitlab') {
-    rules.push({ source: 'content/rules/integrations/119-gitlab-mr.mdc', target: '119-gitlab-mr.mdc' });
+    rules.push({ source: 'integrations/gitlab/gitlab-mr.mdc', target: 'gitlab-mr.mdc' });
   }
 
   return rules;
@@ -295,12 +332,14 @@ Hooks can reference project-specific commands from config:
 ### Hook Events
 
 **Claude Code:**
+
 - `UserPromptSubmit` — Before prompt processing
 - `Stop` — After response complete
 - `PreToolUse` — Before tool execution
 - `PostToolUse` — After tool execution
 
 **Cursor:**
+
 - `init` — Session start
 - `accept` — File accept action
 - `stop` — Chat stop/end

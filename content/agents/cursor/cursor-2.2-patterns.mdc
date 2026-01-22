@@ -13,12 +13,14 @@ alwaysApply: false
 ### 1. Cloud Agents (Multi-IDE Coordination)
 
 **What it does:**
+
 - Agents run in cloud, not locally
 - Coordinate work between Cursor and Claude Code
 - Persistent state across IDE switches
 - Shared agent memory
 
 **When to use:**
+
 - Complex multi-IDE workflows
 - Teams needing synchronized agents
 - Long-running background tasks
@@ -44,12 +46,14 @@ Cloud Agent validates across IDEs
 ### 2. Shadow Workspace (Non-Destructive Exploration)
 
 **What it does:**
+
 - Try code changes without modifying actual files
 - Workspace mirror for safe experimentation
 - Rollback changes instantly
 - Test refactorings before committing
 
 **When to use:**
+
 - Experimenting with large refactorings
 - Testing multiple approaches
 - Safe pattern exploration
@@ -78,12 +82,14 @@ Cloud Agent validates across IDEs
 ### 3. Tab++ (Enhanced Multi-Tab Workflow)
 
 **What it does:**
+
 - Pin important tabs
 - Tab groups for context switching
 - Quick-search across open tabs
 - Tab synchronization between IDEs
 
 **When to use:**
+
 - Many related files open
 - Switching between architectural layers
 - Team collaboration (shared tab layout)
@@ -125,6 +131,7 @@ Quick switch: Ctrl+Tab → Filter by tab group
 ```
 
 **When to use Cloud Agents:**
+
 - Using both Cursor and Claude Code
 - Need persistent agent memory
 - Teams collaborating
@@ -142,6 +149,7 @@ Quick switch: Ctrl+Tab → Filter by tab group
 ```
 
 **Best practices:**
+
 - Use before large refactorings
 - Compare multiple approaches side-by-side
 - Commit only approved changes
@@ -263,7 +271,8 @@ Instant context switch without searching files
 
 ## Cursor 2.2 Best Practices
 
-### DO:
+### DO
+
 - ✅ Use Cloud Agents for multi-IDE workflows
 - ✅ Use Shadow Workspace for large refactorings
 - ✅ Pin critical files for quick access
@@ -271,7 +280,8 @@ Instant context switch without searching files
 - ✅ Commit only shadow-applied changes
 - ✅ Keep agent context across IDEs
 
-### DON'T:
+### DON'T
+
 - ❌ Use local agent for Claude Code coordination
 - ❌ Commit shadow workspace changes directly
 - ❌ Keep 50+ tabs open (use groups instead)
@@ -282,6 +292,7 @@ Instant context switch without searching files
 ## IDE Switch with Cursor 2.2
 
 **Old way (Context loss)**:
+
 ```
 Cursor: Implement feature A
 IDE switch: Close Cursor
@@ -290,6 +301,7 @@ Claude Code: Review feature A
 ```
 
 **New way (Full context)**:
+
 ```
 Cursor: Implement feature A
 Cloud Agent: Stores state + learnings

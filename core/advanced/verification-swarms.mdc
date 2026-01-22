@@ -10,6 +10,7 @@ alwaysApply: false
 **Definition**: 3 specialized agents review code in parallel, must ALL approve before merge.
 
 **Agents**:
+
 1. **Coder Agent** (You) - Implementation quality
 2. **Security Agent** (Snyk) - Vulnerabilities & compliance
 3. **Architecture Agent** (Claude Opus) - Design & maintainability
@@ -43,6 +44,7 @@ Code Ready → Verification Swarm:
 ### Step 2: Each Agent Reviews
 
 **Coder Checklist**:
+
 - [ ] Tests passing (unit + integration)
 - [ ] Test coverage > 80%
 - [ ] ESLint passing
@@ -50,12 +52,14 @@ Code Ready → Verification Swarm:
 - [ ] Comments clear
 
 **Security Agent (Snyk)**:
+
 - [ ] No high/critical vulnerabilities
 - [ ] No dependency issues
 - [ ] OWASP Top 10 compliance
 - [ ] Secrets not committed
 
 **Architecture Agent (Opus)**:
+
 - [ ] Design consistent with project patterns
 - [ ] Performance acceptable
 - [ ] No technical debt introduced

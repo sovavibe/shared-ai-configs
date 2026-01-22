@@ -91,7 +91,6 @@ export interface MCPServiceConfig {
   hindsight?: MCPServerConfig;
   snyk?: MCPServerConfig;
   context7?: MCPServerConfig;
-  pal?: MCPServerConfig;
   memory_bank?: MCPServerConfig;
   figma?: MCPServerConfig;
   browser?: MCPServerConfig;
@@ -160,12 +159,20 @@ export interface ClaudeTargetConfig extends TargetConfig {
 }
 
 export interface CursorTargetConfig extends TargetConfig {
-  features?: ('rules' | 'hooks' | 'commands' | 'skills' | 'agents' | 'notepads' | 'mcp' | 'cursorrules')[];
+  features?: (
+    | 'rules'
+    | 'hooks'
+    | 'commands'
+    | 'skills'
+    | 'agents'
+    | 'notepads'
+    | 'mcp'
+    | 'cursorrules'
+  )[];
 }
 
-export interface KiloTargetConfig extends TargetConfig {
-  // Future Kilo agent support
-}
+// Future Kilo agent support - extends TargetConfig with no additional properties yet
+export type KiloTargetConfig = TargetConfig;
 
 // Targets can be either boolean (legacy) or object (new)
 export interface GenerationTargetsConfig {

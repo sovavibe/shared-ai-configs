@@ -140,6 +140,7 @@ Load when researching libraries (used daily, high priority when needed). Use `re
    - Keep only essential information
 
 4. Resume with clean context (<80% tokens):
+
    ```bash
    bd list --status=in_progress    # Find interrupted task
    bd show <id> --json             # Get full context from description

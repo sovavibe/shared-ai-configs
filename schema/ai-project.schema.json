@@ -130,7 +130,10 @@
           "type": "object",
           "description": "Task tracking system",
           "properties": {
-            "type": { "type": "string", "enum": ["beads", "jira", "linear", "github-issues", "none"] },
+            "type": {
+              "type": "string",
+              "enum": ["beads", "jira", "linear", "github-issues", "none"]
+            },
             "key_prefix": { "type": "string" },
             "paths": {
               "type": "object",
@@ -161,10 +164,6 @@
               "properties": { "enabled": { "type": "boolean", "default": false } }
             },
             "context7": {
-              "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
-            },
-            "pal": {
               "type": "object",
               "properties": { "enabled": { "type": "boolean", "default": false } }
             },
@@ -291,12 +290,19 @@
                   "type": "object",
                   "description": "Claude Code target - generates .claude/, CLAUDE.md, hooks (bash)",
                   "properties": {
-                    "enabled": { "type": "boolean", "default": true, "description": "Enable Claude Code generation" },
+                    "enabled": {
+                      "type": "boolean",
+                      "default": true,
+                      "description": "Enable Claude Code generation"
+                    },
                     "output_dir": { "type": "string", "default": ".claude" },
                     "features": {
                       "type": "array",
                       "description": "What to generate for Claude Code",
-                      "items": { "type": "string", "enum": ["rules", "hooks", "commands", "docs", "settings", "main"] },
+                      "items": {
+                        "type": "string",
+                        "enum": ["rules", "hooks", "commands", "docs", "settings", "main"]
+                      },
                       "default": ["rules", "hooks", "commands", "docs", "settings", "main"]
                     }
                   }
@@ -310,13 +316,38 @@
                   "type": "object",
                   "description": "Cursor IDE target - generates .cursor/, skills, agents, notepads, hooks (js)",
                   "properties": {
-                    "enabled": { "type": "boolean", "default": true, "description": "Enable Cursor generation" },
+                    "enabled": {
+                      "type": "boolean",
+                      "default": true,
+                      "description": "Enable Cursor generation"
+                    },
                     "output_dir": { "type": "string", "default": ".cursor" },
                     "features": {
                       "type": "array",
                       "description": "What to generate for Cursor",
-                      "items": { "type": "string", "enum": ["rules", "hooks", "commands", "skills", "agents", "notepads", "mcp", "cursorrules"] },
-                      "default": ["rules", "hooks", "commands", "skills", "agents", "notepads", "mcp", "cursorrules"]
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "rules",
+                          "hooks",
+                          "commands",
+                          "skills",
+                          "agents",
+                          "notepads",
+                          "mcp",
+                          "cursorrules"
+                        ]
+                      },
+                      "default": [
+                        "rules",
+                        "hooks",
+                        "commands",
+                        "skills",
+                        "agents",
+                        "notepads",
+                        "mcp",
+                        "cursorrules"
+                      ]
                     }
                   }
                 }
@@ -341,10 +372,26 @@
           "type": "object",
           "description": "Common content shared across all enabled targets",
           "properties": {
-            "sdlc_workflow": { "type": "boolean", "default": true, "description": "SDLC workflow (analyze → architect → plan → implement → review)" },
-            "beads_tracking": { "type": "boolean", "default": true, "description": "Beads task tracking integration" },
-            "quality_gates": { "type": "boolean", "default": true, "description": "Quality gates hooks" },
-            "mcp_integration": { "type": "boolean", "default": true, "description": "MCP tools integration" }
+            "sdlc_workflow": {
+              "type": "boolean",
+              "default": true,
+              "description": "SDLC workflow (analyze → architect → plan → implement → review)"
+            },
+            "beads_tracking": {
+              "type": "boolean",
+              "default": true,
+              "description": "Beads task tracking integration"
+            },
+            "quality_gates": {
+              "type": "boolean",
+              "default": true,
+              "description": "Quality gates hooks"
+            },
+            "mcp_integration": {
+              "type": "boolean",
+              "default": true,
+              "description": "MCP tools integration"
+            }
           }
         },
         "strategy": {
@@ -352,7 +399,11 @@
           "enum": ["generate", "symlink", "copy"],
           "default": "generate"
         },
-        "gitignore_entries": { "type": "boolean", "default": true, "description": "Add generated paths to .gitignore" }
+        "gitignore_entries": {
+          "type": "boolean",
+          "default": true,
+          "description": "Add generated paths to .gitignore"
+        }
       }
     }
   }

@@ -46,6 +46,7 @@ Returns:
 ```
 
 **Compare to grep:**
+
 ```bash
 grep -r "catch\|error\|Error" src/  # 1000+ matches, noisy
 ```
@@ -303,11 +304,13 @@ Use @Codebase to understand existing architecture
 ### Limitation: Vague Results
 
 **Problem**: Query too general
+
 ```
 @Codebase "show me React code"  ← 10,000+ results
 ```
 
 **Solution**: Be specific about intent
+
 ```
 @Codebase "How do we handle API errors in components?"  ← Focused
 ```
@@ -315,11 +318,13 @@ Use @Codebase to understand existing architecture
 ### Limitation: Missing Context
 
 **Problem**: Need to see specific file
+
 ```
 @Codebase "error handling"  ← Don't know exact location
 ```
 
 **Solution**: Combine with @file
+
 ```
 @Codebase "error handling patterns"  ← Find patterns
 @file src/shared/ui/ErrorBoundary.tsx  ← Then inspect specific file
@@ -328,25 +333,29 @@ Use @Codebase to understand existing architecture
 ### Limitation: Language Barriers
 
 **Problem**: Query in wrong language
+
 ```
 @Codebase "как обрабатывать ошибки"  ← Russian
 ```
 
 **Solution**: Use English for code searches
+
 ```
 @Codebase "how to handle errors in API"  ← English
 ```
 
 ## Best Practices
 
-### DO:
+### DO
+
 - ✅ Ask about INTENT ("How is X done?")
 - ✅ Focus on PATTERNS ("Show me all auth flows")
 - ✅ Combine searches (semantic + specific file)
 - ✅ Use for architecture understanding
 - ✅ Find refactoring targets
 
-### DON'T:
+### DON'T
+
 - ❌ Use for exact text matching (use grep)
 - ❌ Ask questions like "Where is 'userId' defined?"
 - ❌ Expect regex patterns to work

@@ -30,6 +30,7 @@ gh pr create --title "..." --body "..."
 ## PR Review Workflow
 
 ### 1. Gather Context
+
 ```bash
 # Get PR info
 gh pr view <PR_NUMBER>
@@ -40,6 +41,7 @@ gh pr checks <PR_NUMBER>
 ```
 
 ### 2. Review Process
+
 ```bash
 # Run local quality checks first
 npm run lint
@@ -51,6 +53,7 @@ gh pr review <PR_NUMBER>
 ```
 
 ### 3. Add Review Comments
+
 ```bash
 # Add review comment
 gh pr review <PR_NUMBER> --comment --body "Review comments here"

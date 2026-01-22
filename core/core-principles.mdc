@@ -196,7 +196,7 @@ Comments pointing to specific files = find similar issues across entire branch.
 | **Recovery**       | `bd list --status=in_progress` | No way to resume        |
 | **Team**           | Syncs with git, accessible     | Local file only         |
 
-### ALWAYS Use Beads For:
+### ALWAYS Use Beads For
 
 **Planning**: Create Beads Epic → Decompose into tasks
 **Starting**: Create Beads Task (or claim existing)
@@ -209,7 +209,7 @@ Comments pointing to specific files = find similar issues across entire branch.
 **Documentation**: Beads task for documentation work
 **Learning**: Beads task for reflection
 
-### NEVER Create Markdown Checklists For:
+### NEVER Create Markdown Checklists For
 
 - ❌ Project-level plans (use Beads Epic instead)
 - ❌ Feature checklists (use Beads Epic → Tasks instead)

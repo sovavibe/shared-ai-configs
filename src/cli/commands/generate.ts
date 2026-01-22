@@ -1,10 +1,20 @@
-import { writeFileSync, readFileSync, existsSync, mkdirSync, copyFileSync, symlinkSync, unlinkSync, readdirSync, appendFileSync } from 'fs';
+import {
+  writeFileSync,
+  readFileSync,
+  existsSync,
+  mkdirSync,
+  copyFileSync,
+  symlinkSync,
+  unlinkSync,
+  readdirSync,
+  appendFileSync,
+} from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { logger } from '../utils/logger.js';
 import { loadConfig, validateConfig, CONFIG_DEFAULTS } from '../utils/config.js';
 import { renderTemplate } from '../utils/template.js';
-import type { GenerateOptions, Config, GenerationTargetsConfig, ClaudeTargetConfig, CursorTargetConfig } from '../types.js';
+import type { GenerateOptions, Config, ClaudeTargetConfig, CursorTargetConfig } from '../types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -61,7 +71,12 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
     }
 
     // 2. .claude/ directory (rules, hooks, docs, settings, commands)
-    const claudeResults = await generateClaudeDir(config, outputDir, options, targets.claude.features);
+    const claudeResults = await generateClaudeDir(
+      config,
+      outputDir,
+      options,
+      targets.claude.features
+    );
     generatedFiles.push(...claudeResults);
   }
 
@@ -74,7 +89,12 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
     logger.header('Cursor target');
 
     // .cursor/ directory (rules, skills, agents, notepads, commands, hooks)
-    const cursorResults = await generateCursorDir(config, outputDir, options, targets.cursor.features);
+    const cursorResults = await generateCursorDir(
+      config,
+      outputDir,
+      options,
+      targets.cursor.features
+    );
     generatedFiles.push(...cursorResults);
 
     // .cursorrules file (if cursorrules feature enabled)
@@ -89,7 +109,10 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
   // ============================================================================
 
   // .beads/ if beads task tracking is enabled AND any IDE is active
-  if (config.services?.task_tracking?.type === 'beads' && (targets.claude.enabled || targets.cursor.enabled)) {
+  if (
+    config.services?.task_tracking?.type === 'beads' &&
+    (targets.claude.enabled || targets.cursor.enabled)
+  ) {
     const results = await generateBeadsDir(config, outputDir, options);
     generatedFiles.push(...results);
   }
@@ -109,15 +132,15 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
   logger.info('');
   logger.success('Generation complete');
 
-  const created = generatedFiles.filter(f => f.action === 'created').length;
-  const updated = generatedFiles.filter(f => f.action === 'updated').length;
-  const skipped = generatedFiles.filter(f => f.action === 'skipped').length;
+  const created = generatedFiles.filter((f) => f.action === 'created').length;
+  const updated = generatedFiles.filter((f) => f.action === 'updated').length;
+  const skipped = generatedFiles.filter((f) => f.action === 'skipped').length;
 
   logger.table({
-    'Created': String(created),
-    'Updated': String(updated),
-    'Skipped': String(skipped),
-    'Strategy': strategy
+    Created: String(created),
+    Updated: String(updated),
+    Skipped: String(skipped),
+    Strategy: strategy,
   });
 
   if (options.dryRun) {
@@ -143,7 +166,9 @@ interface NormalizedTargets {
 /**
  * Type guard to check if target is an object config (not boolean)
  */
-function isTargetConfig(target: boolean | ClaudeTargetConfig | CursorTargetConfig | undefined): target is ClaudeTargetConfig | CursorTargetConfig {
+function isTargetConfig(
+  target: boolean | ClaudeTargetConfig | CursorTargetConfig | undefined
+): target is ClaudeTargetConfig | CursorTargetConfig {
   return typeof target === 'object' && target !== null;
 }
 
@@ -156,7 +181,16 @@ function normalizeTargets(config: Config): NormalizedTargets {
 
   // Default features for each target
   const claudeDefaultFeatures = ['rules', 'hooks', 'commands', 'docs', 'settings', 'main'];
-  const cursorDefaultFeatures = ['rules', 'hooks', 'commands', 'skills', 'agents', 'notepads', 'mcp', 'cursorrules'];
+  const cursorDefaultFeatures = [
+    'rules',
+    'hooks',
+    'commands',
+    'skills',
+    'agents',
+    'notepads',
+    'mcp',
+    'cursorrules',
+  ];
 
   // Determine if Claude is enabled
   let claudeEnabled = true; // Default enabled
@@ -183,20 +217,22 @@ function normalizeTargets(config: Config): NormalizedTargets {
   return {
     claude: {
       enabled: claudeEnabled,
-      output_dir: (isTargetConfig(claudeTarget) ? claudeTarget.output_dir : undefined) ||
-                  config.services?.ide?.paths?.claude ||
-                  CONFIG_DEFAULTS.services.ide.paths.claude,
-      features: (isTargetConfig(claudeTarget) ? claudeTarget.features : undefined) ||
-                claudeDefaultFeatures
+      output_dir:
+        (isTargetConfig(claudeTarget) ? claudeTarget.output_dir : undefined) ||
+        config.services?.ide?.paths?.claude ||
+        CONFIG_DEFAULTS.services.ide.paths.claude,
+      features:
+        (isTargetConfig(claudeTarget) ? claudeTarget.features : undefined) || claudeDefaultFeatures,
     },
     cursor: {
       enabled: cursorEnabled,
-      output_dir: (isTargetConfig(cursorTarget) ? cursorTarget.output_dir : undefined) ||
-                  config.services?.ide?.paths?.cursor ||
-                  CONFIG_DEFAULTS.services.ide.paths.cursor,
-      features: (isTargetConfig(cursorTarget) ? cursorTarget.features : undefined) ||
-                cursorDefaultFeatures
-    }
+      output_dir:
+        (isTargetConfig(cursorTarget) ? cursorTarget.output_dir : undefined) ||
+        config.services?.ide?.paths?.cursor ||
+        CONFIG_DEFAULTS.services.ide.paths.cursor,
+      features:
+        (isTargetConfig(cursorTarget) ? cursorTarget.features : undefined) || cursorDefaultFeatures,
+    },
   };
 }
 
@@ -248,7 +284,10 @@ async function generateClaudeDir(
   features: string[]
 ): Promise<GeneratedFile[]> {
   const results: GeneratedFile[] = [];
-  const claudeDir = join(outputDir, config.services?.ide?.paths?.claude || CONFIG_DEFAULTS.services.ide.paths.claude);
+  const claudeDir = join(
+    outputDir,
+    config.services?.ide?.paths?.claude || CONFIG_DEFAULTS.services.ide.paths.claude
+  );
   const strategy = config.generation?.strategy || 'generate';
 
   if (!options.dryRun) {
@@ -262,6 +301,20 @@ async function generateClaudeDir(
       const result = await generateFromTemplate(
         'claude/settings.json.ejs',
         join(claudeDir, 'settings.json'),
+        config,
+        options
+      );
+      if (result) results.push(result);
+    }
+  }
+
+  // Generate MCP config (if 'mcp' feature enabled or by default)
+  if (features.includes('mcp') || features.includes('settings')) {
+    const mcpTemplate = join(packageRoot, 'templates/mcp/mcp.json.ejs');
+    if (existsSync(mcpTemplate)) {
+      const result = await generateFromTemplate(
+        'mcp/mcp.json.ejs',
+        join(claudeDir, 'mcp.json'),
         config,
         options
       );
@@ -283,7 +336,7 @@ async function generateClaudeDir(
       { template: 'claude/docs/SDLC-WORKFLOW.md.ejs', output: 'SDLC-WORKFLOW.md' },
       { template: 'claude/docs/DOCUMENTATION-INDEX.md.ejs', output: 'DOCUMENTATION-INDEX.md' },
       { template: 'claude/docs/QUICK-START-REFERENCE.md.ejs', output: 'QUICK-START-REFERENCE.md' },
-      { template: 'claude/docs/SLASH-COMMANDS-GUIDE.md.ejs', output: 'SLASH-COMMANDS-GUIDE.md' }
+      { template: 'claude/docs/SLASH-COMMANDS-GUIDE.md.ejs', output: 'SLASH-COMMANDS-GUIDE.md' },
     ];
 
     for (const doc of docTemplates) {
@@ -310,7 +363,7 @@ async function generateClaudeDir(
     }
 
     if (existsSync(hooksSourceDir)) {
-      const hookFiles = readdirSync(hooksSourceDir).filter(f => f.endsWith('.sh'));
+      const hookFiles = readdirSync(hooksSourceDir).filter((f) => f.endsWith('.sh'));
       for (const hook of hookFiles) {
         const sourcePath = join(hooksSourceDir, hook);
         const targetPath = join(hooksTargetDir, hook);
@@ -359,7 +412,9 @@ async function generateClaudeDir(
         mkdirSync(dirname(targetPath), { recursive: true });
         if (existsSync(targetPath)) unlinkSync(targetPath);
 
-        const actualSource = existsSync(sourcePath) ? sourcePath : join(packageRoot, 'content', ruleSpec.source);
+        const actualSource = existsSync(sourcePath)
+          ? sourcePath
+          : join(packageRoot, 'content', ruleSpec.source);
         if (strategy === 'symlink') {
           symlinkSync(actualSource, targetPath);
         } else {
@@ -381,7 +436,7 @@ async function generateClaudeDir(
     }
   }
 
-  const count = results.filter(r => r.action !== 'skipped').length;
+  const count = results.filter((r) => r.action !== 'skipped').length;
   if (count > 0) {
     logger.success(`Generated ${count} files in .claude/`);
   }
@@ -400,7 +455,10 @@ async function generateCursorDir(
   features: string[]
 ): Promise<GeneratedFile[]> {
   const results: GeneratedFile[] = [];
-  const cursorDir = join(outputDir, config.services?.ide?.paths?.cursor || CONFIG_DEFAULTS.services.ide.paths.cursor);
+  const cursorDir = join(
+    outputDir,
+    config.services?.ide?.paths?.cursor || CONFIG_DEFAULTS.services.ide.paths.cursor
+  );
   const strategy = config.generation?.strategy || 'generate';
 
   if (!options.dryRun) {
@@ -463,12 +521,12 @@ async function generateCursorDir(
     }
   }
 
-  // MCP config (if 'mcp' feature enabled)
+  // MCP config (if 'mcp' feature enabled) - uses shared template
   if (features.includes('mcp')) {
-    const mcpTemplate = join(packageRoot, 'templates/cursor/mcp.json.ejs');
+    const mcpTemplate = join(packageRoot, 'templates/mcp/mcp.json.ejs');
     if (existsSync(mcpTemplate)) {
       const result = await generateFromTemplate(
-        'cursor/mcp.json.ejs',
+        'mcp/mcp.json.ejs',
         join(cursorDir, 'mcp.json'),
         config,
         options
@@ -477,7 +535,7 @@ async function generateCursorDir(
     }
   }
 
-  const count = results.filter(r => r.action !== 'skipped').length;
+  const count = results.filter((r) => r.action !== 'skipped').length;
   if (count > 0) {
     logger.success(`Generated ${count} files in .cursor/`);
   }
@@ -499,81 +557,85 @@ function getRulesToInclude(config: Config): RuleSpec[] {
 
   // Core rules (always included)
   const coreRules = [
-    'core/001-persona.mdc',
-    'core/004-quality.mdc',
-    'core/021-core-principles.mdc',
-    'core/043-existing-solutions.mdc',
+    'core/persona.mdc',
+    'core/quality.mdc',
+    'core/core-principles.mdc',
+    'core/existing-solutions.mdc',
   ];
   for (const rule of coreRules) {
-    rules.push({ source: rule, target: rule.split('/').pop()! });
+    const target = rule.split('/').pop() ?? rule;
+    rules.push({ source: rule, target });
   }
 
   // MCP rules (always included if any MCP is enabled)
-  const hasAnyMcp = mcp && Object.values(mcp).some(m => m?.enabled);
+  const hasAnyMcp = mcp && Object.values(mcp).some((m) => m?.enabled);
   if (hasAnyMcp) {
     const mcpRules = [
-      'core/mcp/104-mcp-troubleshooting.mdc',
-      'core/mcp/105-tool-selection.mdc',
-      'core/mcp/110-ai-workflow.mdc',
-      'core/mcp/111-context-management.mdc',
+      'core/mcp/mcp-troubleshooting.mdc',
+      'core/mcp/tool-selection.mdc',
+      'core/mcp/ai-workflow.mdc',
+      'core/mcp/context-management.mdc',
     ];
     for (const rule of mcpRules) {
-      rules.push({ source: rule, target: rule.split('/').pop()! });
+      const target = rule.split('/').pop() ?? rule;
+      rules.push({ source: rule, target });
     }
   }
 
   // Conditional MCP rules
   if (mcp?.hindsight?.enabled) {
-    rules.push({ source: 'core/mcp/100-hindsight.mdc', target: '100-hindsight.mdc' });
+    rules.push({ source: 'core/mcp/hindsight.mdc', target: 'hindsight.mdc' });
   }
 
   // Workflow rules
   const workflowRules = [
-    'core/workflow/113-task-management.mdc',
-    'core/workflow/114-git-workflow.mdc',
-    'core/workflow/117-communication-style.mdc',
-    'core/workflow/118-documentation.mdc',
+    'core/workflow/task-management.mdc',
+    'core/workflow/git-workflow.mdc',
+    'core/workflow/communication-style.mdc',
+    'core/workflow/documentation.mdc',
   ];
   for (const rule of workflowRules) {
-    rules.push({ source: rule, target: rule.split('/').pop()! });
+    const target = rule.split('/').pop() ?? rule;
+    rules.push({ source: rule, target });
   }
 
   // Stack-specific rules
   if (config.stack.type === 'react') {
     const reactRules = [
-      'stacks/react/002-tech-stack.mdc',
-      'stacks/react/020-architecture.mdc',
-      'stacks/react/030-styling.mdc',
+      'stacks/react/tech-stack.mdc',
+      'stacks/react/architecture.mdc',
+      'stacks/react/styling.mdc',
     ];
     // Ant Design rule only if UI library is Ant Design
     if (config.stack.ui?.library === 'Ant Design') {
-      reactRules.push('stacks/react/031-ant-design.mdc');
+      reactRules.push('stacks/react/ant-design.mdc');
     }
     for (const rule of reactRules) {
-      rules.push({ source: rule, target: rule.split('/').pop()! });
+      const target = rule.split('/').pop() ?? rule;
+      rules.push({ source: rule, target });
     }
   }
 
   // Beads integration
   if (taskTracking?.type === 'beads') {
-    rules.push({ source: 'integrations/beads/005-beads.mdc', target: '005-beads.mdc' });
+    rules.push({ source: 'integrations/beads/beads.mdc', target: 'beads.mdc' });
   }
 
   // VCS integration
   if (vcs?.type === 'gitlab') {
-    rules.push({ source: 'integrations/gitlab/119-gitlab-mr.mdc', target: '119-gitlab-mr.mdc' });
+    rules.push({ source: 'integrations/gitlab/gitlab-mr.mdc', target: 'gitlab-mr.mdc' });
   } else if (vcs?.type === 'github') {
-    rules.push({ source: 'integrations/github/119-github-pr.mdc', target: '119-github-pr.mdc' });
+    rules.push({ source: 'integrations/github/github-pr.mdc', target: 'github-pr.mdc' });
   }
 
   // Security rules
   if (mcp?.snyk?.enabled) {
-    rules.push({ source: 'core/security/140-security.mdc', target: '140-security.mdc' });
+    rules.push({ source: 'core/security/security.mdc', target: 'security.mdc' });
   }
 
   // Dual IDE rules
   if (config.services?.ide?.dual_mode) {
-    rules.push({ source: 'core/workflow/120-dual-ide.mdc', target: '120-dual-ide.mdc' });
+    rules.push({ source: 'core/workflow/dual-ide.mdc', target: 'dual-ide.mdc' });
   }
 
   return rules;
@@ -616,7 +678,9 @@ async function generateCursorRules(
       mkdirSync(dirname(targetPath), { recursive: true });
       if (existsSync(targetPath)) unlinkSync(targetPath);
 
-      const actualSource = existsSync(sourcePath) ? sourcePath : join(packageRoot, 'content', ruleSpec.source);
+      const actualSource = existsSync(sourcePath)
+        ? sourcePath
+        : join(packageRoot, 'content', ruleSpec.source);
       if (strategy === 'symlink') {
         symlinkSync(actualSource, targetPath);
       } else {
@@ -640,7 +704,9 @@ async function generateBeadsDir(
   options: GenerateOptions
 ): Promise<GeneratedFile[]> {
   const results: GeneratedFile[] = [];
-  const beadsPath = config.services?.task_tracking?.paths?.beads || CONFIG_DEFAULTS.services.task_tracking.paths.beads;
+  const beadsPath =
+    config.services?.task_tracking?.paths?.beads ||
+    CONFIG_DEFAULTS.services.task_tracking.paths.beads;
   const beadsDir = join(outputDir, beadsPath);
   const strategy = config.generation?.strategy || 'generate';
 
@@ -667,7 +733,7 @@ async function generateBeadsDir(
     if (result) results.push(result);
   }
 
-  const count = results.filter(r => r.action !== 'skipped').length;
+  const count = results.filter((r) => r.action !== 'skipped').length;
   if (count > 0) {
     logger.success(`Generated ${count} files in .beads/`);
   }
@@ -685,7 +751,9 @@ async function generatePerlesDir(
   options: GenerateOptions
 ): Promise<GeneratedFile[]> {
   const results: GeneratedFile[] = [];
-  const perlesPath = config.services?.task_tracking?.paths?.perles || CONFIG_DEFAULTS.services.task_tracking.paths.perles;
+  const perlesPath =
+    config.services?.task_tracking?.paths?.perles ||
+    CONFIG_DEFAULTS.services.task_tracking.paths.perles;
   const perlesDir = join(outputDir, perlesPath);
   const strategy = config.generation?.strategy || 'generate';
 
@@ -712,7 +780,7 @@ async function generatePerlesDir(
     if (result) results.push(result);
   }
 
-  const count = results.filter(r => r.action !== 'skipped').length;
+  const count = results.filter((r) => r.action !== 'skipped').length;
   if (count > 0) {
     logger.success(`Generated ${count} files in .perles/`);
   }
@@ -734,7 +802,7 @@ async function generateIgnoreFiles(
   const ignoreFiles = [
     { template: 'ignore/cursorignore.ejs', output: '.cursorignore' },
     { template: 'ignore/cursorindexingignore.ejs', output: '.cursorindexingignore' },
-    { template: 'ignore/cursorrules.ejs', output: '.cursorrules' }
+    { template: 'ignore/cursorrules.ejs', output: '.cursorrules' },
   ];
 
   for (const file of ignoreFiles) {
@@ -762,7 +830,7 @@ async function generateIgnoreFiles(
     }
   }
 
-  const count = results.filter(r => r.action !== 'skipped').length;
+  const count = results.filter((r) => r.action !== 'skipped').length;
   if (count > 0) {
     logger.success(`Generated ${count} ignore files`);
   }
@@ -784,38 +852,49 @@ async function updateGitignore(
 
   const entries: string[] = [
     '',
-    '# Generated AI configs (from shared-ai-configs)',
+    '# AI Configuration (generated by shared-ai-configs)',
+    '.ai-project.yaml',
+    '',
+    '# Memory Bank (stored in MCP, not in git)',
+    '.memory',
+    'memory-bank/',
   ];
 
   // Claude-specific entries (only if Claude target enabled)
   if (targets.claude.enabled) {
+    entries.push('');
+    entries.push('# Claude Code');
+    entries.push('.claude/');
     entries.push('CLAUDE.md');
-    const claudePath = targets.claude.output_dir;
-    entries.push(`${claudePath}/rules/`);
-    entries.push(`${claudePath}/docs/`);
-    entries.push(`${claudePath}/hooks/`);
   }
 
   // Cursor-specific entries (only if Cursor target enabled)
   if (targets.cursor.enabled) {
-    const cursorPath = targets.cursor.output_dir;
-    entries.push(`${cursorPath}/rules/*.mdc`);
-    entries.push(`${cursorPath}/agents/`);
-    entries.push(`${cursorPath}/skills/`);
-    entries.push(`${cursorPath}/notepads/`);
-    entries.push(`${cursorPath}/hooks/`);
+    entries.push('');
+    entries.push('# Cursor IDE');
+    entries.push('.cursor/');
+    entries.push('.cursorignore');
+    entries.push('.cursorindexingignore');
+    entries.push('.cursorrules');
+    entries.push('AGENTS.md');
   }
 
   // Beads entries
   if (config.services?.task_tracking?.type === 'beads') {
-    const beadsPath = config.services.task_tracking.paths?.beads || CONFIG_DEFAULTS.services.task_tracking.paths.beads;
+    entries.push('');
+    entries.push('# Beads (task tracking)');
+    const beadsPath =
+      config.services.task_tracking.paths?.beads ||
+      CONFIG_DEFAULTS.services.task_tracking.paths.beads;
     entries.push(`${beadsPath}*.db`);
     entries.push(`${beadsPath}*.jsonl`);
   }
 
-  // Ignore files themselves
-  entries.push('.cursorignore');
-  entries.push('.cursorindexingignore');
+  // Future IDE support placeholders
+  entries.push('');
+  entries.push('# Future IDE support');
+  entries.push('.kilo/');
+  entries.push('.jb-ai/');
 
   if (!existsSync(gitignorePath)) {
     if (!options.dryRun) {

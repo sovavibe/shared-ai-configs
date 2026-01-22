@@ -20,11 +20,11 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
   logger.info('');
   logger.info('Project:');
   logger.table({
-    'Name': config.project.name,
+    Name: config.project.name,
     'Short name': config.project.short_name || config.project.name,
-    'Stack': config.stack.type,
+    Stack: config.stack.type,
     'Chat language': config.languages?.chat || CONFIG_DEFAULTS.languages.chat,
-    'Code language': config.languages?.code || CONFIG_DEFAULTS.languages.code
+    'Code language': config.languages?.code || CONFIG_DEFAULTS.languages.code,
   });
 
   // Services
@@ -36,8 +36,8 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
     'IDE Primary': services?.ide?.primary || 'not set',
     'IDE Secondary': services?.ide?.secondary || 'none',
     'Dual mode': services?.ide?.dual_mode ? 'enabled' : 'disabled',
-    'VCS': services?.vcs?.type || 'none',
-    'Task tracking': services?.task_tracking?.type || 'none'
+    VCS: services?.vcs?.type || 'none',
+    'Task tracking': services?.task_tracking?.type || 'none',
   });
 
   // MCP Tools
@@ -45,13 +45,12 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
   logger.info('MCP Tools:');
   const mcp = services?.mcp;
   logger.table({
-    'Hindsight': mcp?.hindsight?.enabled ? 'enabled' : 'disabled',
-    'Snyk': mcp?.snyk?.enabled ? 'enabled' : 'disabled',
-    'Context7': mcp?.context7?.enabled ? 'enabled' : 'disabled',
-    'PAL': mcp?.pal?.enabled ? 'enabled' : 'disabled',
+    Hindsight: mcp?.hindsight?.enabled ? 'enabled' : 'disabled',
+    Snyk: mcp?.snyk?.enabled ? 'enabled' : 'disabled',
+    Context7: mcp?.context7?.enabled ? 'enabled' : 'disabled',
     'Memory Bank': mcp?.memory_bank?.enabled ? 'enabled' : 'disabled',
-    'Figma': mcp?.figma?.enabled ? 'enabled' : 'disabled',
-    'Browser': mcp?.browser?.enabled ? 'enabled' : 'disabled'
+    Figma: mcp?.figma?.enabled ? 'enabled' : 'disabled',
+    Browser: mcp?.browser?.enabled ? 'enabled' : 'disabled',
   });
 
   // Generated files status
@@ -61,8 +60,10 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
   // Use config paths with CONFIG_DEFAULTS fallback - ensure string values
   const claudePath = services?.ide?.paths?.claude || CONFIG_DEFAULTS.services.ide.paths.claude;
   const cursorPath = services?.ide?.paths?.cursor || CONFIG_DEFAULTS.services.ide.paths.cursor;
-  const beadsPath = services?.task_tracking?.paths?.beads || CONFIG_DEFAULTS.services.task_tracking.paths.beads;
-  const perlesPath = services?.task_tracking?.paths?.perles || CONFIG_DEFAULTS.services.task_tracking.paths.perles;
+  const beadsPath =
+    services?.task_tracking?.paths?.beads || CONFIG_DEFAULTS.services.task_tracking.paths.beads;
+  const perlesPath =
+    services?.task_tracking?.paths?.perles || CONFIG_DEFAULTS.services.task_tracking.paths.perles;
 
   const files = [
     { path: 'CLAUDE.md', target: config.generation?.targets?.claude_md !== false },
@@ -98,7 +99,7 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
   logger.info('');
   logger.info('Generation:');
   logger.table({
-    'Strategy': config.generation?.strategy || CONFIG_DEFAULTS.generation.strategy
+    Strategy: config.generation?.strategy || CONFIG_DEFAULTS.generation.strategy,
   });
 
   // Recommendations

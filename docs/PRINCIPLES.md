@@ -1,442 +1,184 @@
 # Shared AI Configs — Core Principles
 
-> **Философия:** Эти принципы — фундамент всей системы. Каждое решение должно им соответствовать.
+> **Philosophy:** These principles form the foundation of the entire system. Every decision must align with them.
 
 ## 1. DRY — Don't Repeat Yourself
 
-### Принцип
+### Principle
 
-Каждая единица знания имеет **единственное, однозначное, авторитетное представление** в системе.
+Each unit of knowledge has a **single, unambiguous, authoritative representation** in the system.
 
-### Применение
+### Application
 
 ```
-❌ ПЛОХО:
-.claude/rules/react.mdc   (копия)
-.cursor/rules/react.mdc   (копия)
-.kilo/rules/react.mdc     (копия)
+❌ BAD:
+.claude/rules/react.mdc   (copy)
+.cursor/rules/react.mdc   (copy)
+.kilo/rules/react.mdc     (copy)
 
-✅ ХОРОШО:
-content/rules/react.mdc   (источник)
-    ├──► .claude/rules/react.mdc  (сгенерировано)
-    ├──► .cursor/rules/react.mdc  (сгенерировано)
-    └──► .kilo/rules/react.mdc    (сгенерировано)
+✅ GOOD:
+content/rules/react.mdc   (source)
+    ├──► .claude/rules/react.mdc  (generated)
+    ├──► .cursor/rules/react.mdc  (generated)
+    └──► .kilo/rules/react.mdc    (generated)
 ```
 
-### Правила
+### Rules
 
-1. **Правила (rules)** — один MDC файл → все IDE
-2. **Команды (commands)** — один MD файл → все IDE
-3. **Документация** — один EJS шаблон → разные выходные файлы
-4. **Конфигурация** — один `.ai-project.yaml` → все настройки
+1. **Rules** — one MDC file → all IDEs
+2. **Commands** — one MD file → all IDEs
+3. **Documentation** — one EJS template → different output files
+4. **Configuration** — one `.ai-project.yaml` → all settings
 
 ---
 
 ## 2. Configuration over Convention
 
-### Принцип
+### Principle
 
-Всё настраиваемо через конфиг. **Нет магических строк** в коде.
+Everything is configurable through config. **No magic strings** in code.
 
-### Применение
+### Application
 
 ```yaml
-# .ai-project.yaml — единственный источник правды
+# .ai-project.yaml — single source of truth
 
 commands:
-  dev: "pnpm dev"           # НЕ хардкод "npm run dev"
-  lint: "pnpm lint"         # НЕ хардкод "npm run lint"
+  dev: "pnpm dev"           # NOT hardcoded "npm run dev"
+  lint: "pnpm lint"         # NOT hardcoded "npm run lint"
   quality_gates: "pnpm quality:gates"
 
 services:
-  vcs:
-    type: gitlab            # НЕ хардкод "github"
   task_tracking:
-    type: beads             # НЕ хардкод "jira"
+    type: beads             # NOT hardcoded in code
 ```
-
-### Правила
-
-1. **CONFIG_DEFAULTS** — все fallback значения в одном месте
-2. **Schema validation** — AJV + `useDefaults: true`
-3. **Template variables** — `<%= commands.dev %>` вместо `npm run dev`
-4. **No hardcoded paths** — `<%= project.path %>` вместо `/Users/ap/work/Front`
 
 ---
 
-## 3. Conditional Generation
+## 3. Abstraction Over Specifics
 
-### Принцип
+### What to Include
 
-Генерируем **только то, что нужно** на основе конфига.
+- Technology patterns and best practices
+- Architecture guidelines
+- Code examples demonstrating patterns
 
-### Применение
+### What to Exclude
 
-```typescript
-// НЕ генерируем hindsight правила если hindsight отключен
-if (config.services?.mcp?.hindsight?.enabled) {
-  generateRule('100-hindsight.mdc');
-}
+- Business logic (domain-terms.md → project docs)
+- Version numbers (React 18.3 → React)
+- Specific lint rules (handled by `npm run lint`)
 
-// НЕ включаем GitLab секцию если VCS = github
-if (config.services?.vcs?.type === 'gitlab') {
-  includeSection('gitlab-workflow');
-}
 ```
-
-### В шаблонах
-
-```ejs
-<% if (services?.task_tracking?.type === 'beads') { %>
-## Beads Task Tracking
-
-```bash
-bd ready           # Find work
-bd close <id>      # Complete task
+✅ "Use React hooks for state management"
+❌ "Use React 18.3.1 with specific ESLint rules"
 ```
-<% } %>
-```
-
-### Правила
-
-1. **Включать только enabled сервисы**
-2. **Не генерировать пустые секции**
-3. **Экономить токены** — меньше контекста = быстрее ответ
 
 ---
 
-## 4. Multi-Target Architecture
+## 4. Version Independence
 
-### Принцип
+Rules should work across minor versions. Version constraints belong in `package.json`:
 
-Один контент → множество целей (IDE, агенты).
-
-### Матрица целей
-
-| Контент | Claude Code | Cursor | Kilo (future) |
-|---------|-------------|--------|---------------|
-| Rules | `.claude/rules/` | `.cursor/rules/` | `.kilo/rules/` |
-| Commands | `.claude/commands/` | `.cursor/commands/` | `.kilo/commands/` |
-| Hooks | Bash (`.sh`) | JavaScript (`.js`) | TBD |
-| Main | `CLAUDE.md` | `.cursorrules` | `KILO.md` |
-
-### Конфигурация целей
-
-```yaml
-generation:
-  targets:
-    claude:
-      enabled: true
-      output_dir: ".claude"
-      features: [rules, hooks, commands, docs, settings]
-    cursor:
-      enabled: true
-      output_dir: ".cursor"
-      features: [rules, hooks, commands, skills, agents, notepads]
-    kilo:
-      enabled: false  # Future
 ```
-
-### Правила
-
-1. **Каждая цель независима** — можно включать/выключать
-2. **Общий контент, разные адаптации** — hooks разные, rules одинаковые
-3. **Расширяемость** — добавить новую цель без изменения контента
+✅ Rule: "Use TanStack Query for server state"
+❌ Rule: "Use @tanstack/react-query@5.17.0"
+```
 
 ---
 
-## 5. Project-Specific Adaptations
+## 5. Agent-Specific Content
 
-### Принцип
+Different AI agents have different capabilities and formats:
 
-Каждый проект уникален. Конфиг позволяет **адаптировать генерацию** под проект.
-
-### Примеры адаптаций
-
-```yaml
-# Проект A: React + GitLab + Beads
-stack:
-  type: react
-services:
-  vcs: { type: gitlab }
-  task_tracking: { type: beads }
-commands:
-  dev: "npm run dev"
-
-# Проект B: Node + GitHub + Jira
-stack:
-  type: node
-services:
-  vcs: { type: github }
-  task_tracking: { type: jira }
-commands:
-  dev: "yarn dev"
-
-# Проект C: Python + None
-stack:
-  type: python
-services:
-  vcs: { type: none }
-  task_tracking: { type: none }
-commands:
-  dev: "python manage.py runserver"
+```
+content/
+├── agents/
+│   ├── claude/      # Claude-specific patterns
+│   └── cursor/      # Cursor-specific patterns
 ```
 
-### Использование в hooks
-
-```bash
-#!/bin/bash
-# Hook использует команды из конфига проекта
-QUALITY_GATES="<%= commands.quality_gates %>"
-$QUALITY_GATES || exit 1
-```
-
-### Правила
-
-1. **Проектные команды в конфиге** — не в коде
-2. **Генерация адаптируется** — разные проекты → разные файлы
-3. **Переопределение defaults** — CONFIG_DEFAULTS ← project config
+Duplication between Claude and Cursor is acceptable when necessary for clarity.
 
 ---
 
-## 6. Token Optimization
+## 6. Semantic Naming
 
-### Принцип
-
-Минимизируем **потребление токенов** при работе с AI.
-
-### Стратегии
+Rules use descriptive names without numeric prefixes:
 
 ```
-┌─────────────────────────────────────────────────────┐
-│ БЕЗ оптимизации:                                    │
-│   Session Start: 180K tokens                        │
-│   - Все правила загружены                           │
-│   - Все MCP инструменты в контексте                 │
-│   - Полная документация                             │
-└─────────────────────────────────────────────────────┘
-                          ▼
-┌─────────────────────────────────────────────────────┐
-│ С оптимизацией:                                     │
-│   Session Start: 5-8K tokens (60-70% экономия)     │
-│   - Только core правила (alwaysApply: true)         │
-│   - MCP по требованию                               │
-│   - Glob-based loading                              │
-└─────────────────────────────────────────────────────┘
+✅ persona.mdc
+✅ quality.mdc
+✅ git-workflow.mdc
+
+❌ 001-persona.mdc
+❌ 004-quality.mdc
+❌ 114-git-workflow.mdc
 ```
-
-### Реализация
-
-```yaml
----
-# Rule with glob-based loading
-description: 'React patterns'
-alwaysApply: false              # НЕ загружать всегда
-globs: ['src/**/*.tsx']         # Загружать только для TSX файлов
----
-```
-
-### Правила
-
-1. **alwaysApply: false** по умолчанию
-2. **Globs для context-aware loading**
-3. **Условная генерация** — меньше файлов = меньше контекста
-4. **Диаграммы вместо текста** — 87% экономия
 
 ---
 
-## 7. IDE Parity
+## 7. English Only
 
-### Принцип
+All content in English for international open-source use:
 
-**Одинаковое поведение** в разных IDE. Переключение IDE не должно менять workflow.
-
-### Применение
-
-```
-Claude Code                    Cursor
-──────────────────────────────────────────
-/analyze                   =   /analyze
-/architect                 =   /architect
-/plan                      =   /plan
-/review                    =   /review
-bd ready                   =   bd ready
-bd close                   =   bd close
-npm run quality:gates      =   npm run quality:gates
-```
-
-### Правила
-
-1. **Команды идентичны** — одни и те же slash commands
-2. **Правила идентичны** — MDC формат общий
-3. **Workflow идентичен** — SDLC фазы одинаковые
-4. **Quality gates одинаковые** — pre-commit hooks унифицированы
+- Code and comments
+- Documentation
+- Commit messages
+- Issue descriptions
 
 ---
 
-## 8. Separation of Concerns
-
-### Принцип
-
-Разделение **контента, шаблонов, логики генерации**.
-
-### Структура
+## Directory Structure
 
 ```
 shared-ai-configs/
-├── content/              # ЧТО генерировать (данные)
-│   ├── rules/            # Правила
-│   ├── commands/         # Команды
-│   └── hooks/            # Hooks
-│
-├── templates/            # КАК форматировать (представление)
-│   ├── CLAUDE.md.ejs
-│   └── cursorrules.ejs
-│
-├── src/cli/              # ЛОГИКА генерации (контроллер)
-│   ├── commands/generate.ts
-│   └── utils/template.ts
-│
-└── schema/               # ВАЛИДАЦИЯ (контракт)
-    └── ai-project.schema.json
+├── content/
+│   ├── agents/          # Agent-specific content
+│   │   ├── claude/
+│   │   └── cursor/
+│   ├── commands/        # Slash command definitions
+│   ├── notepads/        # Reference materials
+│   └── skills/          # Skill definitions
+├── core/                # Universal rules
+│   ├── mcp/             # MCP integration
+│   ├── workflow/        # Workflow patterns
+│   ├── security/        # Security rules
+│   └── advanced/        # 2026 patterns
+├── stacks/              # Stack-specific rules
+│   ├── react/
+│   └── node/
+├── hooks/               # IDE hooks
+│   ├── claude/          # Bash hooks
+│   └── cursor/          # JS hooks
+├── templates/           # Generation templates
+│   ├── claude/
+│   ├── cursor/
+│   └── mcp/
+└── integrations/        # Third-party integrations
+    ├── beads/
+    ├── gitlab/
+    └── github/
 ```
-
-### Правила
-
-1. **Контент — чистые данные** (MDC, MD)
-2. **Шаблоны — только форматирование** (EJS)
-3. **Логика — только в CLI** (TypeScript)
-4. **Schema — контракт валидации** (JSON Schema)
 
 ---
 
-## 9. Idempotent Generation
+## Quality Gates
 
-### Принцип
-
-Повторная генерация **не меняет результат** если конфиг не изменился.
-
-### Проверка
+All contributions must pass:
 
 ```bash
-# Первая генерация
-npx shared-ai-configs generate
-
-# Повторная генерация
-npx shared-ai-configs generate
-
-# Проверка: diff должен быть пустым
-git diff
-# (пусто)
+npm run quality   # Lint + format + markdown check
+npm run build     # TypeScript compilation
+npm test          # Unit tests
 ```
-
-### Правила
-
-1. **Детерминированный вывод** — одинаковый input → одинаковый output
-2. **Нет timestamps в генерации** (если не указано явно)
-3. **Нет random элементов**
-4. **Сортировка массивов** — порядок файлов стабильный
 
 ---
 
-## 10. Extensibility
+## Contributing
 
-### Принцип
-
-Легко добавить **новые IDE, стеки, интеграции** без изменения core.
-
-### Точки расширения
-
-1. **Новый IDE** — добавить target в config + templates
-2. **Новый стек** — добавить `content/rules/stacks/newstack/`
-3. **Новая интеграция** — добавить в `services.mcp.*`
-4. **Кастомные правила** — `rules.custom[]` в конфиге
-
-### Пример: добавление Kilo
-
-```yaml
-# 1. Добавить в schema
-generation:
-  targets:
-    kilo:
-      enabled: boolean
-      output_dir: string
-
-# 2. Добавить templates
-templates/kilo/
-├── KILO.md.ejs
-└── config.json.ejs
-
-# 3. Добавить в generate.ts
-if (config.generation?.targets?.kilo?.enabled) {
-  generateForTarget('kilo', config);
-}
-```
-
-### Правила
-
-1. **Плагинная архитектура** — новые фичи не ломают существующие
-2. **Feature flags** — `enabled: true/false` для каждой фичи
-3. **Schema evolution** — новые поля с defaults
-
----
-
-## Чеклист для новых фич
-
-При добавлении новой функциональности проверь:
-
-- [ ] **DRY**: Контент в одном месте?
-- [ ] **Config**: Настраивается через `.ai-project.yaml`?
-- [ ] **Conditional**: Генерируется только если нужно?
-- [ ] **Multi-target**: Работает для всех IDE?
-- [ ] **Token-optimized**: Не добавляет лишний контекст?
-- [ ] **IDE Parity**: Одинаково работает везде?
-- [ ] **Idempotent**: Повторная генерация стабильна?
-- [ ] **Extensible**: Легко расширить в будущем?
-
----
-
-## Anti-patterns
-
-### ❌ НЕ делай так:
-
-```typescript
-// Хардкод команды
-const lintCmd = 'npm run lint';  // ❌
-
-// Хардкод пути
-const projectPath = '/Users/ap/work/Front';  // ❌
-
-// Генерация без условия
-generateRule('gitlab-mr.mdc');  // ❌ А если GitHub?
-
-// Дублирование контента
-copyFile('rules/react.mdc', '.claude/rules/');
-copyFile('rules/react.mdc', '.cursor/rules/');  // ❌ Дубликат
-
-// Timestamps в генерации
-content += `Generated: ${new Date()}`;  // ❌ Не idempotent
-```
-
-### ✅ Делай так:
-
-```typescript
-// Команды из конфига
-const lintCmd = config.commands?.lint || CONFIG_DEFAULTS.commands.lint;  // ✅
-
-// Путь из конфига
-const projectPath = config.project?.path || process.cwd();  // ✅
-
-// Условная генерация
-if (config.services?.vcs?.type === 'gitlab') {
-  generateRule('gitlab-mr.mdc');  // ✅
-}
-
-// Единый источник
-for (const target of getEnabledTargets(config)) {
-  generateRuleForTarget('react.mdc', target);  // ✅ Один файл → много целей
-}
-
-// Без timestamps (если не нужно)
-content += `# Generated by shared-ai-configs`;  // ✅ Без даты
-```
+1. Follow semantic naming (no numeric prefixes)
+2. Write in English
+3. Keep rules abstract (no version numbers)
+4. Test generation before committing
+5. Update INDEX.mdc when adding rules

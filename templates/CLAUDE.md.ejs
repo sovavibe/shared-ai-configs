@@ -425,16 +425,6 @@ Splits epic into batches for parallel execution (up to 5 Sonnet workers).
 
 **Full guide:** `<%= services.ide.paths.claude %>PERLES-ORCHESTRATION-GUIDE.md` (538 lines with examples)
 
-<% if (services.mcp && services.mcp.pal && services.mcp.pal.enabled) { -%>
-### PAL Tools Usage
-
-**IMPORTANT:** Deep analysis = Opus directly, not external models via PAL.
-
-- **thinkdeep (GLM-4.7)** - Implementation guidance, routine tasks only
-- **NOT for:** Critical architecture, deep investigations, security analysis
-- **Deep work:** Use Opus directly or Perles orchestration mode
-
-<% } -%>
 <% } -%>
 ## MCP Tools
 
@@ -447,9 +437,6 @@ Splits epic into batches for parallel execution (up to 5 Sonnet workers).
 <% } -%>
 <% if (services.mcp && services.mcp.context7 && services.mcp.context7.enabled) { -%>
 | **MCP_DOCKER**       | Context7, Jira, Confluence                    | Docs & project mgmt              |
-<% } -%>
-<% if (services.mcp && services.mcp.pal && services.mcp.pal.enabled) { -%>
-| **pal**              | `chat`, `thinkdeep`, `debug`, `codereview`    | External models (GPT-5, GLM-4.7) |
 <% } -%>
 <% if (services.mcp && services.mcp.snyk && services.mcp.snyk.enabled) { -%>
 | **Snyk**             | `snyk_code_scan`, `snyk_sca_scan`             | Security scanning                |
@@ -471,10 +458,7 @@ Splits epic into batches for parallel execution (up to 5 Sonnet workers).
 <% if (services.mcp && services.mcp.context7 && services.mcp.context7.enabled) { -%>
 4. **Context7** → Library docs (`resolve-library-id` → `get-library-docs`)
 <% } -%>
-<% if (services.mcp && services.mcp.pal && services.mcp.pal.enabled) { -%>
-5. **PAL** → External models for complex tasks
-<% } -%>
-6. **WebSearch** → External info (last resort)
+5. **WebSearch** → External info (last resort)
 
 <% if (services.mcp && (services.mcp.hindsight?.enabled || services.mcp.context7?.enabled || services.mcp.snyk?.enabled)) { -%>
 ### Quick MCP Commands
@@ -490,11 +474,6 @@ mcp__MCP_DOCKER__get-library-docs "/tanstack/query" --topic "mutations"
 # Memory
 mcp__hindsight-alice__recall "How do we handle errors?"
 mcp__hindsight-alice__retain "Decision: Use X because Y"
-
-<% } -%>
-<% if (services.mcp.pal && services.mcp.pal.enabled) { -%>
-# External model for complex task
-mcp__pal__thinkdeep --hypothesis "Root cause of bug" --model gpt-5.1-codex
 
 <% } -%>
 <% if (services.mcp.snyk && services.mcp.snyk.enabled) { -%>
@@ -616,17 +595,17 @@ curl -X DELETE "http://localhost:8888/v1/default/banks/session"
 
 **All strategic documentation (plans, roadmaps, architectural decisions) must be in <%= languages?.chat || 'English' %>** for improved team readability and comprehension. Code comments remain in English per ESLint rules.
 
-### Model Selection Strategy: Opus vs PAL vs Sonnet
+### Model Selection Strategy: Opus vs Sonnet
 
 **When to use each model:**
 
-#### 🧠 **Opus (Direct, NOT via PAL)**
+#### 🧠 **Opus**
 
 - ✅ Architectural decisions
 - ✅ Deep code review
 - ✅ Critical bug analysis
 - ✅ Security decisions
-- ❌ NOT via PAL - use direct Opus for quality
+- ✅ Complex reasoning
 
 #### 📊 **Sonnet/Haiku (for standard work)**
 
@@ -635,18 +614,7 @@ curl -X DELETE "http://localhost:8888/v1/default/banks/session"
 - ✅ Code generation
 - ✅ Routine refactoring
 
-<% if (services.mcp && services.mcp.pal && services.mcp.pal.enabled) { -%>
-#### 🔄 **PAL Tools (GLM-4.7 for routine only)**
-
-- ✅ Routine research
-- ✅ Quick second opinion
-- ✅ Simple investigations
-- ❌ NOT for architecture
-- ❌ NOT for security analysis
-- ❌ NOT for critical code review
-
-<% } -%>
-**Rule:** If you're tempted to use PAL, first ask: "Is this a critical decision?" If yes → use Opus directly.
+**Rule:** Use Opus for critical decisions, Sonnet for implementation.
 
 <% } -%>
 ---

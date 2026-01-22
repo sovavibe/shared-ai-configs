@@ -46,6 +46,7 @@ alwaysApply: true
    ```
 
 4. **Перед коммитом:**
+
    ```bash
    bd sync --flush-only  # ОБЯЗАТЕЛЬНО перед git commit
    ```

@@ -52,11 +52,13 @@ alwaysApply: false
 ## Strategy 3: Progressive Loading
 
 **Pattern**:
+
 1. Core context loads (essential only) - 2-3K
 2. File-specific rules load on @mention - auto
 3. On-demand MCPs load when needed - auto
 
 **Benefits**:
+
 - Fast session start
 - Automatic expansion
 - No manual tool switching
@@ -64,6 +66,7 @@ alwaysApply: false
 ## Strategy 4: Decision Tree Compression
 
 **Before** (Explanation format - 150+ tokens):
+
 ```
 When implementing authentication, consider:
 - Session-based: Store token in session...
@@ -73,6 +76,7 @@ When implementing authentication, consider:
 ```
 
 **After** (Decision table - 20 tokens, 87% savings):
+
 ```markdown
 | Method | When | Pros | Cons |
 |--------|------|------|------|

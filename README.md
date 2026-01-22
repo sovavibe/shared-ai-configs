@@ -1,144 +1,265 @@
-# Shared AI Configs
+# shared-ai-configs
 
-Universal AI-assisted development configuration for multiple projects.
+NPM package for generating AI-assisted development configurations for Claude Code and Cursor IDE.
 
 ## Features
 
-- **25+ Universal Rules** — Quality, workflow, MCP, security patterns
-- **Stack Templates** — React, Node.js, Java, Python (extensible)
-- **Integrations** — GitLab, GitHub, Jira, Beads
-- **CLAUDE.md Generator** — Template with 60+ placeholders
-- **Symlink-based Sync** — Single source of truth, instant updates
+- **Config-driven generation** — Single `.ai-project.yaml` defines all outputs
+- **Multi-target** — Claude Code (CLAUDE.md, .claude/), Cursor (.cursor/rules/)
+- **40+ rules** — Quality, workflow, MCP, security, stack-specific patterns
+- **EJS templates** — 60+ placeholders for full customization
+- **JSON Schema validation** — Catches config errors before generation
+
+## Installation
+
+```bash
+# Global install
+npm install -g shared-ai-configs
+
+# Or use npx
+npx shared-ai-configs <command>
+```
 
 ## Quick Start
 
 ```bash
-# 1. Clone this repo (or add as submodule)
-git clone git@github.com:your-org/shared-ai-configs.git ~/shared-ai-configs
+# 1. Initialize project with .ai-project.yaml
+npx shared-ai-configs init
 
-# 2. Initialize your project
-cd /path/to/your-project
-~/shared-ai-configs/tools/setup.sh init
+# 2. Edit .ai-project.yaml with your settings
 
-# 3. Edit .ai-project.yaml with your settings
+# 3. Generate configurations
+npx shared-ai-configs generate
 
-# 4. Sync rules and generate CLAUDE.md
-~/shared-ai-configs/tools/setup.sh sync
-~/shared-ai-configs/tools/setup.sh generate
+# 4. Verify everything is correct
+npx shared-ai-configs status
 ```
 
-## Structure
+## CLI Commands
 
-```
-shared-ai-configs/
-├── core/                      # 🌍 UNIVERSAL (25 files)
-│   ├── 001-persona.mdc        # Role, principles, style
-│   ├── 004-quality.mdc        # Code quality, TypeScript safety
-│   ├── mcp/                   # MCP & Tools
-│   │   ├── 100-hindsight.mdc
-│   │   ├── 105-tool-selection.mdc
-│   │   └── ...
-│   ├── workflow/              # Git, PR, task management
-│   │   ├── 114-git-workflow.mdc
-│   │   └── ...
-│   ├── advanced/              # 2026 Patterns (SDD, swarms)
-│   │   ├── 124-sdd-patterns.mdc
-│   │   └── ...
-│   ├── security/              # Security & performance
-│   └── commands/              # SDLC slash commands
-│
-├── stacks/                    # 🔧 STACK-SPECIFIC
-│   ├── react/                 # React + TypeScript + Ant Design
-│   ├── node/                  # Node.js scripts
-│   ├── java/                  # Spring Boot (extensible)
-│   └── python/                # FastAPI/Django (extensible)
-│
-├── integrations/              # 🔌 INTEGRATIONS
-│   ├── gitlab/                # GitLab MR commands
-│   ├── github/                # GitHub PR commands
-│   ├── jira/                  # Jira sync
-│   └── beads/                 # Task tracking
-│
-├── templates/                 # 📄 TEMPLATES
-│   └── CLAUDE.template.md     # 60+ placeholders
-│
-├── hooks/                     # 🪝 HOOKS
-│   ├── session-start.sh
-│   ├── validate-bash.sh
-│   └── pre-commit.sh
-│
-├── workflows/                 # 🔄 SDLC Workflows
-├── schema/                    # 📋 Config Schema
-│   ├── ai-project.schema.json
-│   └── ai-project.example.yaml
-│
-└── tools/                     # 🛠️ CLI
-    └── setup.sh
-```
+| Command | Description |
+|---------|-------------|
+| `init` | Create `.ai-project.yaml` template |
+| `generate` | Generate all configurations |
+| `validate` | Validate `.ai-project.yaml` against schema |
+| `status` | Show current configuration status |
+| `doctor` | Diagnose issues (missing files, outdated configs) |
 
-## Commands
+### Options
 
 ```bash
-# Initialize project with .ai-project.yaml template
-./tools/setup.sh init
+# Generate with force overwrite
+npx shared-ai-configs generate --force
 
-# Sync rules via symlinks (based on .ai-project.yaml)
-./tools/setup.sh sync
+# Validate specific config file
+npx shared-ai-configs validate ./custom-config.yaml
 
-# Generate CLAUDE.md from template
-./tools/setup.sh generate
-
-# Link specific file
-./tools/setup.sh link core/001-persona.mdc .cursor/rules/001-persona.mdc
-
-# Show status
-./tools/setup.sh status
+# Check health
+npx shared-ai-configs doctor
 ```
 
-## .ai-project.yaml
+## Configuration
 
-Project-specific configuration:
+`.ai-project.yaml` is the single source of truth:
 
 ```yaml
 project:
   name: "My Project"
-  language: "Russian"  # or English
+  description: "Customer portal application"
 
 stack:
-  type: "react"  # react | node | java | python
-  framework:
-    name: "React"
-    version: "18.3"
+  type: "react"              # react | node | java | python
+  framework: "React 18"
+  state: "Zustand 5"
+  ui: "Ant Design 5"
+  api:
+    client: "TanStack Query 5"
+    codegen: "Orval 7"
+  testing: "Vitest"
+  linter: "ESLint"
 
-integrations:
+services:
   vcs:
-    type: "gitlab"  # gitlab | github
-  issues:
-    type: "jira"
-    key: "PROJ"
+    type: "git"              # git | none
+    main_branch: "main"
   task_tracking:
-    type: "beads"
-    enabled: true
+    type: "beads"            # beads | jira | linear | github-issues | none
+    key_prefix: "VP-"
+  mcp:
+    hindsight:
+      enabled: true
+    snyk:
+      enabled: true
+    context7:
+      enabled: true
 
 commands:
   dev: "npm run dev"
+  build: "npm run build"
+  lint: "npm run lint"
+  test: "npm run test"
+  codegen: "npm run codegen"
   quality_gates: "npm run quality:gates"
-  # ... more commands
+
+options:
+  dev_server_port: 5173
+  orchestration: true
+  agentic_workflows: true
+
+languages:
+  chat: "Russian"
+  code: "English"
+
+rules:
+  critical:
+    - "NEVER edit src/shared/api/generated/"
+    - "ALWAYS run quality gates before committing"
+
+generation:
+  targets:
+    claude: true
+    cursor: true
 ```
 
-See `schema/ai-project.example.yaml` for full example.
+## Generated Output
 
-## Adding New Stacks
+```
+your-project/
+├── .ai-project.yaml         # Your config (tracked in git)
+├── CLAUDE.md                # Entry point for Claude Code
+├── .claude/
+│   ├── docs/                # Generated documentation
+│   │   ├── MCP-GUIDE.md
+│   │   ├── SESSION-PROTOCOL.md
+│   │   ├── SDLC-WORKFLOW.md
+│   │   └── ...
+│   └── settings.json        # Claude Code settings
+└── .cursor/
+    └── rules/               # 40+ .mdc rules
+        ├── 001-persona.mdc
+        ├── 002-tech-stack.mdc
+        ├── 005-beads.mdc
+        └── ...
+```
 
-1. Create `stacks/your-stack/` directory
-2. Add rules as `.mdc` files
-3. Update `setup.sh` to handle your stack type
+## Architecture
 
-## Adding New Integrations
+```
+shared-ai-configs/
+├── src/
+│   └── cli/
+│       ├── commands/        # CLI commands
+│       │   ├── init.ts
+│       │   ├── generate.ts
+│       │   ├── validate.ts
+│       │   ├── status.ts
+│       │   └── doctor.ts
+│       ├── utils/
+│       │   └── template.ts  # EJS context builder
+│       └── types.ts         # TypeScript types
+├── templates/
+│   ├── CLAUDE.md.ejs        # Main template (60+ placeholders)
+│   ├── claude/
+│   │   ├── docs/*.ejs       # Documentation templates
+│   │   └── settings.json.ejs
+│   └── ...
+├── content/
+│   ├── core/                # Universal rules (25 files)
+│   ├── stacks/              # Stack-specific rules
+│   │   ├── react/
+│   │   ├── node/
+│   │   └── ...
+│   └── integrations/        # Tool integrations
+│       ├── beads/
+│       ├── gitlab/
+│       └── ...
+└── schema/
+    └── ai-project.schema.json
+```
 
-1. Create `integrations/your-tool/` directory
-2. Add commands as `.md` files
-3. Update `setup.sh` detection logic
+## Task Tracking Integration
+
+Auto-generates commands based on `services.task_tracking.type`:
+
+| Type | Commands |
+|------|----------|
+| `beads` | `bd create`, `bd close`, `bd ready`, `bd sync` |
+| `jira` | `jira create`, `jira close`, `jira list` |
+| `linear` | `linear issue create`, `linear issue close` |
+| `github-issues` | `gh issue create`, `gh issue close` |
+
+## MCP Integration
+
+Enable MCP tools in config:
+
+```yaml
+services:
+  mcp:
+    hindsight:
+      enabled: true    # Memory & recall
+    snyk:
+      enabled: true    # Security scanning
+    context7:
+      enabled: true    # Library docs
+    pal:
+      enabled: true    # External models
+    memory_bank:
+      enabled: true    # Allpepper memory
+    figma:
+      enabled: true    # Design to code
+    browser:
+      enabled: true    # Chrome automation
+```
+
+## Extending
+
+### Add Custom Rules
+
+1. Create `.mdc` file in `content/core/` or `content/stacks/<stack>/`
+2. Use frontmatter for metadata:
+
+```markdown
+---
+description: 'My custom rule'
+version: '1.0.0'
+alwaysApply: true
+---
+
+# My Rule
+
+Content here...
+```
+
+### Add New Stack
+
+1. Create `content/stacks/<stack-name>/` directory
+2. Add stack-specific `.mdc` rules
+3. Update `src/cli/commands/generate.ts` if special handling needed
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Build
+npm run build
+
+# Watch mode
+npm run watch
+
+# Test
+npm run test
+
+# Lint
+npm run lint
+```
+
+## Related
+
+- [Claude Code](https://claude.ai/claude-code) — Anthropic's CLI
+- [Cursor](https://cursor.sh) — AI-powered IDE
+- [Beads](https://github.com/your-org/beads) — Local task tracking
 
 ## License
 

@@ -1,0 +1,42 @@
+{
+  "mcpServers": {
+<% if (services?.mcp?.hindsight?.enabled) { -%>
+    "hindsight-alice": {
+      "command": "hindsight-mcp"
+    }<%= services?.mcp?.snyk?.enabled || services?.mcp?.context7?.enabled || services?.mcp?.figma?.enabled || services?.mcp?.web_search?.enabled || services?.mcp?.chrome?.enabled ? ',' : '' %>
+<% } -%>
+<% if (services?.mcp?.snyk?.enabled) { -%>
+    "Snyk": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/snyk-mcp"]
+    }<%= services?.mcp?.context7?.enabled || services?.mcp?.figma?.enabled || services?.mcp?.web_search?.enabled || services?.mcp?.chrome?.enabled ? ',' : '' %>
+<% } -%>
+<% if (services?.mcp?.context7?.enabled) { -%>
+    "Context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }<%= services?.mcp?.figma?.enabled || services?.mcp?.web_search?.enabled || services?.mcp?.chrome?.enabled ? ',' : '' %>
+<% } -%>
+<% if (services?.mcp?.figma?.enabled) { -%>
+    "Figma": {
+      "command": "npx",
+      "args": ["-y", "figma-developer-mcp", "--stdio"],
+      "env": {
+        "FIGMA_API_KEY": "${FIGMA_API_KEY}"
+      }
+    }<%= services?.mcp?.web_search?.enabled || services?.mcp?.chrome?.enabled ? ',' : '' %>
+<% } -%>
+<% if (services?.mcp?.web_search?.enabled) { -%>
+    "web-search-prime": {
+      "command": "npx",
+      "args": ["-y", "@pinkpixel/web-search-mcp"]
+    }<%= services?.mcp?.chrome?.enabled ? ',' : '' %>
+<% } -%>
+<% if (services?.mcp?.chrome?.enabled) { -%>
+    "claude-in-chrome": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/claude-in-chrome-mcp"]
+    }
+<% } -%>
+  }
+}

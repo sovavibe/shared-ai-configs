@@ -53,18 +53,21 @@ test_plan: "docs/TEST-PLAN.md"
 ## Model Selection Strategy
 
 ### Opus (Direct, NOT via PAL)
+
 - ✅ Architectural decisions
 - ✅ Deep code review
 - ✅ Critical bug analysis
 - ✅ Security decisions
 
 ### Sonnet/Haiku (for standard work)
+
 - ✅ Implementation
 - ✅ Test writing
 - ✅ Code generation
 - ✅ Routine refactoring
 
 ### PAL Tools (external models for routine only)
+
 - ✅ Routine research
 - ✅ Quick second opinion
 - ❌ NOT for architecture

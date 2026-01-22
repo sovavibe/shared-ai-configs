@@ -20,6 +20,7 @@ alwaysApply: false
 ## MR Review Workflow
 
 ### 1. Gather Context
+
 ```bash
 # Get MR info via CLI
 glab mr view <MR_NUMBER>
@@ -30,6 +31,7 @@ glab mr diff <MR_NUMBER>
 ```
 
 ### 2. Review Process
+
 ```bash
 # Run quality checks first
 npm run lint
@@ -41,6 +43,7 @@ npm run test -- --run
 ```
 
 ### 3. Process Feedback
+
 ```bash
 # Get existing comments
 /gitlab-get-comments <MR_NUMBER>
@@ -75,6 +78,7 @@ glab mr comment <MR> --message "Comment text" --line <LINE> --file <PATH>
 For each significant issue found:
 
 1. Create Beads task:
+
 ```bash
 bd create --title="[MR-N] Fix: issue description" --type=task --priority=2
 ```

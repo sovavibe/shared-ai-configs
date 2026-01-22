@@ -11,7 +11,7 @@ alwaysApply: false
 
 **Stack**: Node.js 20+ | TypeScript 5.5 | ESM | Zod | yargs | Vitest
 
-**Best Practices from Cursor Directory** (https://cursor.directory/rules):
+**Best Practices from Cursor Directory** (<https://cursor.directory/rules>):
 
 ## Rules
 
@@ -132,5 +132,5 @@ expect(results).toHaveLength(EXPECTED_COUNT)
 
 ## References
 
-- Cursor Directory: https://cursor.directory/rules/node
-- Cursor Directory TypeScript: https://cursor.directory/rules/typescript
+- Cursor Directory: <https://cursor.directory/rules/node>
+- Cursor Directory TypeScript: <https://cursor.directory/rules/typescript>
