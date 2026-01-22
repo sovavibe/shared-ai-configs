@@ -1,7 +1,7 @@
 ---
 description: 'Beads issue tracking - local task management and git sync'
-version: '1.0.0'
-lastUpdated: '2026-01-20'
+version: '1.1.0'
+lastUpdated: '2026-01-22'
 alwaysApply: true
 ---
 
@@ -11,45 +11,95 @@ alwaysApply: true
 
 - Track ALL work in bd (never use markdown TODOs)
 - `bd ready` → find available work
-- `bd sync --flush-only` at end of session
+- Daemon handles sync automatically (no manual `bd sync` needed)
+
+## Sync-Branch Mode (Recommended)
+
+Beads использует отдельную ветку `beads-sync` для хранения данных:
+
+```
+main:         A──B──C──D       (твой код, beads invisible)
+beads-sync:   X──Y──Z──W       (задачи, синхронизируются с remote)
+```
+
+**Преимущества:**
+
+- ✅ Команда не видит beads в main ветке
+- ✅ Бэкап в remote (через beads-sync)
+- ✅ Синхронизация между машинами
+- ✅ Daemon автоматически коммитит изменения
+
+## Setup (Новый проект)
+
+```bash
+# 1. Инициализация
+bd init
+
+# 2. Настройка sync-branch (если не настроен)
+bd config set sync.branch beads-sync
+
+# 3. Запуск daemon с auto-commit
+bd daemon start --auto-commit
+
+# 4. Проверка
+bd doctor
+```
+
+## Config.yaml (Recommended Settings)
+
+```yaml
+# .beads/config.yaml
+auto-start-daemon: true      # Автозапуск daemon при любой bd команде
+flush-debounce: '5s'         # Интервал auto-flush
+sync-branch: "beads-sync"    # Отдельная ветка для sync
+```
+
+## Daemon Modes
+
+| Режим | Команда | Когда использовать |
+|-------|---------|-------------------|
+| **auto-commit only** | `bd daemon start --auto-commit` | Корпоративная сеть / VPN (push вручную) |
+| **full auto** | `bd daemon start --auto-commit --auto-push` | Открытый remote |
+
+**Важно:** При корпоративной сети push может не работать вне VPN. Используй `--auto-commit` и push вручную когда есть доступ.
+
+## Manual Push (когда нужен)
+
+```bash
+bd sync              # Push beads changes to remote
+# или
+cd .git/beads-worktrees/beads-sync && git push
+```
 
 ## Environment Setup
 
-**`BD_ENABLED=1`** в `.env.development.local` включает интеграцию.
+**`BD_ENABLED=1`** в `.env.development.local` включает интеграцию в hooks.
 
 | BD_ENABLED     | Поведение                             |
 | -------------- | ------------------------------------- |
-| `1`            | AI автоматически синхронизирует beads |
-| `0` / не задан | beads невидим, файл не меняется       |
+| `1`            | AI автоматически работает с beads     |
+| `0` / не задан | beads невидим, hooks не активны       |
 
-## AI-Assisted Sync (ОБЯЗАТЕЛЬНО)
+## AI Workflow
 
-**AI должен автоматически выполнять:**
+**Старт сессии:**
 
-1. **Старт сессии:**
+```bash
+bd ready && bd blocked
+```
 
-   ```bash
-   bd ready && bd blocked
-   ```
+**Создание задач:**
 
-2. **Создание задач:**
+```bash
+bd create --title="Description" --type=task --priority=2
+```
 
-   ```bash
-   bd create --title="Description" --type=task --priority=2
-   ```
+**Завершение работы:**
 
-3. **Завершение работы:**
-
-   ```bash
-   bd close <id1> <id2> ...
-   bd sync --flush-only
-   ```
-
-4. **Перед коммитом:**
-
-   ```bash
-   bd sync --flush-only  # ОБЯЗАТЕЛЬНО перед git commit
-   ```
+```bash
+bd close <id1> <id2> ...
+# Daemon автоматически сохранит изменения
+```
 
 ## Core Principle
 
