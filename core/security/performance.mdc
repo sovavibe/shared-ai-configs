@@ -154,6 +154,6 @@ npm run build
 
 ## Related
 
-- @004-quality - Quality rules that include performance
-- @010-react-patterns - React patterns for performance
-- @040-testing - Performance testing patterns
+- @quality - Quality rules that include performance
+- @architecture - React patterns for performance
+- @testing - Performance testing patterns

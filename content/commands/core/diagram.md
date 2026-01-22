@@ -149,7 +149,7 @@ Diagrams are saved to:
 - Version in git
 - Reference in documentation
 
-**See:** `@123-mermaid-diagrams` for full standards
+**See:** `@mermaid-diagrams` for full standards
 
 ## Examples
 
@@ -180,5 +180,5 @@ Diagrams are saved to:
 ## References
 
 - `@architecture.mdc` — FSD architecture guidelines
-- `@004-quality.mdc` — Core development rules
-- Mermaid documentation: https://mermaid.js.org/intro/
+- `@quality` — Core development rules
+- Mermaid documentation: <https://mermaid.js.org/intro/>

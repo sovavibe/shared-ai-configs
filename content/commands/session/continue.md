@@ -136,7 +136,7 @@ Done:
 
 ## References
 
-- `@005-beads.mdc` — Core Beads workflow
+- `@beads` — Core Beads workflow
 - `@create-tasks.md` — Create tasks scenarios
 - `@context-management.mdc` — Context loading protocol
 - `.cursor/rules/hindsight.mdc` — Hindsight MCP usage

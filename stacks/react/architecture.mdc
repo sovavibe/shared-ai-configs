@@ -113,7 +113,7 @@ class UserService {
 
 ### Frontend
 
-- **React 18**: Component-based UI
+- **React**: Component-based UI
 - **TypeScript**: Type safety
 - **Vite**: Build tool
 - **Ant Design**: UI components
@@ -126,6 +126,6 @@ class UserService {
 
 ## Related
 
-- @002-tech-stack - Technology stack details
-- @010-react-patterns - React patterns that follow architecture
-- @004-quality - Quality rules that enforce architecture compliance
+- @tech-stack - Technology stack details
+- @architecture - React patterns that follow architecture
+- @quality - Quality rules that enforce architecture compliance

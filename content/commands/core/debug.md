@@ -92,5 +92,5 @@ Refs: VP-XXX"
 ## References
 
 - `@search-patterns.md` — Semantic search best practices
-- `@004-quality.mdc` — Core development rules
+- `@quality` — Core development rules
 - `@testing.mdc` — Testing for regression

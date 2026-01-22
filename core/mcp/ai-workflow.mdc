@@ -43,7 +43,7 @@ alwaysApply: false
 
 **Rule**: Check MCP first, scripts only for mechanical operations.
 
-**Details**: @100-hindsight.mdc, @101-jira.mdc
+**Details**: @hindsight, @jira.mdc
 
 ## Workflow Patterns
 

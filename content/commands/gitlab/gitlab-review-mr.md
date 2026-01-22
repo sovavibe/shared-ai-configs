@@ -746,7 +746,7 @@ git diff <BASE> -- <FILE_PATH> > /tmp/diff.txt             # Get file diff
 
 ## References
 
-- `@005-beads.mdc` - Core Beads workflow
+- `@beads` - Core Beads workflow
 - `@mcp.md` - MCP tools reference
 - `@116-code-review.mdc` - Code review quality gates
 

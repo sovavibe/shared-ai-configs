@@ -136,6 +136,6 @@ npm run security:test-auth
 
 ## Related
 
-- @004-quality - Quality rules that include security
-- @020-architecture - Architecture patterns for security
-- @040-testing - Security testing patterns
+- @quality - Quality rules that include security
+- @architecture - Architecture patterns for security
+- @testing - Security testing patterns

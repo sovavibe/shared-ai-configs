@@ -42,4 +42,4 @@ npm run gitlab:mr:view -- --mr 321 | jq '.diff_refs'
 ## Follow
 
 - `@gitlab-process-comments.md` — Process MR comments
-- @005-beads.mdc — Core Beads workflow
+- @beads — Core Beads workflow

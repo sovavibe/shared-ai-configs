@@ -89,16 +89,27 @@ Rules should work across minor versions. Version constraints belong in `package.
 
 ## 5. Agent-Specific Content
 
-Different AI agents have different capabilities and formats:
+Different AI agents have different capabilities, context formats, and tool access:
 
 ```
 content/
 ├── agents/
-│   ├── claude/      # Claude-specific patterns
-│   └── cursor/      # Cursor-specific patterns
+│   ├── claude/      # Claude Code patterns (Opus, terminal)
+│   └── cursor/      # Cursor patterns (Agent mode, IDE)
 ```
 
-Duplication between Claude and Cursor is acceptable when necessary for clarity.
+### Why Duplication is Normal
+
+Claude Code and Cursor have different:
+
+- Context windows and token limits
+- Tool access (MCP servers vs IDE plugins)
+- Output formats (terminal vs editor tabs)
+- Workflow patterns (agentic vs interactive)
+
+**Duplication between agents is expected and by design.** Each agent gets content
+optimized for its specific capabilities. The DRY principle applies to the source
+in `content/`, not to the generated output in `.claude/` and `.cursor/`.
 
 ---
 

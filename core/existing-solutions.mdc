@@ -76,7 +76,7 @@ npm install --save-dev secretlint @secretlint/secretlint-rule-preset-recommend
    - **Lessons**: What was learned, what to avoid, mistakes and their solutions
    - Search banks: `patterns` (coding patterns), `lessons` (lessons learned), `alice` (general memory)
    - Server: `user-hindsight-alice`
-   - See: @100-hindsight.mdc for detailed usage
+   - See: @hindsight for detailed usage
 4. **Web search** - Find best practices and comparisons (if MCP doesn't have answer)
 5. **Project dependencies** - Check `package.json` for existing tools
 6. **Project documentation** - Check `docs/` and `.cursor/rules/`

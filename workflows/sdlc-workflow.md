@@ -284,7 +284,7 @@ Not every task needs all phases:
 
 ## SDD (Specification-Driven Development) Integration
 
-> **New Rule:** See `@124-sdd-patterns` in `.cursor/rules/124-sdd-patterns.mdc` for complete SDD patterns.
+> **New Rule:** See `@sdd-patterns` in `.cursor/rules/124-sdd-patterns.mdc` for complete SDD patterns.
 
 > **Before implementing**: Write executable specs as binding contracts for all agents.
 
@@ -367,7 +367,7 @@ Create these files for every feature (before implementation):
 
 ## Verification Swarms (Multi-Agent QA)
 
-> **New Rule:** See `@125-verification-swarms` in `.cursor/rules/125-verification-swarms.mdc` for complete verification patterns.
+> **New Rule:** See `@verification-swarms` in `.cursor/rules/125-verification-swarms.mdc` for complete verification patterns.
 
 > **Purpose**: Parallel verification BEFORE PR. Catches ~67% of issues early.
 
@@ -386,12 +386,14 @@ graph TB
 ### Agent Responsibilities
 
 **Coder Agent** (You):
+
 - [ ] Build passes
 - [ ] Tests pass (coverage > 80%)
 - [ ] ESLint passing
 - [ ] All spec criteria met
 
 **Security Agent** (Snyk):
+
 - [ ] No secrets exposed
 - [ ] Input validation present
 - [ ] XSS prevention
@@ -399,6 +401,7 @@ graph TB
 - [ ] OWASP Top 10 compliant
 
 **Architecture Agent** (Opus):
+
 - [ ] FSD architecture compliant
 - [ ] Component design sound
 - [ ] State patterns correct
@@ -843,6 +846,7 @@ If database was deleted accidentally:
    ```
 
 3. **Verify integrity:**
+
    ```bash
    bd doctor
    bd list --status=open

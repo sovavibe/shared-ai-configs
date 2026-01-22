@@ -17,11 +17,11 @@ Load optimized context presets for specific development scenarios.
 
 **What loads:**
 
-- `@001-persona.mdc` - Role, stack
-- `@002-tech-stack.mdc` - Technologies
+- `@persona.mdc` - Role, stack
+- `@tech-stack.mdc` - Technologies
 - `@003-workflow.mdc` - Workflows
-- `@004-quality.mdc` - Code quality
-- `@005-beads.mdc` - Task management
+- `@quality` - Code quality
+- `@beads` - Task management
 
 ---
 
@@ -31,7 +31,7 @@ Load optimized context presets for specific development scenarios.
 
 ```bash
 # Loads: Core + React rules
-@010-react-patterns @011-tanstack-query @012-zustand @030-styling @031-ant-design
+@architecture @tanstack-query @zustand @styling @ant-design
 ```
 
 **What loads (in addition to Core):**
@@ -50,7 +50,7 @@ Load optimized context presets for specific development scenarios.
 
 ```bash
 # Loads: Core + Testing rules
-@040-testing @041-msw-patterns @042-english-only @043-existing-solutions
+@testing @041-msw-patterns @042-english-only @043-existing-solutions
 ```
 
 **What loads (in addition to Core):**
@@ -68,7 +68,7 @@ Load optimized context presets for specific development scenarios.
 
 ```bash
 # Loads: Core + Architecture + MCP
-@020-architecture @021-core-principles @022-api-client @100-hindsight @101-jira
+@architecture @core-principles @022-api-client @hindsight @jira
 ```
 
 **What loads (in addition to Core):**
@@ -87,7 +87,7 @@ Load optimized context presets for specific development scenarios.
 
 ```bash
 # Loads: Core + React + Testing
-@010-react-patterns @040-testing
+@architecture @testing
 ```
 
 **What loads (in addition to Core):**
@@ -118,7 +118,7 @@ Morning:
 
 During work:
   → Open files → rules auto-load by globs
-  → Or manually: @010-react-patterns
+  → Or manually: @architecture
 
 End of day:
   → /session/end
@@ -140,7 +140,7 @@ End of day:
 
 ```
 1. Open related files → rules auto-load
-2. Use @100-hindsight for patterns
+2. Use @hindsight for patterns
 3. Fix bug
 4. Write regression test
 5. /quality/check
@@ -162,9 +162,9 @@ Most context loads automatically when you open files:
 When auto-load isn't enough, use `@mention`:
 
 ```
-@010-react-patterns    # Explicit React context
-@100-hindsight         # MCP patterns
-@101-jira              # Jira integration
+@architecture    # Explicit React context
+@hindsight         # MCP patterns
+@jira              # Jira integration
 ```
 
 ## Related

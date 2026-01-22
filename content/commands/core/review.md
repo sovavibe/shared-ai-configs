@@ -130,7 +130,7 @@ This command integrates with `.cursor/hooks/quality-check.js`:
 ## References
 
 - `@code-quality.mdc` — Code quality standards
-- `@004-quality.mdc` — Critical rules overview
+- `@quality` — Critical rules overview
 - `@suppressions-policy.mdc` — ESLint suppression guidelines
 - `@react-patterns.mdc` — React development patterns
 - `@testing.mdc` — Testing standards

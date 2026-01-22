@@ -172,7 +172,7 @@ src/
 
 ## Related
 
-- @002-tech-stack - Technology stack
-- @010-react-patterns - React patterns
-- @031-ant-design - Ant Design patterns
-- @004-quality - Quality rules
+- @tech-stack - Technology stack
+- @architecture - React patterns
+- @ant-design - Ant Design patterns
+- @quality - Quality rules

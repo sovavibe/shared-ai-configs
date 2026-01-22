@@ -34,7 +34,7 @@ See: @existing-solutions-first.mdc
 2. Requires understanding? → ✅ Use AI + prompts
 3. Pure mechanical? → ✅ Script OK (thin wrapper)
 
-See: @110-ai-workflow.mdc
+See: @ai-workflow
 
 ## TypeScript Strict Mode
 
@@ -126,7 +126,7 @@ import { Button } from '../../../shared/ui'
 
 **CRITICAL**: Minimize manual suppressions (`eslint-disable`, `@ts-ignore`).
 
-See: @119-suppressions.mdc
+See: @suppressions
 
 ## TODO Comments
 
@@ -258,7 +258,7 @@ bd sync                              # Sync
 - **Context7 MCP** - Research libraries, find solutions
 - **Web Search MCP** - Find best practices
 
-See: @111-context-management.mdc for MCP usage details.
+See: @context-management for MCP usage details.
 
 **Core rule**: All planning and execution through Beads, no markdown checklists.
 

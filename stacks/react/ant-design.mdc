@@ -155,5 +155,5 @@ const handleOk = async () => {
 
 ## Related
 
-- @030-styling - General styling patterns
-- @010-react-patterns - React component patterns
+- @styling - General styling patterns
+- @architecture - React component patterns

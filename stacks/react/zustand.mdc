@@ -121,5 +121,5 @@ login: async (credentials) => {
 
 ## Related
 
-- @010-react-patterns - React component patterns
-- @011-tanstack-query - Server state management
+- @architecture - React component patterns
+- @tanstack-query - Server state management

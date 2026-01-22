@@ -167,5 +167,5 @@ TASK1=$(bd create "Extract functions" --deps epic:$EPIC -p 1 --json | jq -r '.id
 
 ## References
 
-- @005-beads.mdc - Core Beads workflow
+- @beads - Core Beads workflow
 - @mcp.md - MCP tools reference

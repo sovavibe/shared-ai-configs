@@ -340,9 +340,9 @@ Success (using fixed version)
 
 ## Related Patterns
 
-- @127-token-optimization.mdc - Reduce tokens with skill composition
-- @125-verification-swarms.mdc - Multi-agent skills pattern
-- @124-sdd-patterns.mdc - SDD workflow as composed skills
+- @token-optimization - Reduce tokens with skill composition
+- @verification-swarms - Multi-agent skills pattern
+- @sdd-patterns - SDD workflow as composed skills
 - SDLC-WORKFLOW.md - Full SDLC as composed skills
 
 ## Real World: SDLC as Composed Skills

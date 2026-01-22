@@ -372,9 +372,9 @@ Co-Authored-By: Cursor agents + Claude Code review"
 
 ## Related Patterns
 
-- @128-skills-patterns.mdc - Skills composition with agents
-- @125-verification-swarms.mdc - Multi-agent verification
-- @127-token-optimization.mdc - Cloud agents reduce token overhead
+- @skills-patterns - Skills composition with agents
+- @verification-swarms - Multi-agent verification
+- @token-optimization - Cloud agents reduce token overhead
 - SDLC-WORKFLOW.md - Cloud agents in IDE coordination
 
 ---

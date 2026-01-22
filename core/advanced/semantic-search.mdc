@@ -364,9 +364,9 @@ Use @Codebase to understand existing architecture
 
 ## Related Rules
 
-- @105-tool-selection.mdc - When to use which tool
-- @110-ai-workflow.mdc - MCP-first approach
-- @021-core-principles.mdc - Code patterns and architecture
+- @tool-selection.mdc - When to use which tool
+- @ai-workflow - MCP-first approach
+- @core-principles - Code patterns and architecture
 
 ## Quick Reference
 

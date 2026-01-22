@@ -147,5 +147,5 @@ Lint warning? → Can refactor? → YES → DO IT
 
 ## Related Files
 
-- @004-quality.mdc - Code quality standards
-- @021-core-principles.mdc - Core principles
+- @quality - Code quality standards
+- @core-principles - Core principles

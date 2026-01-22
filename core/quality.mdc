@@ -46,4 +46,4 @@ npm run codegen        # API generation
 3. Test failures (blocking)
 4. ESLint warnings (should fix)
 
-**Details**: See @004-quality.mdc
+**Details**: See @quality

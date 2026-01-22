@@ -192,8 +192,8 @@ After semantic search gives you context, use grep for specifics:
 
 ## References
 
-- `@005-beads.mdc` — Core Beads workflow
+- `@beads` — Core Beads workflow
 - `@session/create-tasks.md` — Create tasks scenarios
 - `@existing-solutions-first.mdc` — Search first
 - `@communication-style.mdc` — Reporting style
-- `@100-hindsight.mdc` — Hindsight MCP usage
+- `@hindsight` — Hindsight MCP usage

@@ -180,5 +180,5 @@ const activeItems = useMemo(() => data?.filter((item) => item.isActive), [data])
 
 ## Related
 
-- @010-react-patterns - React component patterns
-- @012-zustand - State management patterns
+- @architecture - React component patterns
+- @zustand - State management patterns

@@ -97,4 +97,4 @@ bd list --json | jq '.[] | select(.description | contains("VP-XXX"))'
 | Create Beads later                      | Create IMMEDIATELY with Jira       |
 | Temporary mapping files                 | Query Beads: `bd list --json`      |
 
-See: @005-beads.mdc
+See: @beads

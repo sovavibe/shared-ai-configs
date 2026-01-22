@@ -53,4 +53,4 @@ JSON array of notes (NOT wrapped in object):
 - `@gitlab-view-mr.md` — View MR details
 - `@gitlab-reply.md` — Reply to discussion
 - `@gitlab-process-comments.md` — Process MR comments workflow
-- @005-beads.mdc — Core Beads workflow
+- @beads — Core Beads workflow

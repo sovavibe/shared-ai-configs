@@ -6,7 +6,7 @@ alwaysApply: false
 
 # English Only (Code Repository)
 
-**See also**: @021-core-principles.mdc (English Only Policy)
+**See also**: @core-principles (English Only Policy)
 
 ALL code/comments/config/docs in repository MUST be English
 

@@ -24,11 +24,11 @@ alwaysApply: false
 # .cursor/rules/INDEX.mdc updates:
 010-049:  # Context rules - auto-load by glob
   - glob: "src/**/*.tsx"
-    rules: [@011-tanstack-query, @031-ant-design]
+    rules: [@tanstack-query, @ant-design]
   - glob: "src/**/store/**"
-    rules: [@012-zustand]
+    rules: [@zustand]
   - glob: "**/*styled*"
-    rules: [@030-styling]
+    rules: [@styling]
 ```
 
 **Result**: Load only 2-4 rules per file (instead of 41)

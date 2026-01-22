@@ -37,4 +37,4 @@ npm run gitlab:mr:get-unresolved -- --mr {{mr}}
 ## Follow
 
 - `@gitlab-get-comments.md` — Get unresolved comments
-- `@005-beads.mdc` — Core Beads workflow
+- `@beads` — Core Beads workflow

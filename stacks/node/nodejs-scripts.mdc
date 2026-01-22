@@ -9,7 +9,7 @@ alwaysApply: false
 
 # Node.js Scripts Standards
 
-**Stack**: Node.js 20+ | TypeScript 5.5 | ESM | Zod | yargs | Vitest
+**Stack**: Node.js | TypeScript | ESM | Zod | yargs | Vitest
 
 **Best Practices from Cursor Directory** (<https://cursor.directory/rules>):
 

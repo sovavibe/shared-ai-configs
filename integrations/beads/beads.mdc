@@ -154,4 +154,4 @@ File: src/file.ts:123
 
 - `@create-tasks.md` - Create tasks scenarios
 - `@start-work.md` - Start work workflow
-- `@111-context-management` - Four Pillars workflow
+- `@context-management` - Four Pillars workflow

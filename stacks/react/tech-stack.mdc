@@ -1,65 +1,49 @@
 ---
-description: 'Tech stack, FSD architecture, key patterns, commands'
+description: 'React + TypeScript + Vite base patterns'
 version: '1.0.0'
-lastUpdated: '2026-01-20'
+lastUpdated: '2026-01-22'
 alwaysApply: true
 ---
 
-# Tech Stack & Architecture
+# React Tech Stack
 
-## Tech Stack
+## Base Stack
 
-| Layer   | Tech                                             |
-| ------- | ------------------------------------------------ | --- | ----- | ------ |
-| Build   | Vite 5.4 + React 18.3 + TypeScript 5.5           |
-| UI      | Ant Design 5.22 + styled-components + MUI tables |
-| State   | TanStack Query 5 (server) + Zustand 5 (local)    |
-| API     | Orval 7 (codegen) + Axios + MSW 2 (mocks)        |
-| Auth    | Azure AD OAuth 2.0                               |
-| Scripts | Node.js 20+                                      | Zod | yargs | Vitest |
+| Layer   | Tech                     |
+| ------- | ------------------------ |
+| Build   | Vite + React + TypeScript |
+| Testing | Vitest                   |
 
-## Architecture (FSD)
-
-```
-src/
-├── app/       # Entry, providers, router
-├── pages/     # Route pages
-├── widgets/   # Cross-page UI
-├── shared/    # Reusable (api/, ui/, utils/)
-└── mocks/     # MSW handlers (dev only)
-```
-
-**Import Rule**: pages → widgets → shared (never reverse)
+Additional technologies (UI, state, API) configured per project.
 
 ## Key Patterns
 
-- **Component**: `interface Props` → `FC<Props>` → `styled.div`
-- **TanStack**: `useQuery` → `{ data, isLoading }`
-- **Type Guard**: `const isUser = (x: unknown): x is User => typeof x === 'object' && x !== null && 'id' in x`
+- **Component**: `interface Props` → `FC<Props>` → styled wrapper
+- **Type Guard**: `const isX = (v: unknown): v is X => ...`
+- **Hooks**: Custom hooks for shared logic
 
 ## Code Quality
 
-Keep code small, focused, readable. Specific limits enforced by ESLint.
+Code style enforced by ESLint and TypeScript config.
 
 ## Commands
 
+Commands configured in project's `.ai-project.yaml`.
+Common patterns:
+
 ```bash
-# Development
-npm run dev              # Start (port 5173)
-npm run build            # TypeScript + production
-npm run lint             # ESLint
-npm run test             # Vitest
-
-# API & Mocks
-npm run codegen          # Generate from OpenAPI
-npm run mocks:check      # Verify MSW handlers
-
-# Quality
-npm run quality:gates    # All gates (pre-merge)
-
-# Task Management (Beads)
-bd ready --json              # Check ready work
-bd update <id> --status=in_progress  # Claim task
-bd close <id>                # Complete task
-bd sync --flush-only         # Export to JSONL
+npm run dev           # Development server
+npm run build         # Production build
+npm run lint          # Linting
+npm run test          # Testing
+npm run codegen       # API generation (if applicable)
+npm run quality:gates # Pre-commit checks
 ```
+
+## Related
+
+- @architecture - FSD architecture patterns
+- @tanstack-query - Server state (if used)
+- @zustand - Client state (if used)
+- @ant-design - UI components (if used)
+- @styling - CSS-in-JS patterns
