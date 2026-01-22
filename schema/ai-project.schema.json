@@ -120,6 +120,12 @@
           "description": "Version control system",
           "properties": {
             "type": { "type": "string", "enum": ["gitlab", "github", "bitbucket", "none"] },
+            "integration_mode": {
+              "type": "string",
+              "enum": ["mcp", "cli"],
+              "default": "cli",
+              "description": "Integration mode: 'mcp' for GitLab/GitHub MCP server, 'cli' for glab/gh CLI"
+            },
             "main_branch": { "type": "string", "default": "main" },
             "project_id": { "type": "integer" },
             "group": { "type": "string" }
@@ -132,6 +138,12 @@
             "type": {
               "type": "string",
               "enum": ["beads", "jira", "linear", "github-issues", "none"]
+            },
+            "integration_mode": {
+              "type": "string",
+              "enum": ["mcp", "cli"],
+              "default": "cli",
+              "description": "Integration mode: 'mcp' for Atlassian MCP, 'cli' for jira-cli (only for jira type)"
             },
             "key_prefix": { "type": "string" },
             "paths": {
@@ -156,7 +168,10 @@
           "properties": {
             "hindsight": { "$ref": "#/definitions/MCPServerConfig" },
             "snyk": { "$ref": "#/definitions/MCPServerConfig" },
-            "context7": { "$ref": "#/definitions/MCPServerConfig" },
+            "mcp_docker": {
+              "$ref": "#/definitions/MCPServerConfig",
+              "description": "MCP Docker Gateway - includes Context7 inside"
+            },
             "memory_bank": { "$ref": "#/definitions/MCPServerConfig" },
             "figma": { "$ref": "#/definitions/MCPServerConfig" },
             "browser": { "$ref": "#/definitions/MCPServerConfig" },

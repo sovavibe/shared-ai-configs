@@ -64,6 +64,8 @@ export interface IDEServiceConfig {
 
 export interface VCSServiceConfig {
   type?: 'gitlab' | 'github' | 'bitbucket' | 'none';
+  /** Integration mode: 'mcp' for MCP server, 'cli' for glab/gh CLI */
+  integration_mode?: 'mcp' | 'cli';
   main_branch?: string;
   project_id?: number;
   group?: string;
@@ -71,6 +73,8 @@ export interface VCSServiceConfig {
 
 export interface TaskTrackingServiceConfig {
   type?: 'beads' | 'jira' | 'linear' | 'github-issues' | 'none';
+  /** Integration mode: 'mcp' for Atlassian MCP, 'cli' for jira-cli (only for jira type) */
+  integration_mode?: 'mcp' | 'cli';
   key_prefix?: string;
   paths?: {
     beads?: string;
