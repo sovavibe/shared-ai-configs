@@ -127,7 +127,7 @@ CallMcpTool({
   server: 'user-MCP_DOCKER',
   toolName: 'jira_search',
   arguments: {
-    jql: 'project = VP AND labels = mr-<N> AND status != Done',
+    jql: 'project = <JIRA_PROJECT> AND labels = mr-<N> AND status != Done',
   },
 })
 
@@ -318,7 +318,7 @@ const jiraTask = CallMcpTool({
   server: 'user-MCP_DOCKER',
   toolName: 'jira_create_issue',
   arguments: {
-    project_key: 'VP',
+    project_key: '<JIRA_PROJECT>',
     summary: '[MR-<N>] [Category] [Issue Title]',
     issue_type: 'Task',
     description: `## Problem
@@ -462,13 +462,13 @@ npm run gitlab:inline-comment \
   --file <FILE_PATH> \
   --line <LINE_NUMBER> \
   --side new \
-  --body "🔴 **[VP-XXX] [Category] Title**
+  --body "🔴 **[PROJ-XXX] [Category] Title**
 
 **Что не так**: [Clear description]
 **Как исправить**: [Specific solution]
 **Почему это важно**: [Impact]
 
-**Jira**: VP-XXX"
+**Jira**: PROJ-XXX"
 ```
 
 **Then create MR summary:**
@@ -836,7 +836,7 @@ When using with GPT-4 or other models:
 ```bash
 # Beads: No existing tasks for MR-321
 # Hindsight: Recall patterns for TypeScript strict mode
-# Jira: VP-123 is parent task
+# Jira: PROJ-123 is parent task
 # Context7: Not needed (TypeScript issue)
 ```
 
@@ -852,8 +852,8 @@ const userData: any = fetchUserData()
 **Step 3: Create Tasks**
 
 ```bash
-# Create Jira Task → VP-456
-# Create Beads Epic → VP-zabc
+# Create Jira Task → PROJ-456
+# Create Beads Epic → bd-zabc
 # Create Beads Subtasks → "Add User interface", "Add type guard"
 ```
 
@@ -865,13 +865,13 @@ npm run gitlab:inline-comment \
   --file src/widgets/UserProfile.tsx \
   --line 23 \
   --side new \
-  --body "🔴 **[VP-456] Type Safety: Using 'any' type**
+  --body "🔴 **[PROJ-456] Type Safety: Using 'any' type**
 
 **Что не так**: Использование типа 'any' отключает проверку типов TypeScript
 **Как исправить**: Заменить на интерфейс User с типизацией полей
 **Почему это важно**: Может привести к runtime ошибкам, потеря.type safety
 
-**Jira**: VP-456"
+**Jira**: PROJ-456"
 ```
 
 ### Example 2: Local Mode - React Hooks Issue

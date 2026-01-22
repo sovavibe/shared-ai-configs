@@ -131,8 +131,8 @@ See: @suppressions
 ## TODO Comments
 
 ```typescript
-// TODO(VP-123): Description
-// FIXME(VP-456): Description - Priority
+// TODO(PROJ-123): Description
+// FIXME(PROJ-456): Description - Priority
 ```
 
 Always include Jira task key.

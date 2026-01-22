@@ -80,7 +80,7 @@ CallMcpTool({
   server: "user-MCP_DOCKER",
   toolName: "jira_search",
   arguments: {
-    jql: 'project = VP AND assignee = currentUser() AND status != Done',
+    jql: 'project = <JIRA_PROJECT> AND assignee = currentUser() AND status != Done',
     limit: 10
   }
 })
@@ -99,7 +99,7 @@ CallMcpTool({
 echo "✅ Context recovered + work completed:
 
 Task: bd-XX - 'Task title'
-Jira: VP-XXX
+Jira: PROJ-XXX
 
 Done:
 - Changed: `path/to/file.tsx`

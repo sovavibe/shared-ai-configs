@@ -21,14 +21,14 @@ bd list --status=open
 bd blocked
 
 # Get open Jira issues for project
-jira_search "project = VP AND status != Done ORDER BY updated DESC"
+jira_search "project = <JIRA_PROJECT> AND status != Done ORDER BY updated DESC"
 ```
 
 ### Step 2: Match & Compare
 
 For each bead, check:
 
-1. Does it reference a Jira ticket (VP-XXX in title)?
+1. Does it reference a Jira ticket (PROJ-XXX in title)?
 2. If yes, compare status and description
 3. If no, should it be created in Jira?
 
@@ -49,8 +49,8 @@ For each open Jira ticket:
 
 ### Step 4: Update References
 
-- Add Jira key to bead title: `VP-XXX: Task description`
-- Add Beads ID to Jira description: `Beads ID: VP-xxxx`
+- Add Jira key to bead title: `PROJ-XXX: Task description`
+- Add Beads ID to Jira description: `Beads ID: bd-xxxx`
 
 ## Command Execution
 
@@ -59,11 +59,11 @@ When user runs `/sync-jira`:
 1. **Fetch both sources:**
 
    - `bd list --status=open` + `bd blocked`
-   - `jira_search "project = VP AND status != Done"`
+   - `jira_search "project = <JIRA_PROJECT> AND status != Done"`
 
 2. **Build comparison table:**
 
-   - Match by VP-XXX reference or similar title
+   - Match by PROJ-XXX reference or similar title
    - Identify mismatches
 
 3. **Present diff to user:**
@@ -93,16 +93,16 @@ When user runs `/sync-jira`:
 ### Sync blocked task to Jira
 
 ```
-Bead VP-zhgs (blocked): "Delete GitLab scripts"
-→ Create VP-503 in Jira with BLOCKED status
-→ Update bead title: "VP-503: Delete GitLab scripts"
+Bead bd-zhgs (blocked): "Delete GitLab scripts"
+→ Create PROJ-503 in Jira with BLOCKED status
+→ Update bead title: "PROJ-503: Delete GitLab scripts"
 ```
 
 ### Close Jira from completed bead
 
 ```
-Bead VP-abc (closed): "VP-123: Fix bug"
-Jira VP-123: status = "In Progress"
+Bead bd-abc (closed): "PROJ-123: Fix bug"
+Jira PROJ-123: status = "In Progress"
 → Transition Jira to Done
 ```
 

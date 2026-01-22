@@ -34,7 +34,7 @@ globs: ['**/*.md', '**/*.mdc', '.cursor/**/*']
 
 ```bash
 # Research/analysis → Beads task description
-bd update <id> --description="## Research: VP-XXX
+bd update <id> --description="## Research: PROJ-XXX
 
 ### Findings
 - Finding 1: description
@@ -143,12 +143,12 @@ CallMcpTool({
   server: 'user-MCP_DOCKER',
   toolName: 'jira_add_comment',
   arguments: {
-    issueKey: 'VP-XXX',
+    issueKey: 'PROJ-XXX',
     body: 'Task completed. Details in Beads task description.',
   },
 })
 
-// ❌ Wrong: create docs/reports/VP-XXX-REPORT.md
+// ❌ Wrong: create docs/reports/PROJ-XXX-REPORT.md
 ```
 
 ## Validation

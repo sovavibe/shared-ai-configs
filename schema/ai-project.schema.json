@@ -155,31 +155,16 @@
           "type": "object",
           "description": "MCP servers configuration",
           "properties": {
-            "hindsight": {
-              "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
-            },
-            "snyk": {
-              "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
-            },
-            "context7": {
-              "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
-            },
-            "memory_bank": {
-              "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
-            },
-            "figma": {
-              "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
-            },
-            "browser": {
-              "type": "object",
-              "properties": { "enabled": { "type": "boolean", "default": false } }
-            }
-          }
+            "hindsight": { "$ref": "#/definitions/MCPServerConfig" },
+            "snyk": { "$ref": "#/definitions/MCPServerConfig" },
+            "context7": { "$ref": "#/definitions/MCPServerConfig" },
+            "memory_bank": { "$ref": "#/definitions/MCPServerConfig" },
+            "figma": { "$ref": "#/definitions/MCPServerConfig" },
+            "browser": { "$ref": "#/definitions/MCPServerConfig" },
+            "web_search": { "$ref": "#/definitions/MCPServerConfig" },
+            "chrome": { "$ref": "#/definitions/MCPServerConfig" }
+          },
+          "additionalProperties": { "$ref": "#/definitions/MCPServerConfig" }
         }
       }
     },
@@ -408,6 +393,42 @@
           "type": "boolean",
           "default": true,
           "description": "Add generated paths to .gitignore"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "MCPServerConfig": {
+      "type": "object",
+      "description": "Configuration for an MCP server",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable this MCP server"
+        },
+        "api_key_env": {
+          "type": "string",
+          "description": "Environment variable name containing the API key (e.g., 'CONTEXT7_API_KEY')"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL for HTTP-based MCP servers"
+        },
+        "command": {
+          "type": "string",
+          "description": "Command to run for stdio-based MCP servers (e.g., 'npx', 'node')"
+        },
+        "args": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Command arguments for stdio-based MCP servers"
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Environment variables to pass to the MCP server"
         }
       }
     }

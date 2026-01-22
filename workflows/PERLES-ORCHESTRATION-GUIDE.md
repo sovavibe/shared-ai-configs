@@ -26,11 +26,11 @@
 **Обязательная иерархия:**
 
 ```
-Epic (VP-epic1) - высокоуровневое описание
-├── Task 1 (VP-task1) - parent = VP-epic1
-├── Task 2 (VP-task2) - parent = VP-epic1
-├── Task 3 (VP-task3) - parent = VP-epic1
-└── Task 4 (VP-task4) - parent = VP-epic1
+Epic (PROJ-epic1) - высокоуровневое описание
+├── Task 1 (PROJ-task1) - parent = PROJ-epic1
+├── Task 2 (PROJ-task2) - parent = PROJ-epic1
+├── Task 3 (PROJ-task3) - parent = PROJ-epic1
+└── Task 4 (PROJ-task4) - parent = PROJ-epic1
 ```
 
 **ВАЖНО:** Все issues для orchestration ДОЛЖНЫ иметь parent epic.
@@ -94,7 +94,7 @@ perles
 ```bash
 # 1. Создай epic (если уже есть, пропусти)
 bd create --title="Epic: Dark Mode" --type=feature --priority=1
-# Получил VP-epic1
+# Получил PROJ-epic1
 
 # 2. Запусти Perles
 perles
@@ -105,7 +105,7 @@ perles
 # Выбери "Interactive SDLC from Prompt"
 
 # 4. Coordinator спросит: "Existing epic ID or new prompt?"
-# Ответь: "VP-epic1"
+# Ответь: "PROJ-epic1"
 
 # 5. Coordinator пропустит clarification, сразу запустит SDLC
 ```
@@ -116,7 +116,7 @@ perles
 # Сценарий: работа прервалась (пропал интернет, выключился компьютер)
 
 # 1. Проверь на каком этапе остановился
-bd show VP-epic1
+bd show PROJ-epic1
 # Смотри labels: например "full-sdlc,phase-sdlc-implement"
 # Значит Implementation фаза была в процессе
 
@@ -129,7 +129,7 @@ perles
 # Ctrl+O → orchestration mode
 # Ctrl+P → выбери "Interactive SDLC from Prompt"
 
-# 4. Coordinator спросит: "Resume VP-epic1?"
+# 4. Coordinator спросит: "Resume PROJ-epic1?"
 # Ответь: "Yes"
 
 # 5. Coordinator автоматически:
@@ -168,19 +168,19 @@ perles
 
 ```bash
 bd create --title="Epic: Dark Mode Support" --type=feature --priority=1
-# VP-400
+# PROJ-400
 
-bd create --title="Create theme context and provider" --type=task --priority=2  # VP-401
-bd create --title="Define dark theme variables" --type=task --priority=2        # VP-402
-bd create --title="Add theme toggle component" --type=task --priority=2         # VP-403
-bd create --title="Update all pages with theme support" --type=task --priority=2 # VP-404
-bd create --title="Add theme persistence (localStorage)" --type=task --priority=2 # VP-405
+bd create --title="Create theme context and provider" --type=task --priority=2  # PROJ-401
+bd create --title="Define dark theme variables" --type=task --priority=2        # PROJ-402
+bd create --title="Add theme toggle component" --type=task --priority=2         # PROJ-403
+bd create --title="Update all pages with theme support" --type=task --priority=2 # PROJ-404
+bd create --title="Add theme persistence (localStorage)" --type=task --priority=2 # PROJ-405
 
-bd update VP-401 VP-402 VP-403 VP-404 VP-405 --parent=VP-400
+bd update PROJ-401 PROJ-402 PROJ-403 PROJ-404 PROJ-405 --parent=PROJ-400
 
-bd dep add VP-403 VP-401  # Toggle depends on context
-bd dep add VP-404 VP-402  # Pages depend on theme variables
-bd dep add VP-405 VP-401  # Persistence depends on context
+bd dep add PROJ-403 PROJ-401  # Toggle depends on context
+bd dep add PROJ-404 PROJ-402  # Pages depend on theme variables
+bd dep add PROJ-405 PROJ-401  # Persistence depends on context
 ```
 
 **Full SDLC Execution:**
@@ -221,15 +221,15 @@ bd dep add VP-405 VP-401  # Persistence depends on context
 ```bash
 # 1. Создай epic
 bd create --title="Epic: User Authentication System" --type=feature --priority=1
-# Получил VP-epic1
+# Получил PROJ-epic1
 
 # 2. Создай task для Full SDLC
 bd create --title="Full SDLC: Implement OAuth2 authentication" --type=task --priority=1
-# Получил VP-task1
+# Получил PROJ-task1
 
 # 3. Установи parent и label
-bd update VP-task1 --parent=VP-epic1
-bd update VP-task1 --labels="full-sdlc"
+bd update PROJ-task1 --parent=PROJ-epic1
+bd update PROJ-task1 --labels="full-sdlc"
 ```
 
 **Шаг 2: Запусти Perles**
@@ -240,7 +240,7 @@ perles
 
 # В Perles TUI:
 # 1. Shift+J → "Orchestration Candidates" view
-# 2. Выбери VP-task1 (должен быть в колонке "Full SDLC")
+# 2. Выбери PROJ-task1 (должен быть в колонке "Full SDLC")
 # 3. Ctrl+O - войти в orchestration mode
 # 4. Ctrl+P - открыть workflow picker
 # 5. Выбери "Full SDLC Cycle"
@@ -293,7 +293,7 @@ Coordinator последовательно выполнит все фазы:
 ```bash
 # 1. Создай epic
 bd create --title="Epic: Dashboard Redesign" --type=feature --priority=1
-# Получил VP-epic2
+# Получил PROJ-epic2
 
 # 2. Создай подзадачи (можно через parallel subagents)
 bd create --title="Header component" --type=task --priority=2
@@ -302,23 +302,23 @@ bd create --title="Footer component" --type=task --priority=2
 bd create --title="Main layout" --type=task --priority=2
 bd create --title="User profile widget" --type=task --priority=2
 
-# Получил VP-101, VP-102, VP-103, VP-104, VP-105
+# Получил PROJ-101, PROJ-102, PROJ-103, PROJ-104, PROJ-105
 
 # 3. Установи parent для всех подзадач
-bd update VP-101 --parent=VP-epic2
-bd update VP-102 --parent=VP-epic2
-bd update VP-103 --parent=VP-epic2
-bd update VP-104 --parent=VP-epic2
-bd update VP-105 --parent=VP-epic2
+bd update PROJ-101 --parent=PROJ-epic2
+bd update PROJ-102 --parent=PROJ-epic2
+bd update PROJ-103 --parent=PROJ-epic2
+bd update PROJ-104 --parent=PROJ-epic2
+bd update PROJ-105 --parent=PROJ-epic2
 
 # 4. (Опционально) Установи dependencies
 # Main layout зависит от Header, Sidebar, Footer
-bd dep add VP-104 VP-101  # Layout depends on Header
-bd dep add VP-104 VP-102  # Layout depends on Sidebar
-bd dep add VP-104 VP-103  # Layout depends on Footer
+bd dep add PROJ-104 PROJ-101  # Layout depends on Header
+bd dep add PROJ-104 PROJ-102  # Layout depends on Sidebar
+bd dep add PROJ-104 PROJ-103  # Layout depends on Footer
 
 # 5. Добавь label к epic (НЕ к подзадачам)
-bd update VP-epic2 --labels="epic-batches"
+bd update PROJ-epic2 --labels="epic-batches"
 ```
 
 **Шаг 2: Запусти Perles**
@@ -328,7 +328,7 @@ perles
 
 # В Perles TUI:
 # 1. Shift+J → "Orchestration Candidates" view
-# 2. Выбери VP-epic2 (должен быть в колонке "Epic Batches")
+# 2. Выбери PROJ-epic2 (должен быть в колонке "Epic Batches")
 # 3. Ctrl+O - войти в orchestration mode
 # 4. Ctrl+P - открыть workflow picker
 # 5. Выбери "Epic Parallel Batches"
@@ -340,14 +340,14 @@ perles
 
 **Batch 1 (параллельно):**
 
-- VP-101: Header component
-- VP-102: Sidebar component
-- VP-103: Footer component
+- PROJ-101: Header component
+- PROJ-102: Sidebar component
+- PROJ-103: Footer component
 
 **Batch 2 (параллельно, после Batch 1):**
 
-- VP-104: Main layout (зависит от 101, 102, 103)
-- VP-105: User profile widget (независимо)
+- PROJ-104: Main layout (зависит от 101, 102, 103)
+- PROJ-105: User profile widget (независимо)
 
 **Batch 3 (интеграция):**
 
@@ -373,13 +373,13 @@ perles
 ```bash
 # Создаём epic + task
 bd create --title="Epic: OAuth2 Authentication" --type=feature --priority=1
-# VP-epic1
+# PROJ-epic1
 
 bd create --title="Full SDLC: OAuth2 implementation" --type=task --priority=1
-# VP-task1
+# PROJ-task1
 
-bd update VP-task1 --parent=VP-epic1
-bd update VP-task1 --labels="full-sdlc"
+bd update PROJ-task1 --parent=PROJ-epic1
+bd update PROJ-task1 --labels="full-sdlc"
 
 # Запускаем Full SDLC workflow
 ```
@@ -436,36 +436,36 @@ bd update VP-task1 --labels="full-sdlc"
 ```bash
 # Создаём epic
 bd create --title="Epic: Dashboard Redesign" --type=feature --priority=1
-# VP-epic2
+# PROJ-epic2
 
 # Создаём 10 подзадач
-bd create --title="Header component" --type=task --priority=2      # VP-101
-bd create --title="Sidebar component" --type=task --priority=2     # VP-102
-bd create --title="Footer component" --type=task --priority=2      # VP-103
-bd create --title="Main layout" --type=task --priority=2           # VP-104
-bd create --title="User profile widget" --type=task --priority=2   # VP-105
-bd create --title="Statistics widget" --type=task --priority=2     # VP-106
-bd create --title="Activity feed widget" --type=task --priority=2  # VP-107
-bd create --title="Dashboard page" --type=task --priority=2        # VP-108
-bd create --title="Integration tests" --type=task --priority=2     # VP-109
-bd create --title="E2E tests" --type=task --priority=2             # VP-110
+bd create --title="Header component" --type=task --priority=2      # PROJ-101
+bd create --title="Sidebar component" --type=task --priority=2     # PROJ-102
+bd create --title="Footer component" --type=task --priority=2      # PROJ-103
+bd create --title="Main layout" --type=task --priority=2           # PROJ-104
+bd create --title="User profile widget" --type=task --priority=2   # PROJ-105
+bd create --title="Statistics widget" --type=task --priority=2     # PROJ-106
+bd create --title="Activity feed widget" --type=task --priority=2  # PROJ-107
+bd create --title="Dashboard page" --type=task --priority=2        # PROJ-108
+bd create --title="Integration tests" --type=task --priority=2     # PROJ-109
+bd create --title="E2E tests" --type=task --priority=2             # PROJ-110
 
 # Устанавливаем parent для всех
-bd update VP-101 VP-102 VP-103 VP-104 VP-105 VP-106 VP-107 VP-108 VP-109 VP-110 --parent=VP-epic2
+bd update PROJ-101 PROJ-102 PROJ-103 PROJ-104 PROJ-105 PROJ-106 PROJ-107 PROJ-108 PROJ-109 PROJ-110 --parent=PROJ-epic2
 
 # Устанавливаем dependencies
-bd dep add VP-104 VP-101  # Layout depends on Header
-bd dep add VP-104 VP-102  # Layout depends on Sidebar
-bd dep add VP-104 VP-103  # Layout depends on Footer
-bd dep add VP-108 VP-104  # Dashboard page depends on Layout
-bd dep add VP-108 VP-105  # Dashboard page depends on User profile
-bd dep add VP-108 VP-106  # Dashboard page depends on Statistics
-bd dep add VP-108 VP-107  # Dashboard page depends on Activity feed
-bd dep add VP-109 VP-108  # Integration tests depend on Dashboard page
-bd dep add VP-110 VP-109  # E2E tests depend on Integration tests
+bd dep add PROJ-104 PROJ-101  # Layout depends on Header
+bd dep add PROJ-104 PROJ-102  # Layout depends on Sidebar
+bd dep add PROJ-104 PROJ-103  # Layout depends on Footer
+bd dep add PROJ-108 PROJ-104  # Dashboard page depends on Layout
+bd dep add PROJ-108 PROJ-105  # Dashboard page depends on User profile
+bd dep add PROJ-108 PROJ-106  # Dashboard page depends on Statistics
+bd dep add PROJ-108 PROJ-107  # Dashboard page depends on Activity feed
+bd dep add PROJ-109 PROJ-108  # Integration tests depend on Dashboard page
+bd dep add PROJ-110 PROJ-109  # E2E tests depend on Integration tests
 
 # Добавляем label к epic
-bd update VP-epic2 --labels="epic-batches"
+bd update PROJ-epic2 --labels="epic-batches"
 
 # Запускаем Epic Batches workflow
 ```
@@ -474,25 +474,25 @@ bd update VP-epic2 --labels="epic-batches"
 
 **Batch 1 (параллельно, 3 воркера):**
 
-- VP-101: Header component
-- VP-102: Sidebar component
-- VP-103: Footer component
+- PROJ-101: Header component
+- PROJ-102: Sidebar component
+- PROJ-103: Footer component
 
 **Batch 2 (параллельно, 4 воркера):**
 
-- VP-104: Main layout
-- VP-105: User profile widget
-- VP-106: Statistics widget
-- VP-107: Activity feed widget
+- PROJ-104: Main layout
+- PROJ-105: User profile widget
+- PROJ-106: Statistics widget
+- PROJ-107: Activity feed widget
 
 **Batch 3 (последовательно):**
 
-- VP-108: Dashboard page
+- PROJ-108: Dashboard page
 
 **Batch 4 (последовательно):**
 
-- VP-109: Integration tests
-- VP-110: E2E tests
+- PROJ-109: Integration tests
+- PROJ-110: E2E tests
 
 **Итог:** 10 задач выполнены оптимально (параллельно где возможно), все зависимости соблюдены.
 
@@ -528,7 +528,7 @@ bd update VP-epic2 --labels="epic-batches"
 
 ```bash
 # 1. Проверь текущее состояние
-bd show VP-epic1
+bd show PROJ-epic1
 # Видишь label: "full-sdlc,phase-sdlc-plan"
 # Это значит Plan завершён, Implementation начата но не закончена
 
@@ -538,7 +538,7 @@ perles
 # 3. Переключись на "SDLC Progress Tracking" view
 # Shift+J несколько раз
 
-# 4. Увидишь VP-epic1 в колонке "Planning" (последняя завершённая фаза)
+# 4. Увидишь PROJ-epic1 в колонке "Planning" (последняя завершённая фаза)
 
 # 5. Ctrl+O → Ctrl+P → выбери тот же workflow
 # Coordinator спросит: "Resume from Implementation phase?"
@@ -551,7 +551,7 @@ perles
 
 ```bash
 # 1. Проверь состояние
-bd show VP-epic2
+bd show PROJ-epic2
 # Видишь: некоторые tasks completed, некоторые in_progress
 
 # 2. Coordinator автоматически определит:
@@ -566,7 +566,7 @@ bd show VP-epic2
 
 ```bash
 # 1. Проверь label
-bd show VP-epic1
+bd show PROJ-epic1
 # Label: "full-sdlc,phase-sdlc-analyze"
 # Analyze завершён, Architect был в процессе
 
@@ -631,7 +631,7 @@ bd show <issue-id>
 
 ```bash
 # Если хочешь перезапустить с конкретной фазы:
-bd update VP-epic1 --labels="full-sdlc,phase-sdlc-plan"
+bd update PROJ-epic1 --labels="full-sdlc,phase-sdlc-plan"
 # Coordinator начнёт с Plan фазы при следующем запуске
 ```
 
@@ -641,13 +641,13 @@ bd update VP-epic1 --labels="full-sdlc,phase-sdlc-plan"
 
 ```bash
 # Interactive SDLC from Prompt workflow
-bd update VP-task --labels="from-prompt"
+bd update PROJ-task --labels="from-prompt"
 
 # Full SDLC workflow
-bd update VP-task --labels="full-sdlc"
+bd update PROJ-task --labels="full-sdlc"
 
 # Epic Batches workflow
-bd update VP-epic --labels="epic-batches"
+bd update PROJ-epic --labels="epic-batches"
 ```
 
 ### Phase Labels (автоматически устанавливаются coordinator)
@@ -752,20 +752,20 @@ phase-complete          # Завершено
 1. **ВАЖНО: Проверь parent:**
 
    ```bash
-   bd show VP-xxx
+   bd show PROJ-xxx
    # parent должен быть установлен
    ```
 
    Если нет:
 
    ```bash
-   bd update VP-xxx --parent=VP-epic1
+   bd update PROJ-xxx --parent=PROJ-epic1
    ```
 
 2. Проверь label:
 
    ```bash
-   bd show VP-xxx
+   bd show PROJ-xxx
    # labels должны включать: full-sdlc или epic-batches
    ```
 
@@ -784,14 +784,14 @@ phase-complete          # Завершено
 1. Убедись что label установлен на EPIC, не на tasks:
 
    ```bash
-   bd update VP-epic --labels="epic-batches"  # ✓ Правильно
-   bd update VP-task --labels="epic-batches"  # ✗ Неправильно
+   bd update PROJ-epic --labels="epic-batches"  # ✓ Правильно
+   bd update PROJ-task --labels="epic-batches"  # ✗ Неправильно
    ```
 
 2. Убедись что у tasks установлен parent:
    ```bash
-   bd show VP-task
-   # parent должен быть = VP-epic
+   bd show PROJ-task
+   # parent должен быть = PROJ-epic
    ```
 
 ## Keyboard Shortcuts
@@ -876,7 +876,7 @@ A:
 **Q: Можно ли перезапустить с конкретной фазы?**
 A: Да, вручную установи нужный label:
 ```bash
-bd update VP-epic1 --labels="full-sdlc,phase-sdlc-plan"
+bd update PROJ-epic1 --labels="full-sdlc,phase-sdlc-plan"
 # При следующем resume начнёт с Plan фазы
 ```
 

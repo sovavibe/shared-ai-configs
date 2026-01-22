@@ -89,7 +89,7 @@ services:
     main_branch: "main"
   task_tracking:
     type: "beads"            # beads | jira | linear | github-issues | none
-    key_prefix: "VP-"
+    key_prefix: "PROJ-"
   mcp:
     hindsight:
       enabled: true

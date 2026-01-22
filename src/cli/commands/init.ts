@@ -61,7 +61,7 @@ services:
 
   task_tracking:
     type: "none"              # beads | jira | linear | github-issues | none
-    # key_prefix: "VP-"       # Uncomment if using beads/jira
+    # key_prefix: "PROJ-"     # Uncomment if using beads/jira
     # paths:
     #   beads: ".beads/"
     #   perles: ".perles/"
@@ -107,7 +107,7 @@ options:
 #     - name: "bd"
 #       source: "binary"
 #       config:
-#         project_prefix: "VP-"
+#         project_prefix: "PROJ-"
 
 architecture:
   structure: |

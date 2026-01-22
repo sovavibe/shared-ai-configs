@@ -17,6 +17,12 @@ export interface TemplateContext extends Config {
   isVcs: (type: string) => boolean;
   hasFeature: (feature: string) => boolean;
   isTaskTracking: (type: string) => boolean;
+  // Orchestration config (for perles templates)
+  orchestration: {
+    client: string;
+    claude: { model: string };
+    codex: { model: string };
+  };
 }
 
 function createTemplateContext(config: Config): TemplateContext {
@@ -107,6 +113,12 @@ function createTemplateContext(config: Config): TemplateContext {
     languages: config.languages || { chat: 'English', code: 'English' },
     architecture: config.architecture || {},
     generation: config.generation || {},
+    // Orchestration config (for perles templates)
+    orchestration: {
+      client: 'claude',
+      claude: { model: 'sonnet' },
+      codex: { model: 'gpt-5.2-codex' },
+    },
     // Helper functions
     hasMcp: (name: string) => {
       const mcp = config.services?.mcp as Record<string, { enabled?: boolean }> | undefined;

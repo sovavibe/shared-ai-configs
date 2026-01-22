@@ -448,8 +448,8 @@ perles
 # → Epic Parallel Batches
 
 # Or tag issue for direct workflow
-bd update VP-123 --labels="full-sdlc"
-bd update VP-456 --labels="epic-batches"
+bd update PROJ-123 --labels="full-sdlc"
+bd update PROJ-456 --labels="epic-batches"
 ```
 
 ---
@@ -660,8 +660,8 @@ flowchart LR
 
 ### Reference Format
 
-- **Bead title:** `VP-XXX: Task description`
-- **Jira description:** Include `Beads ID: VP-xxxx`
+- **Bead title:** `PROJ-XXX: Task description`
+- **Jira description:** Include `Beads ID: bd-xxxx`
 
 ### Commands
 
@@ -786,8 +786,8 @@ If database was deleted accidentally:
    ```bash
    git checkout .beads/issues.jsonl  # Restore last committed
    # Manually re-apply recent bd commands
-   bd update VP-xxx --status=blocked
-   bd close VP-yyy
+   bd update bd-xxx --status=blocked
+   bd close bd-yyy
    bd sync --flush-only
    ```
 

@@ -85,14 +85,32 @@ export interface TaskTrackingServiceConfig {
 
 export interface MCPServerConfig {
   enabled: boolean;
+  api_key_env?: string; // Environment variable name for API key (e.g., "CONTEXT7_API_KEY")
+  url?: string; // URL for HTTP-based MCP servers
+  command?: string; // Command to run for stdio-based MCP servers (e.g., "npx", "node")
+  args?: string[]; // Command arguments for stdio-based MCP servers
+  env?: Record<string, string>; // Environment variables to pass to the MCP server
 }
 
 export interface MCPServiceConfig {
+  /** Hindsight Alice MCP - long-term memory (HTTP: localhost:8888) */
   hindsight?: MCPServerConfig;
+  /** Snyk MCP - security scanning (stdio: npx snyk@latest mcp) */
   snyk?: MCPServerConfig;
+  /** Context7 MCP - library documentation lookup (stdio: npx @upstash/context7-mcp) */
   context7?: MCPServerConfig;
+  /** Allpepper Memory Bank MCP - project memory (stdio: npx @allpepper/memory-bank-mcp) */
   memory_bank?: MCPServerConfig;
+  /** Figma MCP - design-to-code (HTTP: mcp.figma.com) */
   figma?: MCPServerConfig;
+  /**
+   * Browser/z.ai services - enables multiple MCP servers:
+   * - zai-mcp-server (stdio) - image analysis, UI conversion
+   * - web-search-prime (HTTP) - web search
+   * - web-reader (HTTP) - URL content fetching
+   * - zread (HTTP) - GitHub repo search/read
+   * Requires Z_AI_API_KEY environment variable.
+   */
   browser?: MCPServerConfig;
 }
 

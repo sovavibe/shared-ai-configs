@@ -36,7 +36,13 @@ async function main() {
 
   // Check for generated file modifications
   const changedFiles = payload.changed_files || payload.files || []
-  const generatedPattern = /src\/shared\/api\/generated\//
+
+  // Configurable via GENERATED_CODE_PATTERN env var
+  // Default: common generated code directories (supports FSD, standard, and common patterns)
+  const patternStr =
+    process.env.GENERATED_CODE_PATTERN ||
+    '(generated|__generated__|codegen|\.generated)\\/|\\.(generated|g)\\.(ts|js)$'
+  const generatedPattern = new RegExp(patternStr)
 
   const blockedFiles = changedFiles.filter((f) => generatedPattern.test(f))
 

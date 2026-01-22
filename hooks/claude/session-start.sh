@@ -36,7 +36,9 @@ echo -e "${YELLOW}[Hindsight]${NC} Recalling multi-session project context (TEMP
 if command -v mcp &> /dev/null; then
     # Dynamic recall prompt based on context (not hardcoded 3 sessions)
     # TEMPR: semantic search + keyword matching + graph traversal + temporal filtering
-    mcp__hindsight-alice__recall "Front project: architecture decisions, API patterns, React conventions, recent blockers, active work context" 2>/dev/null || true
+    # Use HINDSIGHT_RECALL_QUERY env var if set, otherwise use generic query
+    RECALL_QUERY="${HINDSIGHT_RECALL_QUERY:-project architecture decisions, API patterns, conventions, recent blockers, active work context}"
+    mcp__hindsight-alice__recall "$RECALL_QUERY" 2>/dev/null || true
 fi
 
 # 2. Check for in-progress work (only if BD_ENABLED)

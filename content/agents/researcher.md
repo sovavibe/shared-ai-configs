@@ -65,7 +65,7 @@ Hindsight: recall("table filtering patterns")
 Hindsight: reflect("best approach for X given past decisions")
 
 # Team context
-Jira: jira_search("project = VP AND type = Bug")
+Jira: jira_search("project = <JIRA_PROJECT> AND type = Bug")
 ```
 
 ## Output Format
@@ -95,7 +95,7 @@ Jira: jira_search("project = VP AND type = Bug")
 
 ### Past Patterns (Hindsight)
 
-- Similar task completed in VP-123: used approach X
+- Similar task completed in PROJ-123: used approach X
 - Decision rationale: performance over simplicity
 
 ### Recommendations

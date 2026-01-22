@@ -153,14 +153,14 @@ export const UserProfile: FC<Props> = ({ userId }) => {
 ### Format
 
 ```typescript
-// eslint-disable-next-line <rule> -- WHY: <reason>. TODO(VP-XXX): <fix_description>
+// eslint-disable-next-line <rule> -- WHY: <reason>. TODO(PROJ-XXX): <fix_description>
 ```
 
 ### Required Components
 
 1. **`<rule>`** — Specific ESLint rule name (e.g., `no-magic-numbers`)
 2. **`WHY:`** — Clear reason from allowed list
-3. **`TODO(VP-XXX):`** — Jira task reference
+3. **`TODO(PROJ-XXX):`** — Jira task reference
 4. **`<fix_description>`** — What needs to be done
 
 ### Valid WHY Reasons
@@ -175,7 +175,7 @@ export const UserProfile: FC<Props> = ({ userId }) => {
 
 ```typescript
 // ✅ GOOD: Justified suppression
-// eslint-disable-next-line no-magic-numbers -- WHY: Performance optimization benchmark. TODO(VP-123): Move to config.
+// eslint-disable-next-line no-magic-numbers -- WHY: Performance optimization benchmark. TODO(PROJ-123): Move to config.
 const TIMEOUT_MS = 5000
 
 // ❌ BAD: Blanket suppression
@@ -186,7 +186,7 @@ const TIMEOUT_MS = 5000
 const max = 10
 
 // ✅ GOOD: Proper suppression
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- WHY: External API returns untyped data. TODO(VP-456): Add proper types.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- WHY: External API returns untyped data. TODO(PROJ-456): Add proper types.
 const data: any = await externalAPI.getData()
 ```
 

@@ -1,42 +1,164 @@
+<%
+// Helper function to build MCP server entry
+function buildMcpServer(config, defaults) {
+  const result = {};
+
+  // HTTP-based servers: url + headers
+  if (config.url || defaults.url) {
+    result.url = config.url || defaults.url;
+    // Add headers if present
+    const headers = { ...(defaults.headers || {}), ...(config.headers || {}) };
+    if (Object.keys(headers).length > 0) {
+      result.headers = headers;
+    } else {
+      result.headers = {};
+    }
+    return result;
+  }
+
+  // stdio-based servers: command + args + env
+  if (config.command) {
+    result.command = config.command;
+  } else if (defaults.command) {
+    result.command = defaults.command;
+  }
+
+  if (config.args) {
+    result.args = config.args;
+  } else if (defaults.args) {
+    result.args = defaults.args;
+  }
+
+  // Add type for stdio servers with explicit type
+  if (defaults.type) {
+    result.type = defaults.type;
+  }
+
+  // Build env object
+  const envVars = { ...(defaults.env || {}) };
+
+  // Add custom env vars
+  if (config.env) {
+    Object.assign(envVars, config.env);
+  }
+
+  // Add API key from api_key_env
+  if (config.api_key_env) {
+    const keyName = config.api_key_env.replace(/_/g, '_');
+    envVars[keyName] = '${' + config.api_key_env + '}';
+  }
+
+  if (Object.keys(envVars).length > 0) {
+    result.env = envVars;
+  }
+
+  return result;
+}
+
+// Default configurations for known MCP servers
+// HTTP-based servers (url + headers)
+const mcpDefaults = {
+  // HTTP-based servers
+  figma: {
+    url: 'https://mcp.figma.com/mcp',
+    headers: {}
+  },
+  hindsight: {
+    url: 'http://localhost:8888/mcp/alice/'
+  },
+  // z.ai HTTP services (enabled via browser key)
+  'web-search-prime': {
+    url: 'https://api.z.ai/api/mcp/web_search_prime/mcp',
+    headers: { Authorization: 'Bearer ${Z_AI_API_KEY}' }
+  },
+  'web-reader': {
+    url: 'https://api.z.ai/api/mcp/web_reader/mcp',
+    headers: { Authorization: 'Bearer ${Z_AI_API_KEY}' }
+  },
+  zread: {
+    url: 'https://api.z.ai/api/mcp/zread/mcp',
+    headers: { Authorization: 'Bearer ${Z_AI_API_KEY}' }
+  },
+  // stdio-based servers
+  snyk: {
+    command: 'npx',
+    args: ['-y', 'snyk@latest', 'mcp', '-t', 'stdio'],
+    env: {}
+  },
+  memory_bank: {
+    command: 'npx',
+    args: ['-y', '@allpepper/memory-bank-mcp'],
+    env: { MEMORY_BANK_ROOT: '.memory' }
+  },
+  'zai-mcp-server': {
+    type: 'stdio',
+    command: 'npx',
+    args: ['-y', '@z_ai/mcp-server'],
+    env: { Z_AI_API_KEY: '${Z_AI_API_KEY}', Z_AI_MODE: 'ZAI' }
+  },
+  context7: {
+    command: 'npx',
+    args: ['-y', '@upstash/context7-mcp'],
+    env: { CONTEXT7_API_KEY: '${CONTEXT7_API_KEY}' }
+  }
+};
+
+// Server display names (key in yaml -> name in MCP config)
+const mcpNames = {
+  hindsight: 'hindsight-alice',
+  snyk: 'Snyk',
+  context7: 'Context7',
+  figma: 'Figma',
+  memory_bank: 'allpepper-memory-bank',
+  // browser key enables these z.ai services:
+  'zai-mcp-server': 'zai-mcp-server',
+  'web-search-prime': 'web-search-prime',
+  'web-reader': 'web-reader',
+  zread: 'zread'
+};
+
+// Collect enabled servers
+const enabledServers = [];
+if (services?.mcp) {
+  for (const [key, config] of Object.entries(services.mcp)) {
+    if (config?.enabled) {
+      // browser key enables multiple z.ai services
+      if (key === 'browser') {
+        // Add zai-mcp-server (stdio)
+        const zaiDefaults = mcpDefaults['zai-mcp-server'];
+        enabledServers.push({
+          name: mcpNames['zai-mcp-server'],
+          config: buildMcpServer(config, zaiDefaults)
+        });
+        // Add web-search-prime (http)
+        enabledServers.push({
+          name: mcpNames['web-search-prime'],
+          config: buildMcpServer({}, mcpDefaults['web-search-prime'])
+        });
+        // Add web-reader (http)
+        enabledServers.push({
+          name: mcpNames['web-reader'],
+          config: buildMcpServer({}, mcpDefaults['web-reader'])
+        });
+        // Add zread (http)
+        enabledServers.push({
+          name: mcpNames['zread'],
+          config: buildMcpServer({}, mcpDefaults['zread'])
+        });
+      } else {
+        const name = mcpNames[key] || key;
+        const defaults = mcpDefaults[key] || {};
+        const serverConfig = buildMcpServer(config, defaults);
+        enabledServers.push({ name, config: serverConfig });
+      }
+    }
+  }
+}
+-%>
 {
   "mcpServers": {
-<% if (services?.mcp?.hindsight?.enabled) { -%>
-    "hindsight-alice": {
-      "command": "hindsight-mcp"
-    }<%= services?.mcp?.snyk?.enabled || services?.mcp?.context7?.enabled || services?.mcp?.figma?.enabled || services?.mcp?.web_search?.enabled || services?.mcp?.chrome?.enabled ? ',' : '' %>
-<% } -%>
-<% if (services?.mcp?.snyk?.enabled) { -%>
-    "Snyk": {
-      "command": "npx",
-      "args": ["-y", "@anthropic-ai/snyk-mcp"]
-    }<%= services?.mcp?.context7?.enabled || services?.mcp?.figma?.enabled || services?.mcp?.web_search?.enabled || services?.mcp?.chrome?.enabled ? ',' : '' %>
-<% } -%>
-<% if (services?.mcp?.context7?.enabled) { -%>
-    "Context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"]
-    }<%= services?.mcp?.figma?.enabled || services?.mcp?.web_search?.enabled || services?.mcp?.chrome?.enabled ? ',' : '' %>
-<% } -%>
-<% if (services?.mcp?.figma?.enabled) { -%>
-    "Figma": {
-      "command": "npx",
-      "args": ["-y", "figma-developer-mcp", "--stdio"],
-      "env": {
-        "FIGMA_API_KEY": "${FIGMA_API_KEY}"
-      }
-    }<%= services?.mcp?.web_search?.enabled || services?.mcp?.chrome?.enabled ? ',' : '' %>
-<% } -%>
-<% if (services?.mcp?.web_search?.enabled) { -%>
-    "web-search-prime": {
-      "command": "npx",
-      "args": ["-y", "@pinkpixel/web-search-mcp"]
-    }<%= services?.mcp?.chrome?.enabled ? ',' : '' %>
-<% } -%>
-<% if (services?.mcp?.chrome?.enabled) { -%>
-    "claude-in-chrome": {
-      "command": "npx",
-      "args": ["-y", "@anthropic-ai/claude-in-chrome-mcp"]
-    }
-<% } -%>
+<% enabledServers.forEach((server, index) => { -%>
+    "<%= server.name %>": <%- JSON.stringify(server.config, null, 6).replace(/\n/g, '\n    ') %><%= index < enabledServers.length - 1 ? ',' : '' %>
+<% }); -%>
   }
 }

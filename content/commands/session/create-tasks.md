@@ -92,7 +92,7 @@ npm run gitlab:mr:get-unresolved -- --mr <MR_NUMBER>
 CallMcpTool({
   server: "user-MCP_DOCKER",
   toolName: "jira_search",
-  arguments: { jql: 'project = VP AND labels = mr-<MR> AND issuetype = Task AND status != Done' }
+  arguments: { jql: 'project = <JIRA_PROJECT> AND labels = mr-<MR> AND issuetype = Task AND status != Done' }
 })
 
 # Create Jira Task (if needed)
@@ -100,7 +100,7 @@ CallMcpTool({
   server: "user-MCP_DOCKER",
   toolName: "jira_create_issue",
   arguments: {
-    project_key: "VP",
+    project_key: "<JIRA_PROJECT>",
     summary: "[MR-<MR_NUMBER>] Code Review Round 1",
     issue_type: "Task",
     labels: ["mr-<MR_NUMBER>", "code-review", "round-1"]
@@ -109,11 +109,11 @@ CallMcpTool({
 
 # Create Beads Epic IMMEDIATELY
 PARENT_EPIC=$(bd create "Epic: Review MR-<MR_NUMBER>" --type=epic -p 1 --json | jq -r '.id')
-bd update $PARENT_EPIC --description="Jira: VP-XXX
+bd update $PARENT_EPIC --description="Jira: PROJ-XXX
 Type: MR Review"
 
 # Per thread → Beads ticket
-TASK=$(bd create "VP-YYY: ${thread.title}" --deps epic:$PARENT_EPIC -p 1 --json | jq -r '.id')
+TASK=$(bd create "PROJ-YYY: ${thread.title}" --deps epic:$PARENT_EPIC -p 1 --json | jq -r '.id')
 bd update $TASK --description="GitLab Discussion ID: ${thread.id}
 File: ${thread.file}:${thread.line}"
 ```
@@ -126,7 +126,7 @@ CallMcpTool({
   server: "user-MCP_DOCKER",
   toolName: "jira_create_issue",
   arguments: {
-    project_key: "VP",
+    project_key: "<JIRA_PROJECT>",
     summary: "Implement user auth",
     issue_type: "Task",
     labels: ["feature"]
@@ -134,8 +134,8 @@ CallMcpTool({
 })
 
 # Create Beads Epic IMMEDIATELY
-PARENT_EPIC=$(bd create "Epic: VP-XXX: Implement user auth" --type=epic -p 1 --json | jq -r '.id')
-bd update $PARENT_EPIC --description="Jira: VP-XXX
+PARENT_EPIC=$(bd create "Epic: PROJ-XXX: Implement user auth" --type=epic -p 1 --json | jq -r '.id')
+bd update $PARENT_EPIC --description="Jira: PROJ-XXX
 Type: Feature"
 
 # Decompose into steps

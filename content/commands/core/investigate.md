@@ -27,7 +27,7 @@ The investigate workflow guides agent through systematic investigation:
 
 1. **Determine Entry Point:**
 
-   - Jira task? (VP-XXX)
+   - Jira task? (PROJ-XXX)
    - User input?
    - MR comment?
    - File/Component reference?
@@ -159,7 +159,7 @@ After semantic search gives you context, use grep for specifics:
 
 ```bash
 # Investigate Jira task
-@investigate.md VP-123
+@investigate.md PROJ-123
 
 # Investigate user issue
 @investigate.md Users getting login errors after password reset

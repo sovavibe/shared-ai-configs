@@ -185,6 +185,14 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
     generatedFiles.push(...results);
   }
 
+  // .env.aiproject - template for MCP secrets/API keys
+  if (targets.claude.enabled || targets.cursor.enabled) {
+    const envResult = await generateEnvTemplate(config, outputDir, options);
+    if (envResult) {
+      generatedFiles.push(envResult);
+    }
+  }
+
   // Update .gitignore
   if (config.generation?.gitignore_entries !== false) {
     await updateGitignore(config, outputDir, options, targets);
@@ -851,6 +859,49 @@ async function generatePerlesDir(
 }
 
 // ============================================================================
+// .env.aiproject Generation
+// ============================================================================
+
+async function generateEnvTemplate(
+  config: Config,
+  outputDir: string,
+  options: GenerateOptions
+): Promise<GeneratedFile | null> {
+  const outputPath = join(outputDir, '.env.aiproject');
+
+  // Always generate (secret file, but template with empty values)
+  // Skip only if exists and no --force
+  if (existsSync(outputPath) && !options.force) {
+    logger.info('Skipping .env.aiproject (exists, use --force to overwrite)');
+    return { path: outputPath, action: 'skipped' };
+  }
+
+  const templatePath = join(packageRoot, 'templates/.env.aiproject.ejs');
+  if (!existsSync(templatePath)) {
+    logger.warn('Template .env.aiproject.ejs not found');
+    return null;
+  }
+
+  try {
+    const content = await renderTemplate('.env.aiproject.ejs', config);
+
+    if (!options.dryRun) {
+      mkdirSync(dirname(outputPath), { recursive: true });
+      writeFileSync(outputPath, content);
+      logger.success('Generated .env.aiproject (fill in your API keys and tokens)');
+    } else {
+      logger.info('Would generate .env.aiproject');
+    }
+
+    return { path: outputPath, action: existsSync(outputPath) ? 'updated' : 'created' };
+  } catch (error) {
+    const err = error as Error;
+    logger.warn(`Failed to generate .env.aiproject: ${err.message}`);
+    return null;
+  }
+}
+
+// ============================================================================
 // Ignore Files Generation
 // ============================================================================
 
@@ -916,6 +967,9 @@ async function updateGitignore(
     '',
     '# AI Generated (by shared-ai-configs) - DO NOT EDIT',
     '# Regenerate with: npx shared-ai-configs generate',
+    '',
+    '# AI Environment (secrets/API keys)',
+    '.env.aiproject',
     '',
     '# Memory Bank (stored in MCP, not in git)',
     '.memory',
@@ -985,6 +1039,7 @@ async function updateGitignore(
   if (hasMarker) {
     // Check if we need to update (missing cursor files)
     const missingEntries: string[] = [];
+    if (!content.includes('.env.aiproject')) missingEntries.push('.env.aiproject');
     if (targets.cursor.enabled) {
       if (!content.includes('.cursorignore')) missingEntries.push('.cursorignore');
       if (!content.includes('.cursorindexingignore')) missingEntries.push('.cursorindexingignore');

@@ -14,7 +14,7 @@ alwaysApply: false
 
 <body>
 
-Refs: VP-XXX
+Refs: PROJ-XXX
 ```
 
 **🔴 CRITICAL**: ALL commits MUST be in English.
@@ -40,14 +40,14 @@ Refs: VP-XXX
 ## Branch Naming
 
 ```bash
-feat/VP-123-cargo-bulk-import
-fix/VP-456-table-sorting
-hotfix/VP-999-critical-bug
+feat/PROJ-123-cargo-bulk-import
+fix/PROJ-456-table-sorting
+hotfix/PROJ-999-critical-bug
 ```
 
 ## PR Guidelines
 
-**Title**: `feat(cargo): add bulk import [VP-123]`
+**Title**: `feat(cargo): add bulk import [PROJ-123]`
 
 **GitLab Templates**: Use templates from `.gitlab/merge_request_templates/`:
 
@@ -92,10 +92,10 @@ git commit --no-verify
 **NEVER execute autonomously. ALWAYS ask user explicitly:**
 
 ```bash
-# ❌ ЗАПРЕЩЕНО без подтверждения пользователя
+# ❌ FORBIDDEN without user confirmation
 git reset --hard
 git checkout -- .
-git checkout <file>     # откат файла
+git checkout <file>     # revert file
 git clean -fd
 git stash drop
 git branch -D

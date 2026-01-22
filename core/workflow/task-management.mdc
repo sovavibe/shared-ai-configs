@@ -16,7 +16,7 @@ alwaysApply: false
 | Decompose tasks | 2-3 simple, 3-5 medium, 5-10 large                        |
 | End session     | `bd close <id>` → `bd sync --flush-only` → `git push`     |
 
-**Structure**: Jira (VP-100) → Beads Epic → Beads Tasks (atomic units)
+**Structure**: Jira (PROJ-100) → Beads Epic → Beads Tasks (atomic units)
 
 ## Task Type Decision Tree
 
@@ -31,8 +31,8 @@ flowchart TD
 
     HasSubtasks -->|No| Complexity{Task<br/>Complexity?}
 
-    Complexity -->|Atomic<br/>1 action| CreateTask[Create Beads Task<br/>bd create "VP-XXX: title"<br/>Link to Jira]
-    Complexity -->|Complex<br/>2+ steps| CreateEpic[Create Beads Epic<br/>+ subtasks<br/>bd create "Epic: VP-XXX"<br/>Link to Jira]
+    Complexity -->|Atomic<br/>1 action| CreateTask[Create Beads Task<br/>bd create "PROJ-XXX: title"<br/>Link to Jira]
+    Complexity -->|Complex<br/>2+ steps| CreateEpic[Create Beads Epic<br/>+ subtasks<br/>bd create "Epic: PROJ-XXX"<br/>Link to Jira]
 
     ProcessSubtasks --> SubComplexity{Subtask<br/>Complexity?}
 
@@ -68,25 +68,25 @@ flowchart TD
 
 ```bash
 # Parent Epic (Jira Task with Subtasks)
-PARENT_EPIC=$(bd create "Epic: VP-XXX - MR-{N} Round {N}" --type=epic -p 1 --json | jq -r '.id')
+PARENT_EPIC=$(bd create "Epic: PROJ-XXX - MR-{N} Round {N}" --type=epic -p 1 --json | jq -r '.id')
 
 # Atomic Task (1 action)
-TASK=$(bd create "VP-300: [title]" -p 1 --json | jq -r '.id')
-bd update $TASK --description="Jira: VP-300
+TASK=$(bd create "PROJ-300: [title]" -p 1 --json | jq -r '.id')
+bd update $TASK --description="Jira: PROJ-300
 Status: To Do"
 
 # Complex Task (2+ steps) → Epic + Tasks
-EPIC=$(bd create "Epic: VP-300: [title]" --type=epic -p 1 --json | jq -r '.id')
-TASK1=$(bd create "VP-300: Step 1" --deps epic:$EPIC -p 1 --json | jq -r '.id')
+EPIC=$(bd create "Epic: PROJ-300: [title]" --type=epic -p 1 --json | jq -r '.id')
+TASK1=$(bd create "PROJ-300: Step 1" --deps epic:$EPIC -p 1 --json | jq -r '.id')
 
 # Subtask with Discussion ID
-bd update $TASK --description="Jira: VP-ZZZ
+bd update $TASK --description="Jira: PROJ-ZZZ
 GitLab Discussion ID: {discussion_id}
 File: {file_path}:{line}
 Status: To Do"
 
 # Find by Jira key
-bd list --json | jq '.[] | select(.description | contains("VP-XXX"))'
+bd list --json | jq '.[] | select(.description | contains("PROJ-XXX"))'
 ```
 
 ### Rules

@@ -49,6 +49,7 @@ services:
     type: gitlab            # Determines which VCS rules to include
   task_tracking:
     type: beads             # Determines which tracking rules to include
+    key_prefix: "PROJ-"     # Project prefix for task IDs
   mcp:
     hindsight:
       enabled: true         # Include hindsight rules
@@ -431,7 +432,7 @@ services:
 
   task_tracking:
     type: beads | jira | none
-    key_prefix: string (VP-)
+    key_prefix: string (PROJ-)
 
   mcp:
     hindsight: { enabled: boolean }
