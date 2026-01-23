@@ -10,6 +10,6 @@ export const colors = {
   yellow: '\x1b[33m',
   blue: '\x1b[34m',
   bold: '\x1b[1m',
-} as const
+} as const;
 
-export type Color = (typeof colors)[keyof typeof colors]
+export type Color = (typeof colors)[keyof typeof colors];

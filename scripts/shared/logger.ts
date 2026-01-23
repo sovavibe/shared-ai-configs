@@ -35,54 +35,54 @@
  *   - Size-based rotation: Also rotates when file reaches maxSize
  */
 
-import { existsSync, mkdirSync } from 'node:fs'
-import path from 'node:path'
+import { existsSync, mkdirSync } from 'node:fs';
+import path from 'node:path';
 
-import winston from 'winston'
-import DailyRotateFile from 'winston-daily-rotate-file'
+import winston from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
-const isQuiet = process.env.QUIET === 'true'
-const isDebug = process.env.DEBUG === 'true'
-const logToFile = process.env.LOG_TO_FILE === 'true'
+const isQuiet = process.env.QUIET === 'true';
+const isDebug = process.env.DEBUG === 'true';
+const logToFile = process.env.LOG_TO_FILE === 'true';
 
 // Parse maxSize (supports '10m', '100k', etc.)
 const parseMaxSize = (value: string): string => {
   // winston-daily-rotate-file accepts string format directly
-  return value
-}
+  return value;
+};
 
 // Parse maxFiles (supports '14d', '30', etc.)
 const parseMaxFiles = (value: string): string => {
   // winston-daily-rotate-file accepts both number and string (e.g., '14d')
-  return value
-}
+  return value;
+};
 
-const logMaxSize = parseMaxSize(process.env.LOG_MAX_SIZE || '20m')
-const logMaxFiles = parseMaxFiles(process.env.LOG_MAX_FILES || '14d')
-const logDatePattern = process.env.LOG_DATE_PATTERN || 'YYYY-MM-DD'
+const logMaxSize = parseMaxSize(process.env.LOG_MAX_SIZE || '20m');
+const logMaxFiles = parseMaxFiles(process.env.LOG_MAX_FILES || '14d');
+const logDatePattern = process.env.LOG_DATE_PATTERN || 'YYYY-MM-DD';
 
 // Default to readable text format for all scripts
 // Use LOG_FORMAT=json explicitly for structured JSON output
-const logFormat = (process.env.LOG_FORMAT || 'text').toLowerCase() as 'json' | 'text'
+const logFormat = (process.env.LOG_FORMAT || 'text').toLowerCase() as 'json' | 'text';
 
 /**
  * Get log directory path
  */
 const getLogDir = (): string => {
-  return path.join(process.cwd(), 'logs')
-}
+  return path.join(process.cwd(), 'logs');
+};
 
 /**
  * Ensure log directory exists
  */
 const ensureLogDir = (): void => {
-  if (!logToFile) return
+  if (!logToFile) return;
 
-  const logDir = getLogDir()
+  const logDir = getLogDir();
   if (!existsSync(logDir)) {
-    mkdirSync(logDir, { recursive: true })
+    mkdirSync(logDir, { recursive: true });
   }
-}
+};
 
 /**
  * Determine log level based on environment
@@ -91,12 +91,12 @@ const ensureLogDir = (): void => {
  * - LOG_FORMAT=json: error level (only errors, for structured logging)
  */
 const getLogLevel = (): string => {
-  if (isQuiet) return 'silent'
-  if (isDebug) return 'debug'
+  if (isQuiet) return 'silent';
+  if (isDebug) return 'debug';
   // Default: info level (readable text format)
   // JSON format: only errors by default (for structured logging)
-  return logFormat === 'json' ? 'error' : 'info'
-}
+  return logFormat === 'json' ? 'error' : 'info';
+};
 
 /**
  * Create format based on LOG_FORMAT environment variable
@@ -105,16 +105,16 @@ const createFormat = () => {
   if (logFormat === 'text') {
     // Readable text format (no JSON, no timestamp, no level prefix)
     return winston.format.printf(({ message }) => {
-      return String(message)
-    })
+      return String(message);
+    });
   }
   // Structured JSON format (default)
   return winston.format.combine(
     winston.format.timestamp(),
     winston.format.errors({ stack: true }),
-    winston.format.json(),
-  )
-}
+    winston.format.json()
+  );
+};
 
 /**
  * Create file format (always JSON with timestamp for file logs)
@@ -123,9 +123,9 @@ const createFileFormat = () => {
   return winston.format.combine(
     winston.format.timestamp(),
     winston.format.errors({ stack: true }),
-    winston.format.json(),
-  )
-}
+    winston.format.json()
+  );
+};
 
 /**
  * Initialize daily rotate file transport if enabled
@@ -136,10 +136,10 @@ const createFileFormat = () => {
  * - Automatic cleanup (maxFiles)
  */
 const createFileTransport = (): DailyRotateFile | null => {
-  if (!logToFile) return null
+  if (!logToFile) return null;
 
-  ensureLogDir()
-  const logDir = getLogDir()
+  ensureLogDir();
+  const logDir = getLogDir();
 
   return new DailyRotateFile({
     filename: path.join(logDir, 'scripts-%DATE%.log'),
@@ -151,8 +151,8 @@ const createFileTransport = (): DailyRotateFile | null => {
     // Handle errors silently - don't break logger initialization
     handleExceptions: false,
     handleRejections: false,
-  })
-}
+  });
+};
 
 /**
  * Unified Winston logger instance
@@ -167,11 +167,11 @@ const transports: winston.transport[] = [
     stderrLevels: ['error', 'warn'], // Errors and warnings go to stderr
     consoleWarnLevels: ['warn'],
   }),
-]
+];
 
-const fileTransport = createFileTransport()
+const fileTransport = createFileTransport();
 if (fileTransport) {
-  transports.push(fileTransport)
+  transports.push(fileTransport);
 }
 
 const winstonLogger = winston.createLogger({
@@ -180,7 +180,7 @@ const winstonLogger = winston.createLogger({
   transports,
   // Don't exit on error (let scripts handle errors)
   exitOnError: false,
-})
+});
 
 /**
  * Unified logger interface for all Node.js scripts
@@ -203,9 +203,9 @@ export const logger = {
    */
   error(message: string, error?: Error, metadata?: Record<string, unknown>): void {
     if (error instanceof Error) {
-      winstonLogger.error(message, { error: error.message, stack: error.stack, ...metadata })
+      winstonLogger.error(message, { error: error.message, stack: error.stack, ...metadata });
     } else {
-      winstonLogger.error(message, metadata)
+      winstonLogger.error(message, metadata);
     }
   },
 
@@ -215,9 +215,9 @@ export const logger = {
    */
   warn(message: string, error?: Error, metadata?: Record<string, unknown>): void {
     if (error instanceof Error) {
-      winstonLogger.warn(message, { error: error.message, stack: error.stack, ...metadata })
+      winstonLogger.warn(message, { error: error.message, stack: error.stack, ...metadata });
     } else {
-      winstonLogger.warn(message, metadata)
+      winstonLogger.warn(message, metadata);
     }
   },
 
@@ -226,7 +226,7 @@ export const logger = {
    * Logged when: DEBUG=true OR level >= info (default: always shown in text format)
    */
   info(message: string): void {
-    winstonLogger.info(message)
+    winstonLogger.info(message);
   },
 
   /**
@@ -234,7 +234,7 @@ export const logger = {
    * Logged when: DEBUG=true OR level >= info (default: always shown in text format)
    */
   infoWithError(message: string, error: Error, metadata?: Record<string, unknown>): void {
-    winstonLogger.info(message, { error: error.message, stack: error.stack, ...metadata })
+    winstonLogger.info(message, { error: error.message, stack: error.stack, ...metadata });
   },
 
   /**
@@ -242,7 +242,7 @@ export const logger = {
    * Logged when: DEBUG=true OR level >= info (default: always shown in text format)
    */
   infoWithMetadata(message: string, metadata: Record<string, unknown>): void {
-    winstonLogger.info(message, metadata)
+    winstonLogger.info(message, metadata);
   },
 
   /**
@@ -250,7 +250,7 @@ export const logger = {
    * Only logged when DEBUG=true
    */
   debug(message: string): void {
-    winstonLogger.debug(message)
+    winstonLogger.debug(message);
   },
 
   /**
@@ -258,7 +258,7 @@ export const logger = {
    * Only logged when DEBUG=true
    */
   debugWithError(message: string, error: Error, metadata?: Record<string, unknown>): void {
-    winstonLogger.debug(message, { error: error.message, stack: error.stack, ...metadata })
+    winstonLogger.debug(message, { error: error.message, stack: error.stack, ...metadata });
   },
 
   /**
@@ -266,7 +266,7 @@ export const logger = {
    * Only logged when DEBUG=true
    */
   debugWithMetadata(message: string, metadata: Record<string, unknown>): void {
-    winstonLogger.debug(message, metadata)
+    winstonLogger.debug(message, metadata);
   },
 
   /**
@@ -275,7 +275,7 @@ export const logger = {
    */
   log(message: string): void {
     // Use info level for log() method (same as old logger)
-    this.info(message)
+    this.info(message);
   },
 
   /**
@@ -290,7 +290,7 @@ export const logger = {
      * @param spaces - Number of spaces for indentation (default: 2)
      */
     json(data: unknown, spaces: number = 2): void {
-      process.stdout.write(JSON.stringify(data, null, spaces) + '\n')
+      process.stdout.write(JSON.stringify(data, null, spaces) + '\n');
     },
 
     /**
@@ -298,7 +298,7 @@ export const logger = {
      * @param data - Data to serialize as JSON
      */
     jsonCompact(data: unknown): void {
-      process.stdout.write(JSON.stringify(data) + '\n')
+      process.stdout.write(JSON.stringify(data) + '\n');
     },
 
     /**
@@ -306,7 +306,7 @@ export const logger = {
      * @param text - Text to output
      */
     text(text: string): void {
-      process.stdout.write(text + '\n')
+      process.stdout.write(text + '\n');
     },
   },
-}
+};

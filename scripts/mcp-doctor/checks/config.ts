@@ -5,7 +5,14 @@
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 
-import { logSuccess, logError, logWarning, logSection, directLog, logInfo } from '../utils/logger.js';
+import {
+  logSuccess,
+  logError,
+  logWarning,
+  logSection,
+  directLog,
+  logInfo,
+} from '../utils/logger.js';
 
 /**
  * Check MCP configuration file
@@ -19,7 +26,9 @@ export function checkMcpConfig(): boolean {
     logSuccess(`MCP config exists: ${mcpConfigPath}`);
 
     try {
-      const config = JSON.parse(readFileSync(mcpConfigPath, 'utf8')) as { mcpServers?: Record<string, unknown> };
+      const config = JSON.parse(readFileSync(mcpConfigPath, 'utf8')) as {
+        mcpServers?: Record<string, unknown>;
+      };
       const servers = Object.keys(config.mcpServers || {});
 
       if (servers.length > 0) {
@@ -34,7 +43,8 @@ export function checkMcpConfig(): boolean {
         ];
 
         const missingServers = requiredServers.filter(
-          ({ withPrefix, withoutPrefix }) => !servers.includes(withPrefix) && !servers.includes(withoutPrefix)
+          ({ withPrefix, withoutPrefix }) =>
+            !servers.includes(withPrefix) && !servers.includes(withoutPrefix)
         );
 
         if (missingServers.length > 0) {
