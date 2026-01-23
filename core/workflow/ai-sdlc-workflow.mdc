@@ -1,0 +1,397 @@
+---
+description: Universal AI SDLC Workflow - role-based software development with any AI agents
+globs: ["**/*"]
+alwaysApply: true
+version: '1.0.0'
+lastUpdated: '2026-01-23'
+---
+
+# AI SDLC Workflow
+
+> **Universal workflow for AI-assisted software development**
+> Works with any AI agents: Claude, Cursor, Copilot, Windsurf, GPT, Gemini, etc.
+
+## Overview
+
+AI SDLC is a **role-based** (not tool-based) approach to software development with AI agents.
+
+**Key Principle**: Assign tasks based on **capabilities needed**, not specific products.
+
+```mermaid
+graph LR
+    A[ANALYST<br/>Deep reasoning] --> B[ARCHITECT<br/>System design]
+    B --> C[PLANNER<br/>Task breakdown]
+    C --> D[IMPLEMENTER<br/>Code generation]
+    D --> E[REVIEWER<br/>Quality check]
+    E --> F{Issues?}
+    F -->|Yes| D
+    F -->|No| G[✅ Done]
+```
+
+---
+
+## Roles & Capabilities
+
+### Role Definitions
+
+| Role | Capabilities Required | Primary Task |
+|------|----------------------|--------------|
+| **ANALYST** | Deep reasoning, context awareness | Requirements analysis, research |
+| **ARCHITECT** | System thinking, pattern recognition | Design decisions, structure |
+| **PLANNER** | Task decomposition, estimation | Break down work, prioritize |
+| **IMPLEMENTER** | Fast coding, iteration | Write code, tests |
+| **REVIEWER** | Quality assessment, security | Verify correctness |
+
+### Capability Mapping
+
+Map YOUR tools to roles based on their **strengths**:
+
+```yaml
+# Example mapping - adjust for your stack
+analyst:
+  need: [deep_reasoning, context_awareness, research]
+  examples:
+    - Claude Opus (Claude Code)
+    - GPT-4o (API/ChatGPT)
+    - Gemini Pro (Vertex AI)
+    - Any model with extended thinking
+
+architect:
+  need: [system_design, pattern_knowledge]
+  examples:
+    - Claude Opus with codebase context
+    - GPT-4 with architecture prompts
+    - Human architect + AI assistant
+
+planner:
+  need: [task_breakdown, estimation]
+  examples:
+    - Claude Sonnet (fast, accurate)
+    - GPT-4o (good at lists)
+    - Any model with project context
+
+implementer:
+  need: [fast_coding, iteration, tool_use]
+  examples:
+    - Cursor Agent (IDE integration)
+    - GitHub Copilot (inline completion)
+    - Claude Sonnet (Claude Code)
+    - Windsurf Cascade
+    - Any agent with edit capabilities
+
+reviewer:
+  need: [quality_check, security_awareness]
+  examples:
+    - Claude Opus (thorough analysis)
+    - Specialized tools (Snyk, SonarQube)
+    - Human + AI collaborative review
+```
+
+---
+
+## Workflow Patterns
+
+### 1. Sequential (Default)
+
+Best for: **Structured features, well-defined requirements**
+
+```
+ANALYST → ARCHITECT → PLANNER → IMPLEMENTER → REVIEWER
+```
+
+Each phase completes before next begins. Clear handoffs.
+
+### 2. Iterative
+
+Best for: **Complex features, unclear requirements**
+
+```
+ANALYST → ARCHITECT → PLANNER
+              ↑           ↓
+          REVIEWER ← IMPLEMENTER
+              ↓           ↑
+           (loop until approved)
+```
+
+Multiple implementation-review cycles until quality met.
+
+### 3. Parallel
+
+Best for: **Independent subtasks, time-critical delivery**
+
+```
+              ┌─ IMPLEMENTER (feature A) ─┐
+PLANNER ──────┼─ IMPLEMENTER (feature B) ─┼──→ REVIEWER
+              └─ IMPLEMENTER (tests) ─────┘
+```
+
+Multiple agents work simultaneously on different parts.
+
+### 4. Dynamic
+
+Best for: **Research, exploration, unknown scope**
+
+```
+Agent decides next step based on findings
+No fixed workflow - adapts to discoveries
+```
+
+---
+
+## Phase Details
+
+### Phase 1: ANALYZE (Plan Mode)
+
+**Goal**: Understand requirements, gather context
+
+**Agent capabilities**: Deep reasoning, research
+
+**Actions**:
+
+- Read and understand requirements
+- Research existing patterns (hindsight.recall)
+- Identify constraints and edge cases
+- Ask clarifying questions
+
+**Output**: Requirements document, research findings
+
+**Mode**: Plan mode (read-only, safe exploration)
+
+### Phase 2: ARCHITECT (Plan Mode)
+
+**Goal**: Design solution structure
+
+**Agent capabilities**: System design, pattern recognition
+
+**Actions**:
+
+- Define component architecture
+- Choose patterns and approaches
+- Document key decisions (ADRs)
+- Identify risks and trade-offs
+
+**Output**: Architecture design, component diagram
+
+**Mode**: Plan mode (design, don't implement)
+
+### Phase 3: PLAN (Plan Mode)
+
+**Goal**: Break down into executable tasks
+
+**Agent capabilities**: Task decomposition
+
+**Actions**:
+
+- Create task list with dependencies
+- Estimate complexity
+- Identify blocking tasks
+- Define acceptance criteria
+
+**Output**: Task list (beads/TodoWrite)
+
+**Mode**: Plan mode
+
+### Phase 4: IMPLEMENT (Auto Mode)
+
+**Goal**: Write code
+
+**Agent capabilities**: Fast coding, tool use
+
+**Actions**:
+
+- Write code following design
+- Create tests
+- Handle edge cases
+- Iterate quickly
+
+**Output**: Working code, tests
+
+**Mode**: Auto/Accept mode (fast iteration)
+
+### Phase 5: REVIEW (Plan Mode)
+
+**Goal**: Verify quality
+
+**Agent capabilities**: Quality assessment
+
+**Actions**:
+
+- Check code quality
+- Verify security (Snyk, OWASP)
+- Run tests
+- Validate against requirements
+
+**Output**: Review report, approval or issues
+
+**Mode**: Plan mode (analysis, not changes)
+
+---
+
+## Handoff Protocol
+
+When switching between roles/agents, preserve context:
+
+```yaml
+handoff:
+  # MCP context preservation
+  continuation_id: "sdlc-abc123"
+
+  # What was decided
+  decisions:
+    - "Using React Query for data fetching"
+    - "No Redux - local state sufficient"
+
+  # What NOT to change
+  constraints:
+    - "Don't modify shared/api/* (generated)"
+    - "Keep existing auth flow"
+
+  # How to verify success
+  acceptance:
+    - "All tests pass"
+    - "No TypeScript errors"
+    - "Lighthouse score > 90"
+
+  # Context summary (for new agent)
+  summary: |
+    Implementing user profile feature.
+    Design uses FSD architecture.
+    Main component: src/pages/profile/
+```
+
+### Context Compression
+
+Before handoff, compress verbose context:
+
+```
+✅ Keep: Key decisions, constraints, acceptance criteria
+❌ Remove: Verbose reasoning, intermediate attempts, duplicate info
+```
+
+---
+
+## Skip Rules
+
+Not every task needs all phases:
+
+| Task Type | Phases to Run |
+|-----------|---------------|
+| **New feature** | All 5 phases |
+| **Enhancement** | Plan → Implement → Review |
+| **Bug fix** | Implement → Review |
+| **Hotfix** | Implement only |
+| **Docs/Config** | Implement only |
+
+---
+
+## Agent Selection Guide
+
+### When to use DEEP REASONING agent
+
+- ✅ Architecture decisions
+- ✅ Complex bug analysis
+- ✅ Security review
+- ✅ Code review
+- ✅ Research and exploration
+
+### When to use FAST IMPLEMENTATION agent
+
+- ✅ Writing code from clear spec
+- ✅ Creating tests
+- ✅ Routine refactoring
+- ✅ Config changes
+- ✅ Quick iterations
+
+### Mixed Workflow Example
+
+```
+1. User: "Add dark mode support"
+
+2. ANALYST (Opus): Research existing theming, identify scope
+   Output: "Need CSS variables, context provider, 3 components"
+
+3. ARCHITECT (Opus): Design theme system
+   Output: "ThemeProvider + useTheme hook + CSS variables"
+
+4. PLANNER (Sonnet): Break into tasks
+   Output: [
+     "Create ThemeProvider",
+     "Add CSS variables",
+     "Update Header component",
+     "Update Sidebar component",
+     "Add theme toggle"
+   ]
+
+5. IMPLEMENTER (Cursor/Copilot): Code each task
+   Output: Working dark mode
+
+6. REVIEWER (Opus): Verify quality
+   Output: "Approved" or "Fix contrast ratio in sidebar"
+```
+
+---
+
+## Configuration
+
+### Project-Level Defaults
+
+```yaml
+# .aiproject or ai-config.yaml
+sdlc:
+  default_workflow: sequential
+
+  role_mapping:
+    analyst: opus
+    architect: opus
+    planner: sonnet
+    implementer: cursor-agent
+    reviewer: opus
+
+  skip_rules:
+    hotfix: [analyze, architect, plan]
+    docs: [analyze, architect, plan, review]
+```
+
+### Override Per Task
+
+```yaml
+# In beads task or prompt
+workflow: iterative
+roles:
+  implementer: claude-sonnet  # Override default
+```
+
+---
+
+## Metrics
+
+Track AI SDLC effectiveness:
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| **First-pass success** | 80%+ | Code passes review without rework |
+| **Context preservation** | 100% | No "what was decided?" questions |
+| **Role accuracy** | 95%+ | Right agent for right task |
+| **Iteration count** | < 3 | Implement-Review loops per feature |
+
+---
+
+## Migration from dual-ide.mdc
+
+If you were using dual-ide workflow:
+
+| Old (dual-ide) | New (ai-sdlc) |
+|----------------|---------------|
+| "Claude Code Opus for analysis" | "ANALYST role with deep reasoning capability" |
+| "Cursor Agent for implementation" | "IMPLEMENTER role with fast coding capability" |
+| "Claude Code Sonnet for planning" | "PLANNER role with task decomposition capability" |
+
+**Key change**: Focus on **what capability** you need, then choose **any agent** that provides it.
+
+---
+
+## Related
+
+- `@skills-patterns` - MCP workflow composition
+- `@beads` - Task tracking integration
+- `@documentation-workflow` - Documentation creation skill

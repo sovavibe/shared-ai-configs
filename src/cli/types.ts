@@ -98,6 +98,7 @@ export interface MCPServerConfig {
   command?: string; // Command to run for stdio-based MCP servers (e.g., "npx", "node")
   args?: string[]; // Command arguments for stdio-based MCP servers
   env?: Record<string, string>; // Environment variables to pass to the MCP server
+  path?: string; // Custom path for MCP servers (e.g., memory_bank.path -> MEMORY_BANK_ROOT)
 }
 
 export interface MCPServiceConfig {

@@ -45,15 +45,6 @@ flowchart TD
     P --> U
     Q --> T
 
-    style I fill:#e1f5ff
-    style J fill:#e1f5ff
-    style L fill:#e1f5ff
-    style O fill:#e1f5ff
-    style M fill:#fff3e0
-    style K fill:#f3e5f5
-    style N fill:#f3e5f5
-    style P fill:#f3e5f5
-    style H fill:#f3e5f5
 ```
 
 ---

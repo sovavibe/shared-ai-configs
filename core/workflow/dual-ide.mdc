@@ -1,10 +1,19 @@
 ---
-description: Dual IDE workflow with Claude Code and Cursor
+description: "[DEPRECATED] Use @ai-sdlc-workflow instead"
 globs: ["**/*"]
-alwaysApply: true
+alwaysApply: false
+deprecated: true
+supersededBy: ai-sdlc-workflow.mdc
 ---
 
 # Dual IDE Workflow: Claude Code + Cursor
+
+> **⚠️ DEPRECATED**: This file is replaced by `@ai-sdlc-workflow`
+>
+> The new workflow uses **role-based** approach (Analyst, Architect, Planner, Implementer, Reviewer)
+> instead of tool-specific approach (Claude Code vs Cursor).
+>
+> **Migration**: See `core/workflow/ai-sdlc-workflow.mdc` for the universal workflow.
 
 ## Split SDLC Between IDEs
 

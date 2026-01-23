@@ -213,7 +213,7 @@ mcp__hindsight-alice__recall "How do we handle [pattern] in this project?"
 | **MCP guide**    | `.claude/MCP-GUIDE.md`                                         |
 | Session protocol | `.claude/SESSION-PROTOCOL.md`                                  |
 | Troubleshooting  | `.claude/TROUBLESHOOTING.md`                                   |
-| SDLC workflow    | `.claude/SDLC-WORKFLOW.md`                                     |
+| AI SDLC workflow | `core/workflow/ai-sdlc-workflow.mdc` (universal roles)         |
 | Hooks config     | `.claude/settings.json`                                        |
 | Cursor rules     | `.cursor/rules/INDEX.mdc` (41 rules, also work in Claude Code) |
 
@@ -236,32 +236,33 @@ curl -X DELETE "http://localhost:8888/v1/default/banks/session"
 5. **Compact context** with `/compact` when responses slow down
 6. **Resume sessions** with `claude --continue` or `claude --resume <name>`
 
-## Multi-Agent Workflow: Claude Code & Cursor Synchronization
+## AI SDLC Workflow (Role-Based)
 
-**CRITICAL:** We work in two IDEs simultaneously. All rules, conventions, and workflows must be identical.
+> **Full documentation**: `core/workflow/ai-sdlc-workflow.mdc`
 
-### Split SDLC Between IDEs
+**Principle:** Assign tasks by **capability needed**, not specific product.
 
-| SDLC Phase | IDE | Model | Use When |
-|-----------|-----|-------|----------|
-| **Analyze** | Claude Code | **Opus** | Breaking down requirements, understanding scope |
-| **Architect** | Claude Code | **Opus** | Design decisions, system architecture, deep analysis |
-| **Plan** | Claude Code | Sonnet | Detailed planning, TodoWrite, task breakdown |
-| **Implement** | **Cursor** | Agent mode | Code generation, fast iterations, automode |
-| **Review** | Claude Code | **Opus** | Code quality, security review, Snyk integration |
-| **Fix Issues** | Claude Code → Cursor | Opus → Agent | Analysis in Opus, implementation in Cursor |
+### SDLC Roles
 
-**Key Principle:**
+| Role | Capability | Example Agents |
+|------|-----------|----------------|
+| **ANALYST** | Deep reasoning, research | Opus, GPT-4o, Gemini Pro |
+| **ARCHITECT** | System design | Opus, Claude with tools |
+| **PLANNER** | Task breakdown | Sonnet, GPT-4 |
+| **IMPLEMENTER** | Fast coding | Cursor Agent, Copilot, Sonnet |
+| **REVIEWER** | Quality check | Opus, Snyk, SonarQube |
 
-- 🧠 **Critical thinking** (architecture, analysis, deep review) = **Claude Code Opus only**
-- 💻 **Implementation** (writing code, tests, iterating) = **Cursor automode**
-- 📋 **Planning** (breaking down, TodoWrite) = **Claude Code Sonnet**
+### Workflow
 
-### Why Split?
+```
+ANALYST → ARCHITECT → PLANNER → IMPLEMENTER → REVIEWER
+```
 
-- **Claude Code Opus:** Best for analysis, architecture, decision-making (context awareness, reasoning depth)
-- **Cursor Agent:** Best for implementation, iteration, code generation (speed, reflex reactions)
-- **Synergy:** Complex analysis in Claude Code → optimized code generation in Cursor
+### Why Role-Based?
+
+- **Flexible**: Any agent can fill any role if it has the capability
+- **Future-proof**: New tools automatically fit into existing workflow
+- **Clear handoffs**: Roles define what context to pass, not which tool to use
 
 ### IDE Synchronization Rules
 

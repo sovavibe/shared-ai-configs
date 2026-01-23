@@ -74,14 +74,6 @@ flowchart TD
     H --> H1[webSearchPrime<br/>webReader<br/>search_doc]
     I --> I1[navigate<br/>computer<br/>read_page]
 
-    style A fill:#e3f2fd
-    style C fill:#ffcdd2
-    style D fill:#c8e6c9
-    style E fill:#fff9c4
-    style F fill:#e1bee7
-    style G fill:#b2dfdb
-    style H fill:#ffe0b2
-    style I fill:#d1c4e9
 ```
 
 ## Configuration in .ai-project.yaml
@@ -161,10 +153,6 @@ flowchart LR
     G --> I
     G --> J
 
-    style A fill:#e8f5e9
-    style H fill:#e3f2fd
-    style I fill:#fff3e0
-    style J fill:#fce4ec
 ```
 
 ### Generation Process Details
@@ -312,10 +300,6 @@ flowchart TD
     D -->|Not Found| E
     E -->|Not Found| F
 
-    style C fill:#c8e6c9
-    style D fill:#e1bee7
-    style E fill:#b3e5fc
-    style F fill:#ffe0b2
 ```
 
 1. **Codebase** - Always check existing patterns first

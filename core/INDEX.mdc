@@ -65,7 +65,8 @@ core/
 | `@communication-style` | Response format           |
 | `@documentation`       | Doc rules                 |
 | `@suppressions`        | ESLint disable            |
-| `@dual-ide`            | Claude + Cursor workflow  |
+| `@ai-sdlc-workflow`    | Universal AI SDLC (roles) |
+| `@dual-ide`            | ~~Deprecated~~ → @ai-sdlc-workflow |
 
 ### Advanced (2026 Patterns)
 

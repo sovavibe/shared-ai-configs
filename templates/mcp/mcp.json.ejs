@@ -46,6 +46,12 @@ function buildMcpServer(config, defaults) {
     Object.assign(envVars, config.env);
   }
 
+  // Handle custom path property -> maps to specific env var
+  // memory_bank.path -> MEMORY_BANK_ROOT
+  if (config.path) {
+    envVars['MEMORY_BANK_ROOT'] = config.path;
+  }
+
   // Add API key from api_key_env
   if (config.api_key_env) {
     const keyName = config.api_key_env.replace(/_/g, '_');
