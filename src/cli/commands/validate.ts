@@ -1,5 +1,6 @@
 import { logger } from '../utils/logger.js';
 import { loadConfig, validateConfig } from '../utils/config.js';
+import { detectStackType, getStackItemArray } from '../utils/stack-helpers.js';
 import type { ValidateOptions } from '../types.js';
 
 export async function validateCommand(options: ValidateOptions): Promise<void> {
@@ -13,10 +14,14 @@ export async function validateCommand(options: ValidateOptions): Promise<void> {
       logger.success('Configuration is valid');
 
       // Show summary
+      const stackType = config.stack.type ?? detectStackType(config.stack) ?? 'unknown';
+      const frameworks = getStackItemArray(config.stack.framework).join(', ') || 'not set';
+
       logger.info('');
       logger.table({
         Project: config.project.name,
-        Stack: config.stack.type,
+        Stack: stackType,
+        Framework: frameworks,
         'Chat language': config.languages?.chat || 'English',
         VCS: config.services?.vcs?.type || 'none',
         'Task tracking': config.services?.task_tracking?.type || 'none',

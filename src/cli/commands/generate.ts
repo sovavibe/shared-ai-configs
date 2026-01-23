@@ -15,6 +15,7 @@ import { fileURLToPath } from 'url';
 import { logger } from '../utils/logger.js';
 import { loadConfig, validateConfig, CONFIG_DEFAULTS } from '../utils/config.js';
 import { renderTemplate } from '../utils/template.js';
+import { stackItemContains, detectStackType } from '../utils/stack-helpers.js';
 import type { GenerateOptions, Config, ClaudeTargetConfig, CursorTargetConfig } from '../types.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -718,14 +719,15 @@ function getRulesToInclude(config: Config): RuleSpec[] {
   }
 
   // Stack-specific rules
-  if (config.stack.type === 'react') {
+  const stackType = config.stack.type ?? detectStackType(config.stack);
+  if (stackType === 'react') {
     const reactRules = [
       'stacks/react/tech-stack.mdc',
       'stacks/react/architecture.mdc',
       'stacks/react/styling.mdc',
     ];
-    // Ant Design rule only if UI library is Ant Design
-    if (config.stack.ui?.library === 'Ant Design') {
+    // Ant Design rule only if UI library contains Ant Design
+    if (stackItemContains(config.stack.ui, 'Ant Design')) {
       reactRules.push('stacks/react/ant-design.mdc');
     }
     for (const rule of reactRules) {

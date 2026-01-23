@@ -2,6 +2,7 @@ import { existsSync, statSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { logger } from '../utils/logger.js';
 import { loadConfig, CONFIG_DEFAULTS } from '../utils/config.js';
+import { detectStackType, getStackItemArray } from '../utils/stack-helpers.js';
 import type { StatusOptions } from '../types.js';
 
 export async function statusCommand(options: StatusOptions): Promise<void> {
@@ -17,12 +18,16 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
   const config = loadConfig(options.config);
 
   // Project info
+  const stackType = config.stack.type ?? detectStackType(config.stack) ?? 'unknown';
+  const frameworks = getStackItemArray(config.stack.framework).join(', ') || 'not set';
+
   logger.info('');
   logger.info('Project:');
   logger.table({
     Name: config.project.name,
     'Short name': config.project.short_name || config.project.name,
-    Stack: config.stack.type,
+    Stack: stackType,
+    Framework: frameworks,
     'Chat language': config.languages?.chat || CONFIG_DEFAULTS.languages.chat,
     'Code language': config.languages?.code || CONFIG_DEFAULTS.languages.code,
   });

@@ -12,35 +12,40 @@ export interface LanguagesConfig {
   code?: 'English';
 }
 
+// Stack items can be arrays of strings (recommended) or legacy object format
+export interface StackItemObject {
+  name?: string;
+  version?: string;
+  tool?: string;
+  library?: string;
+  styling?: string;
+  server?: string;
+  client?: string;
+  codegen?: string;
+  mocks?: string;
+}
+export type StackItem = string[] | StackItemObject;
+
 export interface StackConfig {
-  type: 'react' | 'node' | 'nextjs' | 'java' | 'python';
-  framework?: {
-    name: string;
-    version: string;
-  };
-  language?: {
-    name: string;
-    version: string;
-  };
-  build?: {
-    tool: string;
-    version: string;
-  };
-  state?: {
-    server: string;
-    client: string;
-  };
-  ui?: {
-    library: string;
-    version: string;
-    styling?: string;
-  };
-  api?: {
-    codegen?: string;
-    client?: string;
-    mocks?: string;
-  };
-  testing?: string;
+  /** Stack type for rule selection (auto-detected from framework if not set) */
+  type?: 'react' | 'node' | 'nextjs' | 'java' | 'python';
+  /** Framework(s) with version, e.g. ["React 18"] or { name: "React", version: "18" } */
+  framework?: string[] | { name: string; version: string };
+  /** Language(s) with version, e.g. ["TypeScript 5.5"] */
+  language?: string[] | { name: string; version: string };
+  /** Build tool(s), e.g. ["Vite 5"] */
+  build?: string[] | { tool: string; version: string };
+  /** UI libraries, e.g. ["Ant Design 5", "styled-components"] */
+  ui?: string[] | { library: string; version: string; styling?: string };
+  /** State management, e.g. ["TanStack Query 5", "Zustand 5"] */
+  state?: string[] | { server: string; client: string };
+  /** API tools, e.g. ["Orval 7", "MSW 2"] */
+  api?: string[] | { codegen?: string; client?: string; mocks?: string };
+  /** Testing tools, e.g. ["Vitest"] */
+  testing?: string[] | string;
+  /** Linting tools, e.g. ["ESLint"] */
+  linting?: string[] | string;
+  /** @deprecated Use linting instead */
   linter?: string;
   auth?: string;
   runtime?: string;
@@ -125,14 +130,16 @@ export interface ServicesConfig {
 }
 
 export interface CommandsConfig {
-  dev: string;
-  build: string;
+  dev?: string;
+  build?: string;
   lint?: string;
   test?: string;
-  codegen?: string;
   quality_gates?: string;
   [key: string]: string | undefined;
 }
+
+/** Project-specific commands (not shared across projects) */
+export type CommandsProjectConfig = Record<string, string>;
 
 export interface OptionsConfig {
   dev_server_port?: number;
@@ -227,9 +234,10 @@ export interface Config {
   project: ProjectConfig;
   languages?: LanguagesConfig;
   stack: StackConfig;
-  architecture?: ArchitectureConfig;
+  architecture?: string | ArchitectureConfig;
   services?: ServicesConfig;
-  commands: CommandsConfig;
+  commands?: CommandsConfig;
+  commands_project?: CommandsProjectConfig;
   options?: OptionsConfig;
   rules?: RulesConfig;
   plugins?: PluginsConfig;

@@ -254,40 +254,40 @@ export function getDefaultConfig(projectPath: string, stack: string): Partial<Co
     generation: CONFIG_DEFAULTS.generation,
   };
 
-  // Stack-specific defaults
+  // Stack-specific defaults (using new array format)
   const stackDefaults: Record<string, Partial<Config>> = {
     react: {
       stack: {
         type: 'react',
-        framework: { name: 'React', version: '18' },
-        language: { name: 'TypeScript', version: '5.5' },
-        build: { tool: 'Vite', version: '5' },
-        linter: 'ESLint',
+        framework: ['React 18'],
+        language: ['TypeScript 5.5'],
+        build: ['Vite 5'],
+        linting: ['ESLint'],
       },
     },
     node: {
       stack: {
         type: 'node',
-        framework: { name: 'Node.js', version: '20' },
-        language: { name: 'TypeScript', version: '5.5' },
-        linter: 'ESLint',
+        framework: ['Node.js 20'],
+        language: ['TypeScript 5.5'],
+        linting: ['ESLint'],
       },
     },
     nextjs: {
       stack: {
         type: 'nextjs',
-        framework: { name: 'Next.js', version: '14' },
-        language: { name: 'TypeScript', version: '5.5' },
-        linter: 'ESLint',
+        framework: ['Next.js 14'],
+        language: ['TypeScript 5.5'],
+        linting: ['ESLint'],
       },
     },
     java: {
       stack: {
         type: 'java',
-        framework: { name: 'Spring Boot', version: '3.2' },
-        language: { name: 'Java', version: '21' },
-        build: { tool: 'Maven', version: '3.9' },
-        linter: 'Checkstyle',
+        framework: ['Spring Boot 3.2'],
+        language: ['Java 21'],
+        build: ['Maven 3.9'],
+        linting: ['Checkstyle'],
       },
       commands: {
         dev: 'mvn spring-boot:run',
@@ -299,9 +299,9 @@ export function getDefaultConfig(projectPath: string, stack: string): Partial<Co
     python: {
       stack: {
         type: 'python',
-        framework: { name: 'FastAPI', version: '0.109' },
-        language: { name: 'Python', version: '3.12' },
-        linter: 'Ruff',
+        framework: ['FastAPI 0.109'],
+        language: ['Python 3.12'],
+        linting: ['Ruff'],
       },
       commands: {
         dev: 'uvicorn main:app --reload',

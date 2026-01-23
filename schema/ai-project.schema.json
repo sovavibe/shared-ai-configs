@@ -35,66 +35,135 @@
     },
     "stack": {
       "type": "object",
-      "required": ["type"],
+      "description": "Technology stack - supports both array format (recommended) and object format (legacy)",
       "properties": {
-        "type": { "type": "string", "enum": ["react", "node", "java", "python", "nextjs"] },
         "framework": {
-          "type": "object",
-          "properties": {
-            "name": { "type": "string" },
-            "version": { "type": "string" }
-          }
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Framework(s) with version, e.g. ['React 18', 'Next.js 14']"
+            },
+            {
+              "type": "object",
+              "properties": { "name": { "type": "string" }, "version": { "type": "string" } }
+            }
+          ]
         },
         "language": {
-          "type": "object",
-          "properties": {
-            "name": { "type": "string" },
-            "version": { "type": "string" }
-          }
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Language(s) with version, e.g. ['TypeScript 5.5']"
+            },
+            {
+              "type": "object",
+              "properties": { "name": { "type": "string" }, "version": { "type": "string" } }
+            }
+          ]
         },
         "build": {
-          "type": "object",
-          "properties": {
-            "tool": { "type": "string" },
-            "version": { "type": "string" }
-          }
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Build tool(s), e.g. ['Vite 5']"
+            },
+            {
+              "type": "object",
+              "properties": { "tool": { "type": "string" }, "version": { "type": "string" } }
+            }
+          ]
         },
         "ui": {
-          "type": "object",
-          "properties": {
-            "library": { "type": "string" },
-            "version": { "type": "string" },
-            "styling": { "type": "string" }
-          }
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "UI libraries, e.g. ['Ant Design 5', 'styled-components']"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "library": { "type": "string" },
+                "version": { "type": "string" },
+                "styling": { "type": "string" }
+              }
+            }
+          ]
         },
         "state": {
-          "type": "object",
-          "properties": {
-            "server": { "type": "string" },
-            "client": { "type": "string" }
-          }
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "State management, e.g. ['TanStack Query 5', 'Zustand 5']"
+            },
+            {
+              "type": "object",
+              "properties": { "server": { "type": "string" }, "client": { "type": "string" } }
+            }
+          ]
         },
         "api": {
-          "type": "object",
-          "properties": {
-            "codegen": { "type": "string" },
-            "client": { "type": "string" },
-            "mocks": { "type": "string" }
-          }
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "API tools, e.g. ['Orval 7', 'MSW 2']"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "codegen": { "type": "string" },
+                "client": { "type": "string" },
+                "mocks": { "type": "string" }
+              }
+            }
+          ]
         },
-        "testing": { "type": "string" },
-        "linter": { "type": "string" },
+        "testing": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Testing tools, e.g. ['Vitest', 'Testing Library']"
+            },
+            { "type": "string" }
+          ]
+        },
+        "linting": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Linting tools, e.g. ['ESLint', 'Prettier']"
+            },
+            { "type": "string" }
+          ]
+        },
+        "linter": { "type": "string", "description": "Legacy: use 'linting' array instead" },
         "auth": { "type": "string" },
         "runtime": { "type": "string" }
       }
     },
     "architecture": {
-      "type": "object",
-      "properties": {
-        "type": { "type": "string", "enum": ["FSD", "Clean", "Layered", "Modular"] },
-        "structure": { "type": "string", "description": "ASCII tree of project structure" },
-        "import_rule": { "type": "string" }
-      }
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["FSD", "Clean", "Layered", "Modular"],
+          "description": "Architecture pattern name"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["FSD", "Clean", "Layered", "Modular"] },
+            "structure": { "type": "string", "description": "ASCII tree of project structure" },
+            "import_rule": { "type": "string" }
+          }
+        }
+      ]
     },
     "services": {
       "type": "object",
@@ -184,17 +253,25 @@
     },
     "commands": {
       "type": "object",
-      "description": "Project CLI commands (just strings, generator doesn't interpret them)",
-      "required": ["dev", "build"],
+      "description": "Standard project CLI commands (shared across projects)",
       "properties": {
-        "dev": { "type": "string", "description": "Development server" },
-        "build": { "type": "string", "description": "Production build" },
-        "lint": { "type": "string" },
-        "test": { "type": "string" },
-        "codegen": { "type": "string" },
-        "quality_gates": { "type": "string" }
+        "dev": { "type": "string", "description": "Development server", "default": "npm run dev" },
+        "build": {
+          "type": "string",
+          "description": "Production build",
+          "default": "npm run build"
+        },
+        "lint": { "type": "string", "default": "npm run lint" },
+        "test": { "type": "string", "default": "npm run test" },
+        "quality_gates": { "type": "string", "default": "npm run quality:gates" }
       },
       "additionalProperties": { "type": "string" }
+    },
+    "commands_project": {
+      "type": "object",
+      "description": "Project-specific commands (not shared, unique to this project)",
+      "additionalProperties": { "type": "string" },
+      "examples": [{ "codegen": "npm run codegen" }, { "mocks_init": "npm run mocks:init" }]
     },
     "options": {
       "type": "object",
