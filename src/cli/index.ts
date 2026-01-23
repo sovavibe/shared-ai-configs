@@ -4,6 +4,7 @@ import { generateCommand } from './commands/generate.js';
 import { validateCommand } from './commands/validate.js';
 import { doctorCommand } from './commands/doctor.js';
 import { statusCommand } from './commands/status.js';
+import { cleanCommand } from './commands/clean.js';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -52,5 +53,13 @@ program
   .description('Show current configuration status')
   .option('-c, --config <path>', 'Path to config file', '.ai-project.yaml')
   .action(statusCommand);
+
+program
+  .command('clean')
+  .description('Remove all generated AI configuration files')
+  .option('-o, --output <dir>', 'Directory to clean', '.')
+  .option('--dry-run', 'Show what would be removed without deleting')
+  .option('--all', 'Also remove .env.aiproject (contains API keys)')
+  .action(cleanCommand);
 
 program.parse();
