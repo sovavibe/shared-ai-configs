@@ -9,36 +9,40 @@ alwaysApply: false
 
 ## Quick Decision Tree
 
-```
-What do you need?
-│
-├─ TASK CONTEXT
-│  └─ Use: Beads (bd ready, bd show <id>)
-│
-├─ FIND FILES
-│  ├─ By name/pattern → Glob ("*.tsx", "src/**/api/*")
-│  └─ By content → Grep (pattern search)
-│
-├─ FIND CODE PATTERNS
-│  ├─ Exact match → Grep ("useQuery.*queryKey")
-│  └─ Similar implementations → Semantic search (Cursor built-in)
-│
-├─ LIBRARY DOCUMENTATION
-│  └─ Use: Context7 (resolve-library-id → get-library-docs)
-│
-├─ PAST DECISIONS/PATTERNS
-│  └─ Use: Hindsight (recall for facts, reflect for analysis)
-│
-├─ TEAM/EXTERNAL TASKS (JIRA)
-│  ├─ Check: .ai-project.yaml → services.task_tracking.integration_mode
-│  ├─ MCP mode → mcp-atlassian (jira_search, jira_create_issue)
-│  └─ CLI mode → jira issue list/create/move (Bash)
-│
-├─ EXTERNAL INFORMATION
-│  └─ Use: WebSearch
-│
-└─ SECURITY SCAN
-   └─ Use: Snyk (snyk_code_scan, snyk_sca_scan)
+```mermaid
+flowchart TD
+    A[What do you need?] --> B{Task Context?}
+    A --> C{Find Files?}
+    A --> D{Code Patterns?}
+    A --> E{Library Docs?}
+    A --> F{Past Decisions?}
+    A --> G{Jira Tasks?}
+    A --> H{External Info?}
+    A --> I{Security Scan?}
+
+    B --> B1[Beads: bd ready, bd show]
+
+    C --> C1{By name?}
+    C --> C2{By content?}
+    C1 --> C1a[Glob: *.tsx]
+    C2 --> C2a[Grep: pattern]
+
+    D --> D1{Exact match?}
+    D --> D2{Similar code?}
+    D1 --> D1a[Grep: useQuery.*queryKey]
+    D2 --> D2a[Semantic Search]
+
+    E --> E1[Context7: resolve-library-id]
+
+    F --> F1[Hindsight: recall/reflect]
+
+    G --> G1{Check integration_mode}
+    G1 --> G2[MCP: mcp-atlassian]
+    G1 --> G3[CLI: jira issue ...]
+
+    H --> H1[WebSearch]
+
+    I --> I1[Snyk: snyk_code_scan]
 ```
 
 ## MCP Tool Selection Matrix

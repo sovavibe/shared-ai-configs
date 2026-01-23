@@ -8,6 +8,23 @@ alwaysApply: true
 
 ## Split SDLC Between IDEs
 
+```mermaid
+graph LR
+    A[Analyze<br/>Opus] --> B[Architect<br/>Opus]
+    B --> C[Plan<br/>Sonnet]
+    C --> D[Implement<br/>Cursor Agent]
+    D --> E[Review<br/>Opus]
+    E --> F{Issues?}
+    F -->|Yes| D
+    F -->|No| G[✅ Done]
+
+    style A fill:#e3f2fd
+    style B fill:#e3f2fd
+    style C fill:#f3e5f5
+    style D fill:#fff3e0
+    style E fill:#e3f2fd
+```
+
 | SDLC Phase | IDE | Model | Use When |
 |-----------|-----|-------|----------|
 | **Analyze** | Claude Code | **Opus** | Breaking down requirements, understanding scope |

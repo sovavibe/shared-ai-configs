@@ -14,32 +14,47 @@ Architecture guidelines and patterns for this project.
 
 ### FSD (Feature-Sliced Design)
 
-```
-src/
-├── app/       # Entry, providers, router
-├── pages/     # Route pages
-├── widgets/   # Cross-page UI
-├── shared/    # Reusable (api/, ui/, utils/)
-└── entities/  # Domain entities
+```mermaid
+graph TB
+    subgraph src[" src/ "]
+        app[app/<br/>Entry, providers, router]
+        pages[pages/<br/>Route pages]
+        widgets[widgets/<br/>Cross-page UI]
+        shared[shared/<br/>api/, ui/, utils/]
+        entities[entities/<br/>Domain entities]
+    end
+
+    app --> pages
+    pages --> widgets
+    widgets --> shared
+    widgets --> entities
+    entities --> shared
 ```
 
 ### Layered Architecture
 
-```
-Presentation Layer
-├── Components
-├── Pages
-└── Widgets
+```mermaid
+graph TB
+    subgraph Presentation["Presentation Layer"]
+        C[Components]
+        P[Pages]
+        W[Widgets]
+    end
 
-Business Logic Layer
-├── Services
-├── Use Cases
-└── Repositories
+    subgraph Business["Business Logic Layer"]
+        S[Services]
+        UC[Use Cases]
+        R[Repositories]
+    end
 
-Data Layer
-├── API Clients
-├── Data Sources
-└── Models
+    subgraph Data["Data Layer"]
+        API[API Clients]
+        DS[Data Sources]
+        M[Models]
+    end
+
+    Presentation --> Business
+    Business --> Data
 ```
 
 ## Design Patterns
