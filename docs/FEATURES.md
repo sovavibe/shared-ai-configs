@@ -221,9 +221,6 @@ SNYK_TOKEN=
 FIGMA_API_KEY=
 Z_AI_API_KEY=
 
-# Task tracking
-BD_ENABLED=1
-
 # VCS
 GITLAB_TOKEN=glpat-xxxxxxxxxxxx
 ```

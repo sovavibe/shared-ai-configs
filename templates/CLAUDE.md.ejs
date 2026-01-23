@@ -215,7 +215,7 @@ graph LR
 <% if (isTaskTracking('beads')) { -%>
 ### Beads Sync (AI-Assisted)
 
-**Environment:** `BD_ENABLED=1` in `.env.development.local` enables integration.
+**Auto-detection:** Beads integration is automatically enabled when `.beads/` directory exists.
 
 **AI should automatically:**
 
@@ -224,7 +224,7 @@ graph LR
 3. **When completing work:** `bd close <id>` + `bd sync --flush-only`
 4. **Before commit:** ensure `bd sync --flush-only` is executed
 
-**For colleagues WITHOUT BD_ENABLED:** beads is invisible, `issues.jsonl` file doesn't change in their commits.
+**For colleagues without beads CLI:** beads is invisible, `issues.jsonl` file doesn't change in their commits.
 
 <% } -%>
 <% } -%>
@@ -597,7 +597,7 @@ curl -X DELETE "http://localhost:8888/v1/default/banks/session"
 1. **Rules Parity:** All 41 rules from `<%= (services.ide?.paths?.cursor || '.cursor/') + 'rules/' %>INDEX.mdc` apply to both IDEs
 2. **Git Workflow:** Both IDEs use stealth mode (no auto-push, no auto-commit)
 <% if (services.task_tracking.type !== 'none') { -%>
-3. **<%= services.task_tracking.type %> Integration:** Both IDEs use `BD_ENABLED=1` for issue tracking
+3. **<%= services.task_tracking.type %> Integration:** Both IDEs auto-detect `.beads/` directory for issue tracking
 <% } -%>
 4. **Quality Gates:** Both IDEs enforce `<%- commands.quality_gates %>` before commit
 5. **Changes Sync:** Updates to `<%= (services.ide?.paths?.cursor || '.cursor/') + 'rules/' %>` must be reflected in `<%= services.ide.paths.claude %>` documentation

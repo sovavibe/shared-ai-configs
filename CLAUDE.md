@@ -1,6 +1,6 @@
 # Claude Code Instructions
 
-> Full-Stack DevTools Engineer | Commander.js 12 | TypeScript 5.3
+> Full-Stack DevTools Engineer
 
 ## CRITICAL: Non-Negotiable Rules
 
@@ -9,10 +9,12 @@
 1. **NEVER** hardcode secrets - use environment variables
 2. **NEVER** skip quality gates (`--no-verify`, `HUSKY=0`)
 3. **NEVER** use destructive git commands (`reset --hard`, `clean -fd`) without user approval
-4. **ALWAYS** run `npm run quality` before committing
-5. **ALWAYS** use beads for task tracking
+4. **NEVER** edit content in dist/ - it's generated
+5. **ALWAYS** run `npm run quality` before committing
 6. **ALWAYS** search existing solutions first (codebase, deps, docs)
 7. **ALWAYS** communicate in Russian (code comments in English)
+8. **ALWAYS** follow import rule: commands → utils → types (never reverse)
+9. **ALWAYS** use beads for task tracking
 
 ## Quick Start
 
@@ -21,7 +23,7 @@
 npm run watch           # Dev server ()
 npm run quality # MANDATORY before commit
        # Generate API types
-bd ready              # Check available work
+              # Check available work
 ```
 
 **Keyboard shortcuts:**
@@ -34,22 +36,7 @@ bd ready              # Check available work
 
 **shared-ai-configs** - NPM package for generating AI-assisted development configurations for Claude Code and Cursor IDE
 
-```text
-src/cli/
-├── commands/      # init, generate, validate, status, doctor
-├── utils/         # config, template, logger
-└── types.ts       # TypeScript interfaces
-core/              # Universal .mdc rules (28 files)
-stacks/            # Stack-specific rules (react/, node/)
-integrations/      # Tool integrations (beads/, github/, gitlab/)
-templates/         # EJS templates for generation
-content/           # Commands, skills, agents, notepads
-hooks/             # Shell/JS hooks for Claude/Cursor
-schema/            # JSON Schema for .ai-project.yaml
-
-```
-
-**Stack:** tsc | Commander.js 12 | TypeScript 5.3 | Vitest
+**Stack:** | Vitest
 
 ## Workflow Commands
 
@@ -58,32 +45,19 @@ schema/            # JSON Schema for .ai-project.yaml
 ```bash
 npm run watch           # Dev server
 npm run build         # Production build
-npm run lint          # ESLint
+npm run lint          # 
 npm run test          # Vitest
        # Generate API (Codegen)
 ```
 
-### Task Management (beads)
+### Task Management ()
 
 ```bash
-bd ready                           # Find available work
-bd update <id> --status=in_progress # Claim task
-bd close <id>                      # Complete task
-bd sync --flush-only               # Export to JSONL
+                           # Find available work
+ <id> --status=in_progress # Claim task
+ <id>                      # Complete task
+               # Export to JSONL
 ```
-
-### Beads Sync (AI-Assisted)
-
-**Environment:** `BD_ENABLED=1` in `.env.development.local` enables integration.
-
-**AI should automatically:**
-
-1. **At session start:** `bd ready` + `bd blocked` for context
-2. **When creating tasks:** `bd create --title="..." --type=task`
-3. **When completing work:** `bd close <id>` + `bd sync --flush-only`
-4. **Before commit:** ensure `bd sync --flush-only` is executed
-
-**For colleagues WITHOUT BD_ENABLED:** beads is invisible, `issues.jsonl` file doesn't change in their commits.
 
 ### Session End (MANDATORY)
 
@@ -95,7 +69,7 @@ npm run quality
 
 # 3. Only after gates pass:
 git add <files> && git commit -m "type(scope): description"
-bd sync --flush-only
+
 ```
 
 ## Memory & Context
@@ -105,7 +79,7 @@ bd sync --flush-only
 The session-start hook automatically loads context. Manually refresh with:
 
 ```bash
-bd ready                                    # Available tasks
+                                    # Available tasks
 mcp__hindsight-alice__recall "sac project context"
 /mcp                                        # Check server health
 ```
@@ -121,7 +95,7 @@ mcp__hindsight-alice__recall "sac project context"
 
 ```bash
 mcp__hindsight-alice__retain "Session summary: [what was done]"
-bd sync --flush-only
+
 ```
 
 ## Context Handoff Protocol (Claude Code ↔ Cursor)
@@ -140,11 +114,11 @@ graph LR
 
 ```yaml
 # .claude/context-handoff/current.md
-phase: 'implementation'
-task_id: 'SAC-xyz'
+phase: "implementation"
+task_id: "xyz"
 scope: "Only modify src/pages/auth/ - don't touch generated API"
-api_contract: 'docs/API-CONTRACT.md'
-test_plan: 'docs/TEST-PLAN.md'
+api_contract: "docs/API-CONTRACT.md"
+test_plan: "docs/TEST-PLAN.md"
 ```
 
 ## SDLC Workflow
@@ -170,18 +144,18 @@ graph LR
 
 **Full guide:** `docs/guides/mcp-tools-complete.md`
 
-| Server               | Tools                                         | Use For             |
-| -------------------- | --------------------------------------------- | ------------------- |
-| **hindsight-alice**  | `recall`, `reflect`, `retain`                 | Long-term memory    |
-| **MCP_DOCKER**       | Context7, Jira, Confluence                    | Docs & project mgmt |
-| **zread**            | `search_doc`, `read_file`                     | GitHub repos        |
-| **Figma**            | `get_design_context`                          | Design to code      |
-| **zai-mcp-server**   | `ui_to_artifact`, `diagnose_error_screenshot` | Image analysis      |
-| **claude-in-chrome** | `navigate`, `computer`, `read_page`           | Browser automation  |
+| Server               | Tools                                         | Use For                          |
+| -------------------- | --------------------------------------------- | -------------------------------- |
+| **hindsight-alice**  | `recall`, `reflect`, `retain`                 | Long-term memory                 |
+| **MCP_DOCKER**       | Context7, Jira, Confluence                    | Docs & project mgmt              |
+| **zread**            | `search_doc`, `read_file`                     | GitHub repos                     |
+| **Figma**            | `get_design_context`                          | Design to code                   |
+| **zai-mcp-server**   | `ui_to_artifact`, `diagnose_error_screenshot` | Image analysis                   |
+| **claude-in-chrome** | `navigate`, `computer`, `read_page`           | Browser automation               |
 
 ### MCP Priority Order
 
-1. **beads** → Task context (`bd ready`)
+1. **** → Task context (``)
 2. **Codebase** → Existing patterns (Glob, Grep)
 3. **Hindsight** → Past decisions (`recall`, `reflect`)
 4. **Context7** → Library docs (`resolve-library-id` → `get-library-docs`)
@@ -247,7 +221,7 @@ mcp__hindsight-alice__recall "How do we handle [pattern] in this project?"
 
 ```bash
 # Quick cleanup - delete temp banks, prune old docs
-bd sync --flush-only
+
 CUTOFF=$(date -v-7d +%Y-%m-%d)
 curl -X DELETE "http://localhost:8888/v1/default/banks/reflections"
 curl -X DELETE "http://localhost:8888/v1/default/banks/session"
@@ -268,14 +242,14 @@ curl -X DELETE "http://localhost:8888/v1/default/banks/session"
 
 ### Split SDLC Between IDEs
 
-| SDLC Phase     | IDE                  | Model        | Use When                                             |
-| -------------- | -------------------- | ------------ | ---------------------------------------------------- |
-| **Analyze**    | Claude Code          | **Opus**     | Breaking down requirements, understanding scope      |
-| **Architect**  | Claude Code          | **Opus**     | Design decisions, system architecture, deep analysis |
-| **Plan**       | Claude Code          | Sonnet       | Detailed planning, TodoWrite, task breakdown         |
-| **Implement**  | **Cursor**           | Agent mode   | Code generation, fast iterations, automode           |
-| **Review**     | Claude Code          | **Opus**     | Code quality, security review, Snyk integration      |
-| **Fix Issues** | Claude Code → Cursor | Opus → Agent | Analysis in Opus, implementation in Cursor           |
+| SDLC Phase | IDE | Model | Use When |
+|-----------|-----|-------|----------|
+| **Analyze** | Claude Code | **Opus** | Breaking down requirements, understanding scope |
+| **Architect** | Claude Code | **Opus** | Design decisions, system architecture, deep analysis |
+| **Plan** | Claude Code | Sonnet | Detailed planning, TodoWrite, task breakdown |
+| **Implement** | **Cursor** | Agent mode | Code generation, fast iterations, automode |
+| **Review** | Claude Code | **Opus** | Code quality, security review, Snyk integration |
+| **Fix Issues** | Claude Code → Cursor | Opus → Agent | Analysis in Opus, implementation in Cursor |
 
 **Key Principle:**
 
@@ -293,7 +267,7 @@ curl -X DELETE "http://localhost:8888/v1/default/banks/session"
 
 1. **Rules Parity:** All 41 rules from `.cursor/rules/INDEX.mdc` apply to both IDEs
 2. **Git Workflow:** Both IDEs use stealth mode (no auto-push, no auto-commit)
-3. **beads Integration:** Both IDEs use `BD_ENABLED=1` for issue tracking
+3. **Integration:** Both IDEs auto-detect `.beads/` directory for issue tracking
 4. **Quality Gates:** Both IDEs enforce `npm run quality` before commit
 5. **Changes Sync:** Updates to `.cursor/rules/` must be reflected in `.claude/` documentation
 
@@ -324,4 +298,4 @@ curl -X DELETE "http://localhost:8888/v1/default/banks/session"
 
 ---
 
-_Code style enforced by ESLint - no need to memorize rules._
+_Code style enforced by  - no need to memorize rules._

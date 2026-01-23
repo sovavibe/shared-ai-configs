@@ -16,6 +16,11 @@ vi.mock('fs', () => ({
   rmSync: vi.fn(),
 }));
 
+// Mock child_process for beads initialization
+vi.mock('child_process', () => ({
+  execSync: vi.fn(),
+}));
+
 // Mock the logger to prevent console output during tests
 vi.mock('../utils/logger.js', () => ({
   logger: {

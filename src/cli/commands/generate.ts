@@ -12,6 +12,7 @@ import {
 } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 import { logger } from '../utils/logger.js';
 import { loadConfig, validateConfig, CONFIG_DEFAULTS } from '../utils/config.js';
 import { renderTemplate } from '../utils/template.js';
@@ -189,6 +190,9 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
   ) {
     const results = await generateBeadsDir(config, outputDir, options);
     generatedFiles.push(...results);
+
+    // Auto-initialize beads database if not exists
+    await initializeBeadsIfNeeded(config, outputDir, options);
   }
 
   // .perles/ if orchestration is enabled AND any IDE is active
@@ -854,6 +858,57 @@ async function generateBeadsDir(
   }
 
   return results;
+}
+
+/**
+ * Initialize beads database if .beads/ directory exists but beads.db doesn't
+ */
+async function initializeBeadsIfNeeded(
+  config: Config,
+  outputDir: string,
+  options: GenerateOptions
+): Promise<void> {
+  const beadsPath =
+    config.services?.task_tracking?.paths?.beads ||
+    CONFIG_DEFAULTS.services.task_tracking.paths.beads;
+  const beadsDir = join(outputDir, beadsPath);
+  const beadsDb = join(beadsDir, 'beads.db');
+
+  // Skip if db already exists
+  if (existsSync(beadsDb)) {
+    logger.info('Beads database already initialized');
+    return;
+  }
+
+  // Skip if dry run
+  if (options.dryRun) {
+    logger.info('Would initialize beads database');
+    return;
+  }
+
+  // Check if bd CLI is available
+  try {
+    execSync('which bd', { stdio: 'ignore' });
+  } catch {
+    logger.warn(
+      'Beads CLI (bd) not found. Install with: npm install -g @beads/cli or brew install beads'
+    );
+    return;
+  }
+
+  // Initialize beads
+  try {
+    logger.info('Initializing beads database...');
+    execSync('bd init', {
+      cwd: outputDir,
+      stdio: 'inherit',
+    });
+    logger.success('✓ Beads database initialized (.beads/beads.db created)');
+  } catch (error) {
+    const err = error as Error;
+    logger.warn(`Failed to initialize beads: ${err.message}`);
+    logger.info('You can manually initialize later with: bd init');
+  }
 }
 
 // ============================================================================

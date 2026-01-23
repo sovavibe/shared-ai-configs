@@ -15,7 +15,7 @@ Complete guide to task management system integrated into your CLI workflow.
 **Covers:**
 
 - What Beads is and why we use it over Jira/GitHub Issues
-- Setup: Enabling `BD_ENABLED=1`
+- Setup: Auto-detection via `.beads/` directory
 - Creating tasks: `bd create` with all options
 - Updating status: Moving tasks through workflow
 - Viewing and filtering: Finding your work
@@ -126,7 +126,7 @@ Complete guide to automatic code quality verification: ESLint, TypeScript, Tests
 | "Type 'string \| undefined' is not assignable" | Quality Gates | "TypeScript Failures" |
 | "High entropy string detected" | Quality Gates | "Secretlint Failures" |
 | "Beads not found" command | Beads | "Troubleshooting Common Issues" |
-| "BD_ENABLED=1 not working" | Beads | "Issue 2: BD_ENABLED=1 not working" |
+| "beads auto-detection not working" | Beads | "Issue 2: beads auto-detection not working" |
 | "How do I recall past decisions?" | MCP | "Hindsight: Multi-Session Memory" |
 | "Need second opinion on design" | MCP | "PAL: External Models" |
 | "Task blocked by other task" | Beads | "Dependencies and Blocking" |
@@ -208,7 +208,7 @@ MCP (all) ←→ Context Handoff
 | File | Purpose | Related Docs |
 |------|---------|--------------|
 | `.beads/issues.jsonl` | Beads database | Beads Integration |
-| `.env.development.local` | Enable BD_ENABLED=1 | Beads Integration |
+| `.env.development.local` | Enable beads auto-detection | Beads Integration |
 | `.husky/pre-commit` | Quality gates trigger | Quality Gates |
 | `tsconfig.json` | TypeScript config | Quality Gates |
 | `.eslintrc` | ESLint config | Quality Gates |
@@ -222,7 +222,7 @@ MCP (all) ←→ Context Handoff
 
 ```bash
 # 1. Enable Beads integration
-echo "BD_ENABLED=1" >> .env.development.local
+echo "beads auto-detection" >> .env.development.local
 
 # 2. Verify tools
 bd status           # Should show "Ready"

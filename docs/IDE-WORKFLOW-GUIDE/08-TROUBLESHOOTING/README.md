@@ -274,13 +274,15 @@ cat issues.jsonl | jq '.' | head -20
 **Recovery (15 min):**
 
 ```bash
-# Step 1: Verify Beads is enabled
-echo $BD_ENABLED              # Should be 1
-# If not:
-export BD_ENABLED=1
+# Step 1: Verify .beads/ directory exists
+ls -la .beads/
+# If missing, initialize
+bd init
+
+# Step 2: Load beads context
 bd prime
 
-# Step 2: Check Beads permission
+# Step 3: Check Beads permission
 ls -la .beads/
 # Should be writable (not 000)
 

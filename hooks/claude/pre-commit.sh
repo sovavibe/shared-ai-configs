@@ -14,14 +14,12 @@ if [ -f ".env.development.local" ]; then
     export $(grep -v '^#' .env.development.local | xargs) 2>/dev/null || true
 fi
 
-# Beads sync (only if BD_ENABLED)
-if [ "$BD_ENABLED" = "1" ] || [ "$BD_ENABLED" = "true" ]; then
-    if command -v bd &> /dev/null && [ -f ".beads/issues.jsonl" ]; then
-        echo -e "${YELLOW}[Pre-commit]${NC} Syncing beads..."
-        bd sync --flush-only 2>/dev/null || true
-        git add .beads/issues.jsonl 2>/dev/null || true
-        echo -e "${GREEN}[Beads]${NC} Synced"
-    fi
+# Beads sync (auto-detect if .beads/ exists)
+if [ -d ".beads" ] && command -v bd &> /dev/null && [ -f ".beads/issues.jsonl" ]; then
+    echo -e "${YELLOW}[Pre-commit]${NC} Syncing beads..."
+    bd sync --flush-only 2>/dev/null || true
+    git add .beads/issues.jsonl 2>/dev/null || true
+    echo -e "${GREEN}[Beads]${NC} Synced"
 fi
 
 echo -e "${YELLOW}[Pre-commit]${NC} Running quality gates..."

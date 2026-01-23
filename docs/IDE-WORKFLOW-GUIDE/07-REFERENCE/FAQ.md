@@ -73,7 +73,7 @@ Beads is AI-integrated task tracking that syncs work between your IDE and the te
 - Export to JSONL for team visibility
 - Auto-close when work completes
 
-**Enable:** Set `BD_ENABLED=1` in `.env.development.local`
+**Enable:** Auto-detects when `.beads/` directory exists (run `bd init` to create)
 
 **See:** CLAUDE.md → Task Management
 
@@ -711,9 +711,9 @@ Shows all available tasks sorted by priority.
 ### Q: Can non-Beads users see my work?
 
 **A:**
-Yes! If they enable Beads (`BD_ENABLED=1`), they see your work in `issues.jsonl`.
+Yes! If they initialize Beads (`.beads/` directory exists), they see your work in `issues.jsonl`.
 
-If not enabled, invisible to them. They use other task tracking (Jira, GitHub issues).
+If not initialized, invisible to them. They use other task tracking (Jira, GitHub issues).
 
 **See:** CLAUDE.md → Beads Integration
 
@@ -728,7 +728,6 @@ Create `.env.development.local` (gitignored):
 
 ```
 VITE_API_URL=http://localhost:3000
-BD_ENABLED=1
 REACT_QUERY_DEVTOOLS=true
 ```
 
@@ -742,13 +741,13 @@ REACT_QUERY_DEVTOOLS=true
 
 **A:**
 
-1. Add to `.env.development.local`:
+1. Initialize beads in your project:
 
-   ```
-   BD_ENABLED=1
+   ```bash
+   bd init
    ```
 
-2. Restart Claude Code
+2. Restart Claude Code (hooks will auto-detect `.beads/` directory)
 3. Verify with `bd ready`
 
 **See:** CLAUDE.md → Beads Integration

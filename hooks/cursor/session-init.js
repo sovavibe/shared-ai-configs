@@ -32,17 +32,18 @@ async function main() {
     // Ignore parse errors
   }
 
-  // Check BD_ENABLED from environment
-  const bdEnabled = process.env.BD_ENABLED === '1' || process.env.BD_ENABLED === 'true';
+  // Auto-detect beads integration (.beads/ directory)
+  const fs = require('fs');
+  const beadsEnabled = fs.existsSync('.beads');
 
   // Suggest context loading
-  const beadsSection = bdEnabled
-    ? `**Beads (BD_ENABLED=1):**
+  const beadsSection = beadsEnabled
+    ? `**Beads (.beads/ detected):**
 1. \`bd ready\` - Check available work
 2. \`bd blocked\` - Check blocked tasks
 3. Claim: \`bd update <id> --status=in_progress\`
 4. Complete: \`bd close <id>\` + \`bd sync --flush-only\``
-    : `**Beads:** BD_ENABLED not set, beads integration disabled`;
+    : `**Beads:** No .beads/ directory, beads integration disabled`;
 
   const response = {
     followup_message: `## Session Ready

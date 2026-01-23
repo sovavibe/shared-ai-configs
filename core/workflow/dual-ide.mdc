@@ -17,12 +17,6 @@ graph LR
     E --> F{Issues?}
     F -->|Yes| D
     F -->|No| G[✅ Done]
-
-    style A fill:#e3f2fd
-    style B fill:#e3f2fd
-    style C fill:#f3e5f5
-    style D fill:#fff3e0
-    style E fill:#e3f2fd
 ```
 
 | SDLC Phase | IDE | Model | Use When |
@@ -50,7 +44,7 @@ graph LR
 
 1. **Rules Parity:** All rules from `.cursor/rules/` apply to both IDEs
 2. **Git Workflow:** Both IDEs use stealth mode (no auto-push, no auto-commit)
-3. **Beads Integration:** Both IDEs use `BD_ENABLED=1` for issue tracking
+3. **Beads Integration:** Both IDEs auto-detect `.beads/` directory for issue tracking
 4. **Quality Gates:** Both IDEs enforce `npm run quality:gates` before commit
 5. **Changes Sync:** Updates to `.cursor/rules/` must be reflected in `.claude/` documentation
 

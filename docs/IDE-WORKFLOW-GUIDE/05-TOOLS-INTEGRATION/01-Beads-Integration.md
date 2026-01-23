@@ -47,18 +47,18 @@ Beads is a **task database tightly integrated into your CLI workflow**. It lives
 
 ---
 
-## Setup: Enable BD_ENABLED=1
+## Setup: Beads Auto-Detection
 
-### Step 1: Create `.env.development.local`
+### Step 1: Verify `.beads/` Directory Exists
 
 ```bash
 cd /Users/ap/work/Front
 
-# Create file if not exists
-touch .env.development.local
+# Check if .beads/ exists
+ls -la .beads/
 
-# Add:
-BD_ENABLED=1
+# If not, initialize beads
+bd init
 ```
 
 ### Step 2: Verify Setup
@@ -87,9 +87,9 @@ bd ready
 # - beads-125: Refactor API client
 ```
 
-### What BD_ENABLED=1 Does
+### What Auto-Detection Does
 
-When enabled:
+When `.beads/` exists:
 
 - **Claude Code auto-loads** `bd ready` at session start
 - **Cursor can reference** `@beads-123` in prompts
@@ -97,12 +97,12 @@ When enabled:
 - **Syncing works**: `bd sync --flush-only` exports to CI/CD
 - **Team collaboration**: `bd push`/`bd pull` shares task status
 
-When disabled (default):
+When `.beads/` doesn't exist:
 
-- Beads still works (CLI commands)
+- Beads CLI still available
 - But IDE integration is silent
 - Auto-syncing on commit doesn't happen
-- Team can't see your progress
+- Run `bd init` to enable integration
 
 ---
 
@@ -751,22 +751,22 @@ npm install -g @beads/cli
 bd status
 ```
 
-### Issue 2: BD_ENABLED=1 not working
+### Issue 2: Beads integration not working
 
-**Problem:** Even with `.env.development.local`, Beads isn't auto-loading
+**Problem:** Beads isn't auto-loading in Claude Code or Cursor
 
 **Solution:**
 
 ```bash
-# Verify file exists
-cat .env.development.local
-# Should show: BD_ENABLED=1
+# Verify .beads/ directory exists
+ls -la .beads/
+# Should show: beads.db, issues.jsonl, config.yaml
 
-# Check if it's in .gitignore (it should be)
-grep ".env.development.local" .gitignore
+# If missing, initialize beads
+bd init
 
 # Restart Claude Code completely
-# Sometimes environment variables need a fresh start
+# Session hooks need to detect .beads/ directory
 
 # Test manually
 bd ready

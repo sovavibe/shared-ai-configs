@@ -193,13 +193,14 @@ Time-boxed iteration (typically 2 weeks). Groups tasks, defines delivery goals, 
 - **Related:** Iteration, planning, retrospective
 - **Artifacts:** Sprint backlog, sprint board
 
-### BD_ENABLED
+### Beads Auto-Detection
 
-Environment variable enabling Beads integration. Set in `.env.development.local` for AI-assisted task sync.
+Automatic Beads integration based on `.beads/` directory presence. When directory exists, IDE hooks auto-load beads context.
 
-- **Value:** `1` = enabled, `0` or unset = disabled
+- **Trigger:** `.beads/` directory exists
+- **Setup:** Run `bd init` to create directory
 - **Related:** Integration, automation
-- **Auto-sync:** When enabled, `bd sync` auto-triggers post-commit
+- **Auto-sync:** When active, `bd sync` auto-triggers post-commit
 
 ---
 
