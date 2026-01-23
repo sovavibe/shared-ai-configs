@@ -163,7 +163,6 @@ bd create --title="[TITLE]" --type=[feature|task|bug] --priority=[0-4]
 ## Implementation Steps
 
 - [ ] Step 1: [description]
-
   - File: `path/to/file.ts`
   - Pattern: [reference existing pattern if applicable]
   - Docs: [link to relevant docs]

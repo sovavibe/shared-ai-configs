@@ -17,8 +17,8 @@ Domain-specific knowledge for maintaining high code quality standards.
 
 ```typescript
 interface User {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 const isUser = (x: unknown): x is User =>
@@ -27,12 +27,12 @@ const isUser = (x: unknown): x is User =>
   'id' in x &&
   typeof x.id === 'string' &&
   'name' in x &&
-  typeof x.name === 'string'
+  typeof x.name === 'string';
 
 // Usage
-const data: unknown = fetchData()
+const data: unknown = fetchData();
 if (isUser(data)) {
-  console.log(data.name) // TypeScript knows data is User
+  console.log(data.name); // TypeScript knows data is User
 }
 ```
 
@@ -41,23 +41,23 @@ if (isUser(data)) {
 ```typescript
 // ✅ GOOD: Type guard
 const parseUser = (data: unknown): User | null => {
-  if (isUser(data)) return data
-  return null
-}
+  if (isUser(data)) return data;
+  return null;
+};
 
 // ❌ BAD: as assertion
 const parseUser = (data: unknown): User => {
-  return data as User // Unsafe!
-}
+  return data as User; // Unsafe!
+};
 
 // ✅ GOOD: Proper interface
 interface ApiResponse<T> {
-  data: T
-  error: string | null
+  data: T;
+  error: string | null;
 }
 
 // ❌ BAD: any
-const response: any = await fetch()
+const response: any = await fetch();
 ```
 
 ## Immutability Rules
@@ -66,45 +66,45 @@ const response: any = await fetch()
 
 ```typescript
 // ❌ BAD: Mutation
-const items = [1, 2, 3]
-items.push(4) // Mutates
-items.pop() // Mutates
-items.sort() // Mutates
+const items = [1, 2, 3];
+items.push(4); // Mutates
+items.pop(); // Mutates
+items.sort(); // Mutates
 
 // ✅ GOOD: Immutable
-const items = [1, 2, 3]
-const withAdd = [...items, 4] // Add
-const withoutLast = items.slice(0, -1) // Remove
-const sorted = [...items].sort() // Sort
-const updated = items.map((i) => i + 1) // Update
+const items = [1, 2, 3];
+const withAdd = [...items, 4]; // Add
+const withoutLast = items.slice(0, -1); // Remove
+const sorted = [...items].sort(); // Sort
+const updated = items.map((i) => i + 1); // Update
 ```
 
 ### Object Operations
 
 ```typescript
 // ❌ BAD: Mutation
-const user = { name: 'John', age: 30 }
-user.age = 31 // Mutates
+const user = { name: 'John', age: 30 };
+user.age = 31; // Mutates
 
 // ✅ GOOD: Immutable
-const user = { name: 'John', age: 30 }
-const updated = { ...user, age: 31 } // Update
-const withEmail = { ...user, email: 'john@example.com' } // Add
+const user = { name: 'John', age: 30 };
+const updated = { ...user, age: 31 }; // Update
+const withEmail = { ...user, email: 'john@example.com' }; // Add
 ```
 
 ### React State Updates
 
 ```typescript
 // ❌ BAD: Direct mutation
-const [items, setItems] = useState([1, 2, 3])
-items.push(4)
-setItems(items)
+const [items, setItems] = useState([1, 2, 3]);
+items.push(4);
+setItems(items);
 
 // ✅ GOOD: Immutable update
-const [items, setItems] = useState([1, 2, 3])
-setItems((prev) => [...prev, 4]) // Add
-setItems((prev) => prev.filter((i) => i !== 2)) // Remove
-setItems((prev) => prev.map((i) => i + 1)) // Update
+const [items, setItems] = useState([1, 2, 3]);
+setItems((prev) => [...prev, 4]); // Add
+setItems((prev) => prev.filter((i) => i !== 2)); // Remove
+setItems((prev) => prev.map((i) => i + 1)); // Update
 ```
 
 ## Code Size Limits
@@ -176,18 +176,18 @@ export const UserProfile: FC<Props> = ({ userId }) => {
 ```typescript
 // ✅ GOOD: Justified suppression
 // eslint-disable-next-line no-magic-numbers -- WHY: Performance optimization benchmark. TODO({PREFIX}-123): Move to config.
-const TIMEOUT_MS = 5000
+const TIMEOUT_MS = 5000;
 
 // ❌ BAD: Blanket suppression
 // eslint-disable
 
 // ❌ BAD: Missing WHY and TODO
 // eslint-disable-next-line no-magic-numbers
-const max = 10
+const max = 10;
 
 // ✅ GOOD: Proper suppression
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- WHY: External API returns untyped data. TODO({PREFIX}-456): Add proper types.
-const data: any = await externalAPI.getData()
+const data: any = await externalAPI.getData();
 ```
 
 ### Refactor First Actions
@@ -208,26 +208,26 @@ const data: any = await externalAPI.getData()
 // ✅ GOOD: Specific error handling
 export const fetchData = async (id: string) => {
   try {
-    const response = await api.getData(id)
-    return response.data
+    const response = await api.getData(id);
+    return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
-      notification.error({ message: `Failed to fetch: ${error.message}` })
+      notification.error({ message: `Failed to fetch: ${error.message}` });
     } else {
-      notification.error({ message: 'Unknown error occurred' })
+      notification.error({ message: 'Unknown error occurred' });
     }
-    throw error
+    throw error;
   }
-}
+};
 
 // ❌ BAD: Catch-all
 export const fetchData = async (id: string) => {
   try {
-    return await api.getData(id)
+    return await api.getData(id);
   } catch (error) {
-    console.log(error) // No notification
+    console.log(error); // No notification
   }
-}
+};
 ```
 
 ### Error Boundaries
@@ -261,19 +261,19 @@ export const ComponentWrapper: FC = () => {
 ```typescript
 describe('Feature', () => {
   describe('Happy path', () => {
-    it('should handle success case', () => {})
-  })
+    it('should handle success case', () => {});
+  });
 
   describe('Error cases', () => {
-    it('should handle network error', () => {})
-    it('should handle validation error', () => {})
-  })
+    it('should handle network error', () => {});
+    it('should handle validation error', () => {});
+  });
 
   describe('Edge cases', () => {
-    it('should handle empty input', () => {})
-    it('should handle null values', () => {})
-  })
-})
+    it('should handle empty input', () => {});
+    it('should handle null values', () => {});
+  });
+});
 ```
 
 ## Security Best Practices
@@ -285,12 +285,12 @@ describe('Feature', () => {
 const schema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-})
+});
 
 export const handleSubmit = (data: unknown) => {
-  const validated = schema.parse(data) // Throws if invalid
+  const validated = schema.parse(data); // Throws if invalid
   // Process validated data
-}
+};
 ```
 
 ### XSS Prevention
@@ -309,10 +309,10 @@ const UserContent: FC<{ html: string }> = ({ html }) => {
 
 ```typescript
 // ❌ BAD: Hardcoded secrets
-const API_KEY = 'sk-1234567890abcdef'
+const API_KEY = 'sk-1234567890abcdef';
 
 // ✅ GOOD: Environment variables
-const API_KEY = import.meta.env.VITE_API_KEY
+const API_KEY = import.meta.env.VITE_API_KEY;
 ```
 
 ## References

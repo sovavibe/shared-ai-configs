@@ -85,11 +85,13 @@ If switching between tasks:
 **Hindsight** (Dec 2025) uses TEMPR retrieval: Semantic + Keyword + Graph + Temporal
 
 **How Hindsight recalls from session-start hook:**
+
 ```
 mcp__hindsight-alice__recall "Front project: architecture decisions, API patterns, React conventions, recent blockers, active work context"
 ```
 
 This single prompt triggers:
+
 - 🔍 **Semantic search** - Find conceptually related decisions
 - 🔤 **Keyword matching** - Find specific terms (TanStack, Ant Design, etc.)
 - 📊 **Graph traversal** - Find related concepts (if you mention auth, recalls auth patterns)
@@ -115,6 +117,7 @@ recall "Everything about the project"
 ```
 
 **Session history depth:**
+
 - Hindsight evaluates agents on 1.5M tokens across multiple sessions
 - Multi-session recall: 21.1% → 79.7% accuracy
 - No hardcoded "3 sessions" - TEMPR handles optimal depth dynamically
@@ -140,12 +143,12 @@ mcp__hindsight-alice__retain "TanStack Query mutations: Use useMutation hook wit
 
 **Quick Reference:**
 
-| Need | Tool | Command |
-|------|------|---------|
-| Check memory | Hindsight | `recall "topic"` |
-| Library documentation | Context7 | `resolve-library-id` → `get-library-docs` |
-| Current information | WebSearch | `web search --query "...2026"` |
-| Save learning | Hindsight | `retain "Decision: ..."` |
+| Need                  | Tool      | Command                                   |
+| --------------------- | --------- | ----------------------------------------- |
+| Check memory          | Hindsight | `recall "topic"`                          |
+| Library documentation | Context7  | `resolve-library-id` → `get-library-docs` |
+| Current information   | WebSearch | `web search --query "...2026"`            |
+| Save learning         | Hindsight | `retain "Decision: ..."`                  |
 
 **When to use what:**
 
@@ -269,6 +272,7 @@ If session ends unexpectedly:
    ```
 
 4. **Check git state:**
+
    ```bash
    git status
    git stash list  # If work was stashed

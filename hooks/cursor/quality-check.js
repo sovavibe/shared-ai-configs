@@ -40,13 +40,15 @@ try {
 
 // If quality gates fail, continue work
 if (qualityReport.includes('❌')) {
-  console.log(JSON.stringify({
-    followup_message: `[Iteration ${input.loop_count + 1}/${MAX_ITERATIONS}]
+  console.log(
+    JSON.stringify({
+      followup_message: `[Iteration ${input.loop_count + 1}/${MAX_ITERATIONS}]
 Quality gates failed:
 ${qualityReport}
 
-Please fix all issues before continuing. Update .cursor/scratchpad.md with DONE when all quality gates pass.`
-  }));
+Please fix all issues before continuing. Update .cursor/scratchpad.md with DONE when all quality gates pass.`,
+    })
+  );
 } else {
   console.log(JSON.stringify({}));
 }

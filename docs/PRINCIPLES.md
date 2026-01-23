@@ -44,13 +44,13 @@ Everything is configurable through config. **No magic strings** in code.
 # .ai-project.yaml — single source of truth
 
 commands:
-  dev: "pnpm dev"           # NOT hardcoded "npm run dev"
-  lint: "pnpm lint"         # NOT hardcoded "npm run lint"
-  quality_gates: "pnpm quality:gates"
+  dev: 'pnpm dev' # NOT hardcoded "npm run dev"
+  lint: 'pnpm lint' # NOT hardcoded "npm run lint"
+  quality_gates: 'pnpm quality:gates'
 
 services:
   task_tracking:
-    type: beads             # NOT hardcoded in code
+    type: beads # NOT hardcoded in code
 ```
 
 ---

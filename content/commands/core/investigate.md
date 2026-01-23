@@ -26,14 +26,12 @@ The investigate workflow guides agent through systematic investigation:
 **Objective:** Understand task and gather context
 
 1. **Determine Entry Point:**
-
    - Jira task? ({PREFIX}-XXX)
    - User input?
    - MR comment?
    - File/Component reference?
 
 2. **Load Context:**
-
    - **Beads** - Get full context from task description (includes research, analysis, progress)
    - **Hindsight MCP** (`user-hindsight-alice`) - Recall patterns, lessons, experience
    - Jira (if applicable)
@@ -176,7 +174,6 @@ After semantic search gives you context, use grep for specifics:
 **All intermediate reports and research results MUST be stored:**
 
 1. **Beads task description** (`bd update <id> --description`):
-
    - Store research results during investigation
    - Store analysis reports
    - Store investigation findings

@@ -12,6 +12,7 @@
 3. You must not write more production code than is sufficient to pass
 
 **Benefits:**
+
 - Clear specification of behavior upfront
 - Fewer bugs in production
 - Easier refactoring (tests catch regressions)
@@ -31,6 +32,7 @@ npm run test -- Component.test.ts --watch
 ```
 
 **Example Test:**
+
 ```typescript
 // components/Theme/useTheme.test.ts
 import { renderHook, act } from '@testing-library/react';
@@ -68,6 +70,7 @@ describe('useTheme hook', () => {
 ```
 
 **Watch output:**
+
 ```
 FAIL  components/Theme/useTheme.test.ts
 ● Test suite failed to compile
@@ -99,6 +102,7 @@ export const useTheme = () => {
 ```
 
 **Watch output:**
+
 ```
 PASS  components/Theme/useTheme.test.ts (2.3s)
   useTheme hook
@@ -128,7 +132,7 @@ export const useTheme = () => {
   });
 
   const toggleTheme = useCallback(() => {
-    setTheme(prev => {
+    setTheme((prev) => {
       const newTheme = prev === 'light' ? 'dark' : 'light';
       localStorage.setItem('theme', newTheme);
       return newTheme;
@@ -145,6 +149,7 @@ export const useTheme = () => {
 ```
 
 **Tests still pass:**
+
 ```
 PASS  components/Theme/useTheme.test.ts
   useTheme hook
@@ -219,21 +224,23 @@ describe('UserForm Integration', () => {
 **Why:** Queries by role are most accessible (they match user experience)
 
 **Checklist:**
+
 - [ ] Use `getByRole` for interactive elements
 - [ ] Use `getByLabelText` for form inputs
 - [ ] Use `getByText` for text content
 - [ ] Avoid `getByTestId` unless necessary
 
 **Example:**
+
 ```typescript
 // ✅ Good - queries match user experience
-screen.getByRole('button', { name: /submit/i })
-screen.getByLabelText('Email')
-screen.getByText('Error message')
+screen.getByRole('button', { name: /submit/i });
+screen.getByLabelText('Email');
+screen.getByText('Error message');
 
 // ❌ Avoid - test implementation details
-screen.getByTestId('submit-btn')
-screen.getByClassName('form-input')
+screen.getByTestId('submit-btn');
+screen.getByClassName('form-input');
 ```
 
 ---
@@ -243,12 +250,14 @@ screen.getByClassName('form-input')
 **Why:** `userEvent` simulates real user interactions better than `fireEvent`
 
 **Checklist:**
+
 - [ ] Use `userEvent` instead of `fireEvent`
 - [ ] Use `await` with user interactions
 - [ ] Type in form fields with `userEvent.type()`
 - [ ] Click buttons with `userEvent.click()`
 
 **Example:**
+
 ```typescript
 // ✅ Good - simulates user interaction
 await userEvent.type(screen.getByLabelText('Name'), 'John');
@@ -266,11 +275,13 @@ fireEvent.click(button);
 **Why:** Components may update asynchronously
 
 **Checklist:**
+
 - [ ] Use `waitFor` for async state updates
 - [ ] Use `act` when directly calling functions
 - [ ] Use `findByRole` for elements that appear later
 
 **Example:**
+
 ```typescript
 // ✅ Good - waits for async updates
 it('should show loading then result', async () => {
@@ -299,6 +310,7 @@ it('should display user after loading', async () => {
 ### ✅ Pattern: Mock API Calls with MSW
 
 **Setup (already configured in project):**
+
 ```typescript
 // __mocks__/handlers.ts
 import { http, HttpResponse } from 'msw';
@@ -314,6 +326,7 @@ export const handlers = [
 ```
 
 **Usage in tests:**
+
 ```typescript
 import { render, screen } from '@testing-library/react';
 import { UserProfile } from './UserProfile';
@@ -371,19 +384,21 @@ it('should display data from hook', () => {
 
 ## Coverage Goals
 
-| Category | Target | Priority |
-|----------|--------|----------|
-| **Components** | 80%+ | High |
-| **Custom Hooks** | 85%+ | High |
-| **Utils/Helpers** | 90%+ | High |
-| **Overall** | 80%+ | High |
+| Category          | Target | Priority |
+| ----------------- | ------ | -------- |
+| **Components**    | 80%+   | High     |
+| **Custom Hooks**  | 85%+   | High     |
+| **Utils/Helpers** | 90%+   | High     |
+| **Overall**       | 80%+   | High     |
 
 **Check coverage:**
+
 ```bash
 npm run test -- --coverage
 ```
 
 **Example output:**
+
 ```
 ------|----------|----------|----------|----------|---------|
 File  | % Stmts  | % Branch | % Funcs  | % Lines  | Uncovered Line #s
@@ -476,8 +491,8 @@ When implementing a feature with TDD:
 
 ## Resources
 
-- **@testing-library/react:** https://testing-library.com/react
-- **Vitest:** https://vitest.dev/
-- **MSW (API Mocking):** https://mswjs.io/
-- **Testing Best Practices:** https://testing-library.com/docs/
-- **TDD Handbook:** https://www.freecodecamp.org/news/test-driven-development/
+- **@testing-library/react:** <https://testing-library.com/react>
+- **Vitest:** <https://vitest.dev/>
+- **MSW (API Mocking):** <https://mswjs.io/>
+- **Testing Best Practices:** <https://testing-library.com/docs/>
+- **TDD Handbook:** <https://www.freecodecamp.org/news/test-driven-development/>

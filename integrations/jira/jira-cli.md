@@ -21,7 +21,7 @@ jira init  # Select Cloud or Server, enter instance URL
 services:
   task_tracking:
     type: 'jira'
-    integration_mode: 'cli'  # Uses jira-cli
+    integration_mode: 'cli' # Uses jira-cli
     key_prefix: 'VP-'
     jira:
       instance: 'your-company.atlassian.net'
@@ -165,13 +165,13 @@ jira issue view VP-123 --raw | jq -r '.fields.status.name'
 
 ## Comparison with MCP Mode
 
-| Aspect | CLI (`jira-cli`) | MCP (`mcp-atlassian`) |
-|--------|------------------|----------------------|
-| **Setup** | Simple (`brew install`) | Requires Python/uv |
-| **Speed** | Each command is separate process | Persistent connection |
-| **Output** | `--raw` for JSON | Native JSON |
-| **Confluence** | Not included | Included |
-| **Best for** | Scripts, CI/CD | IDE integration |
+| Aspect         | CLI (`jira-cli`)                 | MCP (`mcp-atlassian`) |
+| -------------- | -------------------------------- | --------------------- |
+| **Setup**      | Simple (`brew install`)          | Requires Python/uv    |
+| **Speed**      | Each command is separate process | Persistent connection |
+| **Output**     | `--raw` for JSON                 | Native JSON           |
+| **Confluence** | Not included                     | Included              |
+| **Best for**   | Scripts, CI/CD                   | IDE integration       |
 
 ## Troubleshooting
 

@@ -45,12 +45,12 @@ const value = isMyType(data) ? data : null
 
 ```typescript
 // FLAG THIS
-element.innerHTML = userInput
-const token = 'sk-abc123'
+element.innerHTML = userInput;
+const token = 'sk-abc123';
 
 // ACCEPT THIS
-element.textContent = userInput
-const token = import.meta.env.VITE_API_TOKEN
+element.textContent = userInput;
+const token = import.meta.env.VITE_API_TOKEN;
 ```
 
 ### 3. Performance (HIGH)
@@ -113,7 +113,6 @@ flowchart TD
 ### Critical Issues (Must Fix)
 
 1. **[SECURITY]** `src/api/auth.ts:45`
-
    - Issue: Hardcoded API key
    - Fix: Move to environment variable
 
@@ -124,7 +123,6 @@ flowchart TD
 ### Warnings (Recommended)
 
 3. **[PERFORMANCE]** `src/components/Table.tsx:89`
-
    - Issue: Inline object in JSX prop
    - Fix: Extract to useMemo
 

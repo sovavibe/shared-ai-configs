@@ -34,5 +34,5 @@ Closes #
 
 ## Screenshots (if applicable)
 
-Before | After
---- | ---
+| Before | After |
+| ------ | ----- |

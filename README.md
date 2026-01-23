@@ -42,13 +42,13 @@ npx shared-ai-configs status
 
 ## CLI Commands
 
-| Command | Description |
-|---------|-------------|
-| `init` | Create `.ai-project.yaml` template |
-| `generate` | Generate all configurations |
-| `validate` | Validate `.ai-project.yaml` against schema |
-| `status` | Show current configuration status |
-| `doctor` | Diagnose issues (missing files, outdated configs) |
+| Command    | Description                                       |
+| ---------- | ------------------------------------------------- |
+| `init`     | Create `.ai-project.yaml` template                |
+| `generate` | Generate all configurations                       |
+| `validate` | Validate `.ai-project.yaml` against schema        |
+| `status`   | Show current configuration status                 |
+| `doctor`   | Diagnose issues (missing files, outdated configs) |
 
 ### Options
 
@@ -69,27 +69,27 @@ npx shared-ai-configs doctor
 
 ```yaml
 project:
-  name: "My Project"
-  description: "Customer portal application"
+  name: 'My Project'
+  description: 'Customer portal application'
 
 stack:
-  type: "react"              # react | node | java | python
-  framework: "React 18"
-  state: "Zustand 5"
-  ui: "Ant Design 5"
+  type: 'react' # react | node | java | python
+  framework: 'React 18'
+  state: 'Zustand 5'
+  ui: 'Ant Design 5'
   api:
-    client: "TanStack Query 5"
-    codegen: "Orval 7"
-  testing: "Vitest"
-  linter: "ESLint"
+    client: 'TanStack Query 5'
+    codegen: 'Orval 7'
+  testing: 'Vitest'
+  linter: 'ESLint'
 
 services:
   vcs:
-    type: "git"              # git | none
-    main_branch: "main"
+    type: 'git' # git | none
+    main_branch: 'main'
   task_tracking:
-    type: "beads"            # beads | jira | linear | github-issues | none
-    key_prefix: "PROJ-"
+    type: 'beads' # beads | jira | linear | github-issues | none
+    key_prefix: 'PROJ-'
   mcp:
     hindsight:
       enabled: true
@@ -99,12 +99,12 @@ services:
       enabled: true
 
 commands:
-  dev: "npm run dev"
-  build: "npm run build"
-  lint: "npm run lint"
-  test: "npm run test"
-  codegen: "npm run codegen"
-  quality_gates: "npm run quality:gates"
+  dev: 'npm run dev'
+  build: 'npm run build'
+  lint: 'npm run lint'
+  test: 'npm run test'
+  codegen: 'npm run codegen'
+  quality_gates: 'npm run quality:gates'
 
 options:
   dev_server_port: 5173
@@ -112,13 +112,13 @@ options:
   agentic_workflows: true
 
 languages:
-  chat: "Russian"
-  code: "English"
+  chat: 'Russian'
+  code: 'English'
 
 rules:
   critical:
-    - "NEVER edit src/shared/api/generated/"
-    - "ALWAYS run quality gates before committing"
+    - 'NEVER edit src/shared/api/generated/'
+    - 'ALWAYS run quality gates before committing'
 
 generation:
   targets:
@@ -186,12 +186,12 @@ shared-ai-configs/
 
 Auto-generates commands based on `services.task_tracking.type`:
 
-| Type | Commands |
-|------|----------|
-| `beads` | `bd create`, `bd close`, `bd ready`, `bd sync` |
-| `jira` | `jira create`, `jira close`, `jira list` |
-| `linear` | `linear issue create`, `linear issue close` |
-| `github-issues` | `gh issue create`, `gh issue close` |
+| Type            | Commands                                       |
+| --------------- | ---------------------------------------------- |
+| `beads`         | `bd create`, `bd close`, `bd ready`, `bd sync` |
+| `jira`          | `jira create`, `jira close`, `jira list`       |
+| `linear`        | `linear issue create`, `linear issue close`    |
+| `github-issues` | `gh issue create`, `gh issue close`            |
 
 ## MCP Integration
 
@@ -201,17 +201,17 @@ Enable MCP tools in config:
 services:
   mcp:
     hindsight:
-      enabled: true    # Memory & recall
+      enabled: true # Memory & recall
     snyk:
-      enabled: true    # Security scanning
+      enabled: true # Security scanning
     context7:
-      enabled: true    # Library docs
+      enabled: true # Library docs
     memory_bank:
-      enabled: true    # Allpepper memory
+      enabled: true # Allpepper memory
     figma:
-      enabled: true    # Design to code
+      enabled: true # Design to code
     browser:
-      enabled: true    # Chrome automation
+      enabled: true # Chrome automation
 ```
 
 ## Extending

@@ -22,12 +22,12 @@
 
 ## Commands
 
-| Folder     | Purpose                      |
-| ---------- | ---------------------------- |
-| `core/`    | implement, review, debug     |
-| `session/` | start, end, continue         |
-| `quality/` | check, lint, gates           |
-| `gitlab/`  | MR workflows                 |
+| Folder     | Purpose                  |
+| ---------- | ------------------------ |
+| `core/`    | implement, review, debug |
+| `session/` | start, end, continue     |
+| `quality/` | check, lint, gates       |
+| `gitlab/`  | MR workflows             |
 
 ## Beads
 

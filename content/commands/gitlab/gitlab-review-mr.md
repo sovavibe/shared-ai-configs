@@ -113,10 +113,11 @@ CallMcpTool({
   toolName: 'recall',
   arguments: {
     bank_id: 'patterns',
-    query: 'Code review patterns: React hooks, TypeScript strict mode, Ant Design, FSD architecture',
+    query:
+      'Code review patterns: React hooks, TypeScript strict mode, Ant Design, FSD architecture',
     max_tokens: 4096,
   },
-})
+});
 ```
 
 #### 🏛️ PILLAR 3: Jira (Team Context - MR Mode Only)
@@ -133,7 +134,7 @@ CallMcpTool({
   arguments: {
     jql: 'project = <JIRA_PROJECT> AND labels = mr-<N> AND status != Done',
   },
-})
+});
 ```
 
 </details>
@@ -157,7 +158,7 @@ CallMcpTool({
   server: 'MCP_DOCKER',
   toolName: 'resolve-library-id',
   arguments: { libraryName: 'antd' },
-})
+});
 ```
 
 **⏸️ STOP: "Контекст загружен. Продолжить с анализом кода?"**
@@ -293,10 +294,10 @@ Focus on patterns and decisions that linters CANNOT check:
 
 ```typescript
 // ❌ Wrong: page imports from another page
-import { UserList } from '@/pages/users' // Cross-page import
+import { UserList } from '@/pages/users'; // Cross-page import
 
 // ✅ Correct: extract to widget or shared
-import { UserList } from '@/widgets/users'
+import { UserList } from '@/widgets/users';
 ```
 
 **Component Composition:**
@@ -357,7 +358,7 @@ const jiraTask = CallMcpTool({
     labels: ['code-review', 'mr-<N>'],
     priority: 'High',
   },
-})
+});
 ```
 
 </details>
@@ -662,7 +663,7 @@ CallMcpTool({
     content: 'MR-<N>: Found [issue type] in [file]. Pattern: [insight for future reviews]',
     context: 'mr-review-[category]',
   },
-})
+});
 ```
 
 ---
@@ -891,7 +892,7 @@ When using with GPT-4 or other models:
 
 ```typescript
 // ❌ Found in src/widgets/UserProfile.tsx:23
-const userData: any = fetchUserData()
+const userData: any = fetchUserData();
 
 // Assessment: Type Safety - Needs Work (Critical)
 ```
@@ -946,8 +947,8 @@ git diff abc1234 --name-only
 ```typescript
 // ❌ Found in src/components/DataTable.tsx:45
 const handleSort = useCallback(() => {
-  onSort?.(column)
-}, []) // Missing 'column' and 'onSort'
+  onSort?.(column);
+}, []); // Missing 'column' and 'onSort'
 
 // Assessment: React - Needs Work (Important)
 ```

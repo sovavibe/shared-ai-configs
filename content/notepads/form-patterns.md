@@ -5,20 +5,20 @@
 ## Basic Form
 
 ```tsx
-import { Form, Input, Button } from 'antd'
-import type { FC } from 'react'
+import { Form, Input, Button } from 'antd';
+import type { FC } from 'react';
 
 interface FormValues {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 export const LoginForm: FC = () => {
-  const [form] = Form.useForm<FormValues>()
+  const [form] = Form.useForm<FormValues>();
 
   const handleSubmit = (values: FormValues) => {
-    console.log('Form values:', values)
-  }
+    console.log('Form values:', values);
+  };
 
   return (
     <Form form={form} layout="vertical" onFinish={handleSubmit} autoComplete="off">
@@ -50,27 +50,27 @@ export const LoginForm: FC = () => {
         </Button>
       </Form.Item>
     </Form>
-  )
-}
+  );
+};
 ```
 
 ## Form with Dynamic Fields
 
 ```tsx
-import { Form, Input, Button, Space } from 'antd'
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { Form, Input, Button, Space } from 'antd';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 interface CargoItem {
-  type: string
-  quantity: number
+  type: string;
+  quantity: number;
 }
 
 interface CargoFormValues {
-  cargos: CargoItem[]
+  cargos: CargoItem[];
 }
 
 export const CargoForm: FC = () => {
-  const [form] = Form.useForm<CargoFormValues>()
+  const [form] = Form.useForm<CargoFormValues>();
 
   return (
     <Form form={form} layout="vertical">
@@ -105,8 +105,8 @@ export const CargoForm: FC = () => {
         )}
       </Form.List>
     </Form>
-  )
-}
+  );
+};
 ```
 
 ## Form with Custom Validation
@@ -114,49 +114,49 @@ export const CargoForm: FC = () => {
 ```tsx
 const validateLaycan = (_: unknown, value: [Date, Date]) => {
   if (!value || value.length !== 2) {
-    return Promise.reject(new Error('Laycan dates required'))
+    return Promise.reject(new Error('Laycan dates required'));
   }
-  const [from, to] = value
+  const [from, to] = value;
   if (from >= to) {
-    return Promise.reject(new Error('Laycan "from" must be before "to"'))
+    return Promise.reject(new Error('Laycan "from" must be before "to"'));
   }
-  return Promise.resolve()
-}
+  return Promise.resolve();
+};
 
-;<Form.Item name="laycan" label="Laycan" rules={[{ validator: validateLaycan }]}>
+<Form.Item name="laycan" label="Laycan" rules={[{ validator: validateLaycan }]}>
   <DatePicker.RangePicker />
-</Form.Item>
+</Form.Item>;
 ```
 
 ## Form with Mutation
 
 ```tsx
-import { useMutation } from '@tanstack/react-query'
-import { message } from 'antd'
+import { useMutation } from '@tanstack/react-query';
+import { message } from 'antd';
 
 interface RouteRequestFormValues {
-  origin: string
-  destination: string
-  cargoType: string
+  origin: string;
+  destination: string;
+  cargoType: string;
 }
 
 export const RouteRequestForm: FC = () => {
-  const [form] = Form.useForm<RouteRequestFormValues>()
+  const [form] = Form.useForm<RouteRequestFormValues>();
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: createRouteRequest,
     onSuccess: () => {
-      message.success('Route request created')
-      form.resetFields()
+      message.success('Route request created');
+      form.resetFields();
     },
     onError: (error) => {
-      message.error(`Failed: ${error.message}`)
+      message.error(`Failed: ${error.message}`);
     },
-  })
+  });
 
   const handleSubmit = async (values: RouteRequestFormValues) => {
-    await mutateAsync(values)
-  }
+    await mutateAsync(values);
+  };
 
   return (
     <Form form={form} onFinish={handleSubmit}>
@@ -165,8 +165,8 @@ export const RouteRequestForm: FC = () => {
         Create Request
       </Button>
     </Form>
-  )
-}
+  );
+};
 ```
 
 ---
@@ -178,46 +178,46 @@ export const RouteRequestForm: FC = () => {
 ```tsx
 const validatePassword = (_: unknown, value: string) => {
   if (!value) {
-    return Promise.reject(new Error('Password is required'))
+    return Promise.reject(new Error('Password is required'));
   }
   if (value.length < 8) {
-    return Promise.reject(new Error('Password must be at least 8 characters'))
+    return Promise.reject(new Error('Password must be at least 8 characters'));
   }
   if (!/[A-Z]/.test(value)) {
-    return Promise.reject(new Error('Password must contain an uppercase letter'))
+    return Promise.reject(new Error('Password must contain an uppercase letter'));
   }
   if (!/[a-z]/.test(value)) {
-    return Promise.reject(new Error('Password must contain a lowercase letter'))
+    return Promise.reject(new Error('Password must contain a lowercase letter'));
   }
   if (!/[0-9]/.test(value)) {
-    return Promise.reject(new Error('Password must contain a number'))
+    return Promise.reject(new Error('Password must contain a number'));
   }
   if (!/[!@#$%^&*]/.test(value)) {
-    return Promise.reject(new Error('Password must contain a special character'))
+    return Promise.reject(new Error('Password must contain a special character'));
   }
-  return Promise.resolve()
-}
+  return Promise.resolve();
+};
 
-;<Form.Item name="password" label="Password" rules={[{ validator: validatePassword }]}>
+<Form.Item name="password" label="Password" rules={[{ validator: validatePassword }]}>
   <Input.Password placeholder="Enter password" />
-</Form.Item>
+</Form.Item>;
 ```
 
 ### Confirm Password Validation
 
 ```tsx
 const validateConfirmPassword = (form: FormInstance) => (_: unknown, value: string) => {
-  const password = form.getFieldValue('password')
+  const password = form.getFieldValue('password');
   if (!value) {
-    return Promise.reject(new Error('Please confirm your password'))
+    return Promise.reject(new Error('Please confirm your password'));
   }
   if (value !== password) {
-    return Promise.reject(new Error('Passwords do not match'))
+    return Promise.reject(new Error('Passwords do not match'));
   }
-  return Promise.resolve()
-}
+  return Promise.resolve();
+};
 
-;<Form form={form} layout="vertical">
+<Form form={form} layout="vertical">
   <Form.Item
     name="password"
     label="Password"
@@ -233,11 +233,14 @@ const validateConfirmPassword = (form: FormInstance) => (_: unknown, value: stri
     name="confirmPassword"
     label="Confirm Password"
     dependencies={['password']}
-    rules={[{ required: true, message: 'Please confirm your password' }, { validator: validateConfirmPassword(form) }]}
+    rules={[
+      { required: true, message: 'Please confirm your password' },
+      { validator: validateConfirmPassword(form) },
+    ]}
   >
     <Input.Password placeholder="Confirm password" />
   </Form.Item>
-</Form>
+</Form>;
 ```
 
 ### Phone Number Validation
@@ -245,18 +248,18 @@ const validateConfirmPassword = (form: FormInstance) => (_: unknown, value: stri
 ```tsx
 const validatePhone = (_: unknown, value: string) => {
   if (!value) {
-    return Promise.resolve() // Optional field
+    return Promise.resolve(); // Optional field
   }
-  const phoneRegex = /^\+?[\d\s-]{10,15}$/
+  const phoneRegex = /^\+?[\d\s-]{10,15}$/;
   if (!phoneRegex.test(value)) {
-    return Promise.reject(new Error('Invalid phone number format'))
+    return Promise.reject(new Error('Invalid phone number format'));
   }
-  return Promise.resolve()
-}
+  return Promise.resolve();
+};
 
-;<Form.Item name="phone" label="Phone Number" rules={[{ validator: validatePhone }]}>
+<Form.Item name="phone" label="Phone Number" rules={[{ validator: validatePhone }]}>
   <Input placeholder="+1 (555) 123-4567" />
-</Form.Item>
+</Form.Item>;
 ```
 
 ### Date Range Validation
@@ -264,26 +267,26 @@ const validatePhone = (_: unknown, value: string) => {
 ```tsx
 const validateDateRange = (_: unknown, value: [Date, Date]) => {
   if (!value || value.length !== 2) {
-    return Promise.reject(new Error('Please select date range'))
+    return Promise.reject(new Error('Please select date range'));
   }
-  const [start, end] = value
-  const now = new Date()
+  const [start, end] = value;
+  const now = new Date();
 
   if (start < now) {
-    return Promise.reject(new Error('Start date must be in the future'))
+    return Promise.reject(new Error('Start date must be in the future'));
   }
 
-  const maxDuration = 90 * 24 * 60 * 60 * 1000 // 90 days
+  const maxDuration = 90 * 24 * 60 * 60 * 1000; // 90 days
   if (end.getTime() - start.getTime() > maxDuration) {
-    return Promise.reject(new Error('Date range cannot exceed 90 days'))
+    return Promise.reject(new Error('Date range cannot exceed 90 days'));
   }
 
-  return Promise.resolve()
-}
+  return Promise.resolve();
+};
 
-;<Form.Item name="dateRange" label="Date Range" rules={[{ validator: validateDateRange }]}>
+<Form.Item name="dateRange" label="Date Range" rules={[{ validator: validateDateRange }]}>
   <DatePicker.RangePicker />
-</Form.Item>
+</Form.Item>;
 ```
 
 ### URL Validation
@@ -291,44 +294,44 @@ const validateDateRange = (_: unknown, value: [Date, Date]) => {
 ```tsx
 const validateUrl = (_: unknown, value: string) => {
   if (!value) {
-    return Promise.resolve() // Optional field
+    return Promise.resolve(); // Optional field
   }
   try {
-    new URL(value)
-    return Promise.resolve()
+    new URL(value);
+    return Promise.resolve();
   } catch {
-    return Promise.reject(new Error('Invalid URL format'))
+    return Promise.reject(new Error('Invalid URL format'));
   }
-}
+};
 
-;<Form.Item name="website" label="Website" rules={[{ validator: validateUrl }]}>
+<Form.Item name="website" label="Website" rules={[{ validator: validateUrl }]}>
   <Input placeholder="https://example.com" />
-</Form.Item>
+</Form.Item>;
 ```
 
 ### Email with Domain Validation
 
 ```tsx
-const allowedDomains = ['company.com', 'partner.com']
+const allowedDomains = ['company.com', 'partner.com'];
 
 const validateEmailDomain = (_: unknown, value: string) => {
   if (!value) {
-    return Promise.reject(new Error('Email is required'))
+    return Promise.reject(new Error('Email is required'));
   }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(value)) {
-    return Promise.reject(new Error('Invalid email format'))
+    return Promise.reject(new Error('Invalid email format'));
   }
-  const domain = value.split('@')[1]
+  const domain = value.split('@')[1];
   if (!allowedDomains.includes(domain)) {
-    return Promise.reject(new Error(`Email must be from ${allowedDomains.join(' or ')}`))
+    return Promise.reject(new Error(`Email must be from ${allowedDomains.join(' or ')}`));
   }
-  return Promise.resolve()
-}
+  return Promise.resolve();
+};
 
-;<Form.Item name="email" label="Work Email" rules={[{ validator: validateEmailDomain }]}>
+<Form.Item name="email" label="Work Email" rules={[{ validator: validateEmailDomain }]}>
   <Input placeholder="user@company.com" />
-</Form.Item>
+</Form.Item>;
 ```
 
 ### Async Validation (Check Email Uniqueness)
@@ -336,21 +339,21 @@ const validateEmailDomain = (_: unknown, value: string) => {
 ```tsx
 const validateEmailUnique = async (_: unknown, value: string) => {
   if (!value) {
-    return Promise.resolve()
+    return Promise.resolve();
   }
 
   try {
-    const exists = await api.checkEmailExists(value)
+    const exists = await api.checkEmailExists(value);
     if (exists) {
-      return Promise.reject(new Error('Email already registered'))
+      return Promise.reject(new Error('Email already registered'));
     }
-    return Promise.resolve()
+    return Promise.resolve();
   } catch {
-    return Promise.reject(new Error('Failed to check email'))
+    return Promise.reject(new Error('Failed to check email'));
   }
-}
+};
 
-;<Form.Item
+<Form.Item
   name="email"
   label="Email"
   rules={[
@@ -361,7 +364,7 @@ const validateEmailUnique = async (_: unknown, value: string) => {
   validateTrigger={['onBlur', 'onChange']}
 >
   <Input placeholder="Enter email" />
-</Form.Item>
+</Form.Item>;
 ```
 
 ---
@@ -386,18 +389,18 @@ const validateEmailUnique = async (_: unknown, value: string) => {
 ### Show Form-Level Errors
 
 ```tsx
-const [formErrors, setFormErrors] = useState<string[]>([])
+const [formErrors, setFormErrors] = useState<string[]>([]);
 
 const handleSubmit = async (values: FormValues) => {
   try {
-    await api.submitForm(values)
-    setFormErrors([])
+    await api.submitForm(values);
+    setFormErrors([]);
   } catch (error) {
-    setFormErrors(['Submission failed', error.message])
+    setFormErrors(['Submission failed', error.message]);
   }
-}
+};
 
-;<Form onFinish={handleSubmit}>
+<Form onFinish={handleSubmit}>
   {/* form fields */}
   {formErrors.length > 0 && (
     <Alert
@@ -408,7 +411,7 @@ const handleSubmit = async (values: FormValues) => {
       ))}
     />
   )}
-</Form>
+</Form>;
 ```
 
 ---
@@ -421,10 +424,10 @@ const handleSubmit = async (values: FormValues) => {
 const { mutateAsync } = useMutation({
   mutationFn: submitForm,
   onSuccess: () => {
-    message.success('Form submitted successfully')
-    form.resetFields()
+    message.success('Form submitted successfully');
+    form.resetFields();
   },
-})
+});
 ```
 
 ### Keep Form Values on Error
@@ -433,14 +436,14 @@ const { mutateAsync } = useMutation({
 const { mutateAsync } = useMutation({
   mutationFn: submitForm,
   onSuccess: () => {
-    message.success('Form submitted successfully')
-    form.resetFields()
+    message.success('Form submitted successfully');
+    form.resetFields();
   },
   onError: (error) => {
-    message.error(`Failed: ${error.message}`)
+    message.error(`Failed: ${error.message}`);
     // Form values are preserved
   },
-})
+});
 ```
 
 ### Set Initial Values
@@ -452,9 +455,9 @@ useEffect(() => {
       name: userData.name,
       email: userData.email,
       phone: userData.phone,
-    })
+    });
   }
-}, [userData, form])
+}, [userData, form]);
 ```
 
 ### Dynamic Validation Rules

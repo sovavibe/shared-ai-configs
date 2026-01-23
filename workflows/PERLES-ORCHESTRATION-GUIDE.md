@@ -8,11 +8,11 @@
 
 **Три основных сценария:**
 
-| Сценарий                | Workflow                    | Когда использовать                                                                               |
-| ----------------------- | --------------------------- | ------------------------------------------------------------------------------------------------ |
-| От идеи до реализации   | **Interactive SDLC**        | Начинаешь с промпта → уточнения → создание задач → полный SDLC цикл                             |
-| Полный SDLC цикл        | **Full SDLC**               | Новая фича требует полный цикл: анализ → архитектура → планирование → реализация → тесты → ревью |
-| Параллельная разработка | **Epic Batches**            | Epic с множеством подзадач, которые можно делать параллельно (разные компоненты, разные файлы)   |
+| Сценарий                | Workflow             | Когда использовать                                                                               |
+| ----------------------- | -------------------- | ------------------------------------------------------------------------------------------------ |
+| От идеи до реализации   | **Interactive SDLC** | Начинаешь с промпта → уточнения → создание задач → полный SDLC цикл                              |
+| Полный SDLC цикл        | **Full SDLC**        | Новая фича требует полный цикл: анализ → архитектура → планирование → реализация → тесты → ревью |
+| Параллельная разработка | **Epic Batches**     | Epic с множеством подзадач, которые можно делать параллельно (разные компоненты, разные файлы)   |
 
 **НЕ используй для:**
 
@@ -387,20 +387,17 @@ bd update {PREFIX}-task1 --labels="full-sdlc"
 **Процесс:**
 
 1. **Analyze Agent (Opus):**
-
    - Requirements: OAuth2 flow, JWT tokens, refresh mechanism
    - User stories: Login, Logout, Token refresh, Auto-login
    - Acceptance criteria: Secure storage, CSRF protection, etc.
 
 2. **Architect Agent (Opus):**
-
    - Component diagram: AuthProvider, TokenManager, API interceptor
    - Data flow: Login → Token → API calls → Refresh → Logout
    - Security: HttpOnly cookies, CSRF tokens, XSS prevention
    - Technology: Zustand for auth state, TanStack Query for API
 
 3. **Planner Agent (Opus):**
-
    - Step 1: Create AuthProvider component
    - Step 2: Implement TokenManager service
    - Step 3: Add API interceptor for token injection
@@ -409,13 +406,11 @@ bd update {PREFIX}-task1 --labels="full-sdlc"
    - Testing: Unit tests, integration tests, E2E flow
 
 4. **Implementation Agent (Sonnet):**
-
    - Creates all files following FSD
    - Implements OAuth2 flow
    - Integrates with existing app structure
 
 5. **Test Engineer (Sonnet):**
-
    - Unit tests for TokenManager
    - Integration tests for auth flow
    - MSW handlers for OAuth2 endpoints
@@ -504,17 +499,17 @@ bd update {PREFIX}-epic2 --labels="epic-batches"
 
 Каждая фаза workflow помечается специальным label:
 
-| Label                    | Фаза                       |
-| ------------------------ | -------------------------- |
-| `phase-clarify`          | Уточнение требований       |
-| `phase-create-structure` | Создание epic/tasks        |
-| `phase-sdlc-analyze`     | Анализ                     |
-| `phase-sdlc-architect`   | Архитектура                |
-| `phase-sdlc-plan`        | Планирование               |
-| `phase-sdlc-implement`   | Реализация                 |
-| `phase-sdlc-test`        | Тестирование               |
-| `phase-sdlc-review`      | Ревью                      |
-| `phase-complete`         | Завершено                  |
+| Label                    | Фаза                 |
+| ------------------------ | -------------------- |
+| `phase-clarify`          | Уточнение требований |
+| `phase-create-structure` | Создание epic/tasks  |
+| `phase-sdlc-analyze`     | Анализ               |
+| `phase-sdlc-architect`   | Архитектура          |
+| `phase-sdlc-plan`        | Планирование         |
+| `phase-sdlc-implement`   | Реализация           |
+| `phase-sdlc-test`        | Тестирование         |
+| `phase-sdlc-review`      | Ревью                |
+| `phase-complete`         | Завершено            |
 
 **Автоматическое сохранение:**
 
@@ -738,6 +733,7 @@ phase-complete          # Завершено
 
 1. Убедись что в orchestration mode (Ctrl+O сначала)
 2. Проверь workflows:
+
    ```bash
    ls -la ~/.perles/workflows/
    # Должны быть: full-sdlc.yaml, epic-batches.yaml
@@ -770,6 +766,7 @@ phase-complete          # Завершено
    ```
 
 3. Проверь status:
+
    ```bash
    # Для "Full SDLC" и "Epic Batches": status = open
    # Для "Orchestration Ready": status = in_progress
@@ -789,6 +786,7 @@ phase-complete          # Завершено
    ```
 
 2. Убедись что у tasks установлен parent:
+
    ```bash
    bd show {PREFIX}-task
    # parent должен быть = {PREFIX}-epic
@@ -868,6 +866,7 @@ A: Да, Ctrl+C → подтвердить. Прогресс сохранитс�
 
 **Q: Как продолжить после сбоя (пропал интернет, выключился компьютер)?**
 A:
+
 1. `bd show <issue-id>` - проверь labels, увидишь последнюю завершённую фазу
 2. `perles` → Shift+J → "SDLC Progress Tracking" - найди issue
 3. Ctrl+O → Ctrl+P → выбери тот же workflow
@@ -875,6 +874,7 @@ A:
 
 **Q: Можно ли перезапустить с конкретной фазы?**
 A: Да, вручную установи нужный label:
+
 ```bash
 bd update {PREFIX}-epic1 --labels="full-sdlc,phase-sdlc-plan"
 # При следующем resume начнёт с Plan фазы

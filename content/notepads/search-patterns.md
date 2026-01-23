@@ -310,7 +310,7 @@ You don't need to specify which tool to use — Cursor chooses based on your que
 
 ## References
 
-- Cursor Blog: https://cursor.com/blog/semsearch
+- Cursor Blog: <https://cursor.com/blog/semsearch>
 - `.cursor/commands/core/investigate.md` — Investigation workflow
 - `.cursor/commands/core/debug.md` — Debugging with semantic search
 - `.cursor/notepads/search-strategies.md` — Search examples

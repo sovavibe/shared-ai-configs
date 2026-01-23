@@ -15,12 +15,12 @@ export async function validateCommand(options: ValidateOptions): Promise<void> {
       // Show summary
       logger.info('');
       logger.table({
-        'Project': config.project.name,
-        'Stack': config.stack.type,
+        Project: config.project.name,
+        Stack: config.stack.type,
         'Chat language': config.languages?.chat || 'English',
-        'VCS': config.services?.vcs?.type || 'none',
+        VCS: config.services?.vcs?.type || 'none',
         'Task tracking': config.services?.task_tracking?.type || 'none',
-        'Generation strategy': config.generation?.strategy || 'generate'
+        'Generation strategy': config.generation?.strategy || 'generate',
       });
     } else {
       logger.error('Configuration has errors:');

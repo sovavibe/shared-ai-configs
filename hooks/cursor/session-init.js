@@ -7,7 +7,7 @@
  * Suggests loading Four Pillars context.
  */
 
-const readline = require('readline')
+const readline = require('readline');
 
 async function main() {
   // Read input from stdin (hook payload)
@@ -15,25 +15,25 @@ async function main() {
     input: process.stdin,
     output: process.stdout,
     terminal: false,
-  })
+  });
 
-  let input = ''
+  let input = '';
   for await (const line of rl) {
-    input += line
+    input += line;
   }
 
   // Parse hook input (if any)
-  let payload = {}
+  let payload = {};
   try {
     if (input.trim()) {
-      payload = JSON.parse(input)
+      payload = JSON.parse(input);
     }
   } catch (e) {
     // Ignore parse errors
   }
 
   // Check BD_ENABLED from environment
-  const bdEnabled = process.env.BD_ENABLED === '1' || process.env.BD_ENABLED === 'true'
+  const bdEnabled = process.env.BD_ENABLED === '1' || process.env.BD_ENABLED === 'true';
 
   // Suggest context loading
   const beadsSection = bdEnabled
@@ -42,7 +42,7 @@ async function main() {
 2. \`bd blocked\` - Check blocked tasks
 3. Claim: \`bd update <id> --status=in_progress\`
 4. Complete: \`bd close <id>\` + \`bd sync --flush-only\``
-    : `**Beads:** BD_ENABLED not set, beads integration disabled`
+    : `**Beads:** BD_ENABLED not set, beads integration disabled`;
 
   const response = {
     followup_message: `## Session Ready
@@ -54,9 +54,9 @@ ${beadsSection}
 - .cursor/rules/ (auto-loaded by file type)
 
 Ready to work!`,
-  }
+  };
 
-  console.log(JSON.stringify(response))
+  console.log(JSON.stringify(response));
 }
 
-main().catch(console.error)
+main().catch(console.error);

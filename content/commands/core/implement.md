@@ -74,7 +74,6 @@ flowchart TD
 **All intermediate reports and research results MUST be stored:**
 
 1. **Beads task description** (`bd update <id> --description`):
-
    - Store research results during investigation
    - Store analysis reports
    - Store implementation context

@@ -12,18 +12,18 @@ content/rules/react.mdc  ──┬──►  .claude/rules/react.mdc
 
 ## Feature Matrix: Claude Code vs Cursor
 
-| Content Type | Claude Code | Cursor | Format | Single Source? |
-|--------------|-------------|--------|--------|----------------|
-| **Rules** | `.claude/rules/*.mdc` | `.cursor/rules/*.mdc` | MDC | ✅ YES |
-| **Hooks** | `.claude/hooks/*.sh` | `.cursor/hooks/*.js` | Different! | ❌ Two sources |
-| **Commands** | `.claude/commands/*.md` | `.cursor/commands/*.md` | Markdown | ✅ YES |
-| **Skills** | N/A | `.cursor/skills/*/SKILL.md` | SKILL.md | Cursor-only |
-| **Agents** | N/A | `.cursor/agents/*.md` | Markdown | Cursor-only |
-| **Notepads** | N/A | `.cursor/notepads/*.md` | Markdown | Cursor-only |
-| **Docs** | `.claude/docs/*.md` | N/A | Markdown | Claude-only |
-| **Main** | `CLAUDE.md` | `.cursorrules` | Different! | ✅ Template-based |
-| **Settings** | `.claude/settings.json` | `.cursor/hooks.json` | JSON | Different structure |
-| **MCP** | Referenced in main | `.cursor/mcp.json` | JSON | ✅ Similar structure |
+| Content Type | Claude Code             | Cursor                      | Format     | Single Source?       |
+| ------------ | ----------------------- | --------------------------- | ---------- | -------------------- |
+| **Rules**    | `.claude/rules/*.mdc`   | `.cursor/rules/*.mdc`       | MDC        | ✅ YES               |
+| **Hooks**    | `.claude/hooks/*.sh`    | `.cursor/hooks/*.js`        | Different! | ❌ Two sources       |
+| **Commands** | `.claude/commands/*.md` | `.cursor/commands/*.md`     | Markdown   | ✅ YES               |
+| **Skills**   | N/A                     | `.cursor/skills/*/SKILL.md` | SKILL.md   | Cursor-only          |
+| **Agents**   | N/A                     | `.cursor/agents/*.md`       | Markdown   | Cursor-only          |
+| **Notepads** | N/A                     | `.cursor/notepads/*.md`     | Markdown   | Cursor-only          |
+| **Docs**     | `.claude/docs/*.md`     | N/A                         | Markdown   | Claude-only          |
+| **Main**     | `CLAUDE.md`             | `.cursorrules`              | Different! | ✅ Template-based    |
+| **Settings** | `.claude/settings.json` | `.cursor/hooks.json`        | JSON       | Different structure  |
+| **MCP**      | Referenced in main      | `.cursor/mcp.json`          | JSON       | ✅ Similar structure |
 
 ## Content Directory Structure
 
@@ -117,14 +117,14 @@ generation:
   targets:
     claude:
       enabled: true
-      output_dir: ".claude"
+      output_dir: '.claude'
       features:
-        - rules          # content/rules/ → .claude/rules/
-        - hooks          # content/hooks/claude/ → .claude/hooks/
-        - commands       # content/commands/ → .claude/commands/
-        - docs           # templates/claude/docs/ → .claude/docs/
-        - settings       # templates/claude/settings.json.ejs → .claude/settings.json
-        - main           # templates/CLAUDE.md.ejs → CLAUDE.md
+        - rules # content/rules/ → .claude/rules/
+        - hooks # content/hooks/claude/ → .claude/hooks/
+        - commands # content/commands/ → .claude/commands/
+        - docs # templates/claude/docs/ → .claude/docs/
+        - settings # templates/claude/settings.json.ejs → .claude/settings.json
+        - main # templates/CLAUDE.md.ejs → CLAUDE.md
 ```
 
 ### Target: Cursor
@@ -135,16 +135,16 @@ generation:
   targets:
     cursor:
       enabled: true
-      output_dir: ".cursor"
+      output_dir: '.cursor'
       features:
-        - rules          # content/rules/ → .cursor/rules/
-        - hooks          # content/hooks/cursor/ → .cursor/hooks/
-        - commands       # content/commands/ → .cursor/commands/
-        - skills         # content/cursor-only/skills/ → .cursor/skills/
-        - agents         # content/cursor-only/agents/ → .cursor/agents/
-        - notepads       # content/cursor-only/notepads/ → .cursor/notepads/
-        - mcp            # templates/cursor/mcp.json.ejs → .cursor/mcp.json
-        - cursorrules    # templates/cursorrules.ejs → .cursorrules
+        - rules # content/rules/ → .cursor/rules/
+        - hooks # content/hooks/cursor/ → .cursor/hooks/
+        - commands # content/commands/ → .cursor/commands/
+        - skills # content/cursor-only/skills/ → .cursor/skills/
+        - agents # content/cursor-only/agents/ → .cursor/agents/
+        - notepads # content/cursor-only/notepads/ → .cursor/notepads/
+        - mcp # templates/cursor/mcp.json.ejs → .cursor/mcp.json
+        - cursorrules # templates/cursorrules.ejs → .cursorrules
 ```
 
 ### Future Target: Kilo
@@ -154,8 +154,8 @@ generation:
 generation:
   targets:
     kilo:
-      enabled: false     # Future support
-      output_dir: ".kilo"
+      enabled: false # Future support
+      output_dir: '.kilo'
       features:
         - rules
         - commands
@@ -236,7 +236,6 @@ lastUpdated: '2026-01-21'
 alwaysApply: false
 globs: ['src/**/*.tsx', 'src/**/*.jsx']
 ---
-
 # React Patterns
 
 Rule content in markdown...
@@ -250,12 +249,12 @@ Rule content in markdown...
 # .ai-project.yaml
 services:
   vcs:
-    type: gitlab        # → include gitlab commands
+    type: gitlab # → include gitlab commands
   task_tracking:
-    type: beads         # → include beads rules
+    type: beads # → include beads rules
   mcp:
     hindsight:
-      enabled: true     # → include hindsight rule
+      enabled: true # → include hindsight rule
 ```
 
 ### Template Conditionals

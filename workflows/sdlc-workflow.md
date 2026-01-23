@@ -257,15 +257,18 @@ Create these files for every feature (before implementation):
 # Feature Spec: [Name]
 
 ## Requirements (Executable)
+
 - [ ] Requirement 1
 - [ ] Requirement 2
 
 ## Acceptance Criteria
-| Scenario | Input | Expected |
-|---|---|---|
+
+| Scenario   | Input  | Expected |
+| ---------- | ------ | -------- |
 | [scenario] | [data] | [result] |
 
 ## Out of Scope
+
 - [What's NOT included]
 ```
 
@@ -277,6 +280,7 @@ Create these files for every feature (before implementation):
 # Design: [Feature]
 
 ## Decisions
+
 - **Technology**: [Choice] because [rationale]
 - **Trade-offs**: [Costs/benefits]
 ```
@@ -289,10 +293,12 @@ Create these files for every feature (before implementation):
 # Implementation Tasks
 
 ## Phase 1: Setup
+
 - [ ] Create component structure
 - [ ] Set up tests
 
 ## Phase 2: Core
+
 - [ ] Implement hooks
 - [ ] Add state
 ```
@@ -301,13 +307,13 @@ Create these files for every feature (before implementation):
 
 ### SDD Benefits
 
-| Aspect | Before | With SDD |
-|--------|--------|----------|
-| Requirements clarity | Verbal | Executable specs |
-| Review iterations | 3-4 | 1-2 (spec-driven) |
-| Rework rate | 40% | <10% |
-| Multi-agent sync | Manual | Automatic (same spec) |
-| Test coverage | Post-hoc | Built into spec |
+| Aspect               | Before   | With SDD              |
+| -------------------- | -------- | --------------------- |
+| Requirements clarity | Verbal   | Executable specs      |
+| Review iterations    | 3-4      | 1-2 (spec-driven)     |
+| Rework rate          | 40%      | <10%                  |
+| Multi-agent sync     | Manual   | Automatic (same spec) |
+| Test coverage        | Post-hoc | Built into spec       |
 
 ---
 
@@ -369,12 +375,12 @@ graph TB
 
 ### Time & Quality Impact
 
-| Metric | Before | With Swarm | Improvement |
-|--------|--------|-----------|-------------|
-| PR review cycle | 6-12 hours | 2-4 hours | -67% time |
-| Rework iterations | 2-3 | <1 | -50% cycles |
-| Bug escape rate | 10% | 2-3% | -67% bugs |
-| Type coverage | 85% | 95% | +10% |
+| Metric            | Before     | With Swarm | Improvement |
+| ----------------- | ---------- | ---------- | ----------- |
+| PR review cycle   | 6-12 hours | 2-4 hours  | -67% time   |
+| Rework iterations | 2-3        | <1         | -50% cycles |
+| Bug escape rate   | 10%        | 2-3%       | -67% bugs   |
+| Type coverage     | 85%        | 95%        | +10%        |
 
 ---
 
@@ -411,12 +417,12 @@ flowchart TD
 
 ### When to Use Each
 
-| Mode | Triggers | Use Case | Time |
-|------|----------|----------|------|
-| **Interactive SDLC** | Vague request, need clarifications | "Add authentication flow" (unclear scope) | 4-6 hours |
-| **Full SDLC** | Clear requirements, complex task | "Migrate from Redux to Zustand" | 6-12 hours |
-| **Epic Batches** | Parallel tasks, 5+ items | Large feature with independent components | 8-16 hours |
-| **Direct Implement** | Simple requirement, obvious solution | "Fix bug in login form" | <1 hour |
+| Mode                 | Triggers                             | Use Case                                  | Time       |
+| -------------------- | ------------------------------------ | ----------------------------------------- | ---------- |
+| **Interactive SDLC** | Vague request, need clarifications   | "Add authentication flow" (unclear scope) | 4-6 hours  |
+| **Full SDLC**        | Clear requirements, complex task     | "Migrate from Redux to Zustand"           | 6-12 hours |
+| **Epic Batches**     | Parallel tasks, 5+ items             | Large feature with independent components | 8-16 hours |
+| **Direct Implement** | Simple requirement, obvious solution | "Fix bug in login form"                   | <1 hour    |
 
 ### Workflow Selection Guide
 
@@ -707,13 +713,11 @@ BD_ENABLED=1  # Включить beads интеграцию
 ### Что происходит при BD_ENABLED=1
 
 1. **Session start hook** (`session-start.sh`):
-
    - `bd prime` — загрузка контекста
    - `bd ready` — доступные задачи
    - `bd blocked` — заблокированные задачи
 
 2. **Pre-commit hook** (`.husky/pre-commit`):
-
    - `bd sync --flush-only` — экспорт в JSONL
    - `git add .beads/issues.jsonl` — добавление в коммит
 

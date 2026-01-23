@@ -16,13 +16,13 @@ lastUpdated: '2026-01-16'
 services:
   task_tracking:
     type: 'jira'
-    integration_mode: 'cli'  # 'mcp' or 'cli'
+    integration_mode: 'cli' # 'mcp' or 'cli'
 ```
 
-| Mode | Jira Commands | Server |
-|------|---------------|--------|
-| `mcp` | `jira_*` MCP tools | `mcp-atlassian` |
-| `cli` | `jira issue ...` Bash | N/A |
+| Mode  | Jira Commands         | Server          |
+| ----- | --------------------- | --------------- |
+| `mcp` | `jira_*` MCP tools    | `mcp-atlassian` |
+| `cli` | `jira issue ...` Bash | N/A             |
 
 ## Core Principle
 
@@ -95,13 +95,13 @@ CallMcpTool({
 
 ```typescript
 CallMcpTool({
-  server: "mcp-atlassian",
-  toolName: "jira_search",
+  server: 'mcp-atlassian',
+  toolName: 'jira_search',
   arguments: {
     jql: 'project = <JIRA_PROJECT> AND assignee = currentUser() AND status != Done',
-    limit: 10
-  }
-})
+    limit: 10,
+  },
+});
 ```
 
 </details>
@@ -140,12 +140,10 @@ Done:
 **All intermediate reports and research results MUST be stored via MCP:**
 
 1. **Beads** (Local CLI):
-
    - Store research, analysis, progress in task description (`bd update <id> --description`)
    - ✅ Stores in `.beads/` folder (all in task descriptions)
 
 2. **Hindsight MCP** (`user-hindsight-alice`):
-
    - Store reflection and lessons learned
    - Store coding patterns and architectural decisions
    - Store experience and opinions

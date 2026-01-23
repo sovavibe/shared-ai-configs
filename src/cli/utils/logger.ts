@@ -30,7 +30,7 @@ export const logger = {
   },
 
   table: (data: Record<string, string>) => {
-    const maxKeyLen = Math.max(...Object.keys(data).map(k => k.length));
+    const maxKeyLen = Math.max(...Object.keys(data).map((k) => k.length));
     for (const [key, value] of Object.entries(data)) {
       console.log(`  ${chalk.gray(key.padEnd(maxKeyLen))}  ${value}`);
     }
@@ -40,5 +40,5 @@ export const logger = {
     for (const item of items) {
       console.log(`  ${chalk.gray(prefix)} ${item}`);
     }
-  }
+  },
 };

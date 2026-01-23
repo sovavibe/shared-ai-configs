@@ -36,9 +36,9 @@ What actually happened.
 ```yaml
 # Relevant parts of .ai-project.yaml
 project:
-  name: "..."
+  name: '...'
 stack:
-  type: "..."
+  type: '...'
 ```
 
 ## Logs

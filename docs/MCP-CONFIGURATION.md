@@ -102,7 +102,7 @@ services:
     figma:
       enabled: true
     browser:
-      enabled: true  # Enables z.ai suite: web-search, web-reader, zread
+      enabled: true # Enables z.ai suite: web-search, web-reader, zread
 ```
 
 ### Advanced Configuration with Custom Settings
@@ -113,22 +113,22 @@ services:
     hindsight:
       enabled: true
       # Custom endpoint (default: http://localhost:8888/mcp/alice/)
-      url: "http://custom-host:9999/mcp/alice/"
+      url: 'http://custom-host:9999/mcp/alice/'
 
     snyk:
       enabled: true
       # Custom args override defaults
-      args: ["-y", "snyk@6.0.0", "mcp", "-t", "stdio"]
+      args: ['-y', 'snyk@6.0.0', 'mcp', '-t', 'stdio']
 
     context7:
       enabled: true
       # Explicit API key env var reference
-      api_key_env: "CONTEXT7_API_KEY"
+      api_key_env: 'CONTEXT7_API_KEY'
 
     memory_bank:
       enabled: true
       env:
-        MEMORY_BANK_ROOT: ".custom-memory"
+        MEMORY_BANK_ROOT: '.custom-memory'
 ```
 
 ## Configuration to Generation Flow
@@ -241,59 +241,59 @@ SNYK_TOKEN=
 
 ## Server Reference Table
 
-| Server | Type | Config Key | Use For | API Key Env | Default Port |
-|--------|------|------------|---------|-------------|--------------|
-| **Hindsight** | HTTP | `hindsight` | Long-term memory, decision recall | None (local) | 8888 |
-| **Snyk** | stdio | `snyk` | Security scanning (SAST, SCA) | `SNYK_TOKEN` | N/A |
-| **Context7** | stdio | `context7` | Library documentation lookup | `CONTEXT7_API_KEY` | N/A |
-| **Memory Bank** | stdio | `memory_bank` | Session notes, project memory | None | N/A |
-| **Figma** | HTTP | `figma` | Design-to-code, screenshots | `FIGMA_API_KEY` | N/A |
-| **zai-mcp-server** | stdio | `browser` | Image analysis, OCR | `Z_AI_API_KEY` | N/A |
-| **web-search-prime** | HTTP | `browser` | Web search | `Z_AI_API_KEY` | N/A |
-| **web-reader** | HTTP | `browser` | URL content extraction | `Z_AI_API_KEY` | N/A |
-| **zread** | HTTP | `browser` | GitHub repo search | `Z_AI_API_KEY` | N/A |
+| Server               | Type  | Config Key    | Use For                           | API Key Env        | Default Port |
+| -------------------- | ----- | ------------- | --------------------------------- | ------------------ | ------------ |
+| **Hindsight**        | HTTP  | `hindsight`   | Long-term memory, decision recall | None (local)       | 8888         |
+| **Snyk**             | stdio | `snyk`        | Security scanning (SAST, SCA)     | `SNYK_TOKEN`       | N/A          |
+| **Context7**         | stdio | `context7`    | Library documentation lookup      | `CONTEXT7_API_KEY` | N/A          |
+| **Memory Bank**      | stdio | `memory_bank` | Session notes, project memory     | None               | N/A          |
+| **Figma**            | HTTP  | `figma`       | Design-to-code, screenshots       | `FIGMA_API_KEY`    | N/A          |
+| **zai-mcp-server**   | stdio | `browser`     | Image analysis, OCR               | `Z_AI_API_KEY`     | N/A          |
+| **web-search-prime** | HTTP  | `browser`     | Web search                        | `Z_AI_API_KEY`     | N/A          |
+| **web-reader**       | HTTP  | `browser`     | URL content extraction            | `Z_AI_API_KEY`     | N/A          |
+| **zread**            | HTTP  | `browser`     | GitHub repo search                | `Z_AI_API_KEY`     | N/A          |
 
 ## Server Capabilities
 
 ### Hindsight (Memory Server)
 
-| Tool | Purpose | Example |
-|------|---------|---------|
-| `recall` | Retrieve past decisions/patterns | `recall("API error handling")` |
-| `retain` | Store important information | `retain("Use X pattern because Y")` |
-| `reflect` | Synthesize complex decisions | `reflect("Architecture options")` |
+| Tool      | Purpose                          | Example                             |
+| --------- | -------------------------------- | ----------------------------------- |
+| `recall`  | Retrieve past decisions/patterns | `recall("API error handling")`      |
+| `retain`  | Store important information      | `retain("Use X pattern because Y")` |
+| `reflect` | Synthesize complex decisions     | `reflect("Architecture options")`   |
 
 ### Snyk (Security Scanner)
 
-| Tool | Purpose | Severity Levels |
-|------|---------|-----------------|
-| `snyk_code_scan` | SAST - source code vulnerabilities | low, medium, high |
-| `snyk_sca_scan` | SCA - dependency vulnerabilities | low, medium, high, critical |
-| `snyk_iac_scan` | IaC - infrastructure misconfigs | low, medium, high, critical |
-| `snyk_container_scan` | Container image vulnerabilities | low, medium, high, critical |
+| Tool                  | Purpose                            | Severity Levels             |
+| --------------------- | ---------------------------------- | --------------------------- |
+| `snyk_code_scan`      | SAST - source code vulnerabilities | low, medium, high           |
+| `snyk_sca_scan`       | SCA - dependency vulnerabilities   | low, medium, high, critical |
+| `snyk_iac_scan`       | IaC - infrastructure misconfigs    | low, medium, high, critical |
+| `snyk_container_scan` | Container image vulnerabilities    | low, medium, high, critical |
 
 ### Context7 (Documentation)
 
-| Tool | Purpose | Example |
-|------|---------|---------|
-| `resolve-library-id` | Find library identifier | `resolve-library-id("tanstack query")` |
-| `get-library-docs` | Fetch documentation | `get-library-docs("/tanstack/query", topic="mutations")` |
+| Tool                 | Purpose                 | Example                                                  |
+| -------------------- | ----------------------- | -------------------------------------------------------- |
+| `resolve-library-id` | Find library identifier | `resolve-library-id("tanstack query")`                   |
+| `get-library-docs`   | Fetch documentation     | `get-library-docs("/tanstack/query", topic="mutations")` |
 
 ### Figma (Design Integration)
 
-| Tool | Purpose | Example |
-|------|---------|---------|
-| `get_design_context` | Generate code from design | `get_design_context(nodeId="123:456", fileKey="abc")` |
-| `get_screenshot` | Capture design screenshot | `get_screenshot(nodeId="123:456", fileKey="abc")` |
-| `get_metadata` | Get design structure (XML) | `get_metadata(nodeId="0:1", fileKey="abc")` |
+| Tool                 | Purpose                    | Example                                               |
+| -------------------- | -------------------------- | ----------------------------------------------------- |
+| `get_design_context` | Generate code from design  | `get_design_context(nodeId="123:456", fileKey="abc")` |
+| `get_screenshot`     | Capture design screenshot  | `get_screenshot(nodeId="123:456", fileKey="abc")`     |
+| `get_metadata`       | Get design structure (XML) | `get_metadata(nodeId="0:1", fileKey="abc")`           |
 
 ### Memory Bank (Project Notes)
 
-| Tool | Purpose | Example |
-|------|---------|---------|
-| `memory_bank_read` | Read stored notes | `memory_bank_read(projectName="Front", fileName="api-patterns.md")` |
-| `memory_bank_write` | Store new notes | `memory_bank_write(projectName="Front", fileName="decisions.md", content="...")` |
-| `list_projects` | List all projects | `list_projects()` |
+| Tool                | Purpose           | Example                                                                          |
+| ------------------- | ----------------- | -------------------------------------------------------------------------------- |
+| `memory_bank_read`  | Read stored notes | `memory_bank_read(projectName="Front", fileName="api-patterns.md")`              |
+| `memory_bank_write` | Store new notes   | `memory_bank_write(projectName="Front", fileName="decisions.md", content="...")` |
+| `list_projects`     | List all projects | `list_projects()`                                                                |
 
 ## Priority Order for Tool Selection
 
@@ -352,23 +352,23 @@ npx snyk auth                         # Snyk CLI auth
 
 ### Common Issues
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| "Server not responding" | Process not running | Check `docker ps` or restart IDE |
-| "Tool not found" | Wrong server/tool name | Verify exact names in docs |
-| "Rate limit exceeded" | Too many requests | Wait 60s, use caching |
-| "Authentication failed" | Missing/expired key | Check env vars, re-auth |
-| "Connection refused" | Service not started | Start Hindsight: `docker-compose up` |
+| Issue                   | Cause                  | Solution                             |
+| ----------------------- | ---------------------- | ------------------------------------ |
+| "Server not responding" | Process not running    | Check `docker ps` or restart IDE     |
+| "Tool not found"        | Wrong server/tool name | Verify exact names in docs           |
+| "Rate limit exceeded"   | Too many requests      | Wait 60s, use caching                |
+| "Authentication failed" | Missing/expired key    | Check env vars, re-auth              |
+| "Connection refused"    | Service not started    | Start Hindsight: `docker-compose up` |
 
 ### Fallback Strategies
 
-| MCP Tool | Fallback When Unavailable |
-|----------|---------------------------|
-| **Context7** | WebSearch + `node_modules` inspection |
-| **Hindsight** | Grep codebase, check code comments |
-| **Snyk** | Run `npm audit` locally |
-| **Figma** | Request screenshots from user |
-| **Memory Bank** | Use local `.md` files temporarily |
+| MCP Tool        | Fallback When Unavailable             |
+| --------------- | ------------------------------------- |
+| **Context7**    | WebSearch + `node_modules` inspection |
+| **Hindsight**   | Grep codebase, check code comments    |
+| **Snyk**        | Run `npm audit` locally               |
+| **Figma**       | Request screenshots from user         |
+| **Memory Bank** | Use local `.md` files temporarily     |
 
 ## Configuration Examples
 

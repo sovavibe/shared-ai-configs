@@ -36,42 +36,42 @@ Every project aspect is configurable via `.ai-project.yaml`:
 ```yaml
 # Project-specific commands
 commands:
-  dev: "pnpm dev"           # Used in CLAUDE.md
-  build: "pnpm build"
-  lint: "pnpm lint"
-  test: "pnpm vitest"
-  codegen: "pnpm codegen"
-  quality_gates: "pnpm quality:gates"  # Used in hooks
+  dev: 'pnpm dev' # Used in CLAUDE.md
+  build: 'pnpm build'
+  lint: 'pnpm lint'
+  test: 'pnpm vitest'
+  codegen: 'pnpm codegen'
+  quality_gates: 'pnpm quality:gates' # Used in hooks
 
 # Project-specific services
 services:
   vcs:
-    type: gitlab            # Determines which VCS rules to include
+    type: gitlab # Determines which VCS rules to include
   task_tracking:
-    type: beads             # Determines which tracking rules to include
-    key_prefix: "{PREFIX}-"     # Project prefix for task IDs
+    type: beads # Determines which tracking rules to include
+    key_prefix: '{PREFIX}-' # Project prefix for task IDs
   mcp:
     hindsight:
-      enabled: true         # Include hindsight rules
+      enabled: true # Include hindsight rules
     snyk:
-      enabled: true         # Include security rules
+      enabled: true # Include security rules
 ```
 
 ### 3. Conditional Content
 
 Templates include/exclude sections based on config:
 
-```ejs
+````ejs
 <% if (services?.task_tracking?.type === 'beads') { %>
 ## Beads Task Tracking
 ```bash
 bd ready           # Find work
 bd close <id>      # Complete task
-```
+````
 
 <% } %>
 
-```
+````
 
 ### 4. IDE-Specific Adaptations
 
@@ -114,7 +114,7 @@ services:
       enabled: true    # Just enable/disable, no keys
     snyk:
       enabled: true
-```
+````
 
 ```bash
 # Environment variables (user's shell or .env.local)
@@ -134,11 +134,11 @@ MCP templates reference env vars:
 
 **Required env vars by service:**
 
-| Service | Environment Variable |
-|---------|---------------------|
-| Figma | `FIGMA_API_KEY` |
-| Snyk | `SNYK_TOKEN` (optional, uses CLI auth) |
-| Context7 | None (uses Upstash free tier) |
+| Service  | Environment Variable                   |
+| -------- | -------------------------------------- |
+| Figma    | `FIGMA_API_KEY`                        |
+| Snyk     | `SNYK_TOKEN` (optional, uses CLI auth) |
+| Context7 | None (uses Upstash free tier)          |
 
 Use `npx shared-ai-configs doctor` to verify required env vars are set.
 
@@ -459,8 +459,8 @@ generation:
       features: string[]
 
 rules:
-  critical: string[]  # Always include
-  custom: string[]    # Project-specific additions
+  critical: string[] # Always include
+  custom: string[] # Project-specific additions
 ```
 
 ## Benefits

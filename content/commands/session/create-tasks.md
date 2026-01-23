@@ -14,13 +14,13 @@ description: 'Auto-detect and create tasks: Jira for team sync, Beads for local 
 services:
   task_tracking:
     type: 'jira'
-    integration_mode: 'cli'  # 'mcp' or 'cli'
+    integration_mode: 'cli' # 'mcp' or 'cli'
 ```
 
-| Mode | Jira Commands | Server |
-|------|---------------|--------|
-| `mcp` | `jira_*` MCP tools | `mcp-atlassian` |
-| `cli` | `jira issue ...` Bash | N/A |
+| Mode  | Jira Commands         | Server          |
+| ----- | --------------------- | --------------- |
+| `mcp` | `jira_*` MCP tools    | `mcp-atlassian` |
+| `cli` | `jira issue ...` Bash | N/A             |
 
 ## Workflow
 

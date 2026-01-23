@@ -19,16 +19,16 @@ export GITLAB_HOST="gitlab.example.com"  # default: gitlab.com
 
 ## Scripts
 
-| Script | Description | Usage |
-|--------|-------------|-------|
-| `mr-view.sh` | View MR details | `./mr-view.sh 321 [--json]` |
-| `mr-diff.sh` | Get MR diff | `./mr-diff.sh 321` |
-| `mr-notes.sh` | Get all MR notes | `./mr-notes.sh 321` |
-| `mr-discussions.sh` | Get discussions (with IDs) | `./mr-discussions.sh 321 [--unresolved]` |
-| `mr-comment.sh` | Add MR comment | `./mr-comment.sh 321 -m "message"` |
-| `mr-reply.sh` | Reply to discussion | `./mr-reply.sh 321 <DISC_ID> -m "message"` |
-| `mr-inline-comment.sh` | Add inline comment | `./mr-inline-comment.sh 321 -f file.ts -l 42 -s new -m "message"` |
-| `mr-update.sh` | Update MR | `./mr-update.sh 321 --title "..." --description "..."` |
+| Script                 | Description                | Usage                                                             |
+| ---------------------- | -------------------------- | ----------------------------------------------------------------- |
+| `mr-view.sh`           | View MR details            | `./mr-view.sh 321 [--json]`                                       |
+| `mr-diff.sh`           | Get MR diff                | `./mr-diff.sh 321`                                                |
+| `mr-notes.sh`          | Get all MR notes           | `./mr-notes.sh 321`                                               |
+| `mr-discussions.sh`    | Get discussions (with IDs) | `./mr-discussions.sh 321 [--unresolved]`                          |
+| `mr-comment.sh`        | Add MR comment             | `./mr-comment.sh 321 -m "message"`                                |
+| `mr-reply.sh`          | Reply to discussion        | `./mr-reply.sh 321 <DISC_ID> -m "message"`                        |
+| `mr-inline-comment.sh` | Add inline comment         | `./mr-inline-comment.sh 321 -f file.ts -l 42 -s new -m "message"` |
+| `mr-update.sh`         | Update MR                  | `./mr-update.sh 321 --title "..." --description "..."`            |
 
 ## Examples
 
@@ -66,11 +66,11 @@ DISC_ID=$(./mr-discussions.sh 321 --unresolved | jq -r '.[0].id')
 
 ## Migration from TypeScript Scripts
 
-| Old Script | New Script |
-|-----------|------------|
-| `npx tsx scripts/gitlab/core/get-mr.ts --mr 321` | `./mr-view.sh 321 --json` |
-| `npx tsx scripts/gitlab/core/get-changes.ts --mr 321` | `./mr-diff.sh 321` |
-| `npx tsx scripts/gitlab/comments/get-all-notes.ts --mr 321` | `./mr-notes.sh 321` |
-| `npx tsx scripts/gitlab/comments/get-unresolved.ts --mr 321 --open-only` | `./mr-discussions.sh 321 --unresolved` |
-| `npx tsx scripts/gitlab/comments/reply-to-thread.ts --mr 321 --discussion-id X --body "msg"` | `./mr-reply.sh 321 X -m "msg"` |
-| `npx tsx scripts/gitlab/core/inline-comment.ts ...` | `./mr-inline-comment.sh ...` |
+| Old Script                                                                                   | New Script                             |
+| -------------------------------------------------------------------------------------------- | -------------------------------------- |
+| `npx tsx scripts/gitlab/core/get-mr.ts --mr 321`                                             | `./mr-view.sh 321 --json`              |
+| `npx tsx scripts/gitlab/core/get-changes.ts --mr 321`                                        | `./mr-diff.sh 321`                     |
+| `npx tsx scripts/gitlab/comments/get-all-notes.ts --mr 321`                                  | `./mr-notes.sh 321`                    |
+| `npx tsx scripts/gitlab/comments/get-unresolved.ts --mr 321 --open-only`                     | `./mr-discussions.sh 321 --unresolved` |
+| `npx tsx scripts/gitlab/comments/reply-to-thread.ts --mr 321 --discussion-id X --body "msg"` | `./mr-reply.sh 321 X -m "msg"`         |
+| `npx tsx scripts/gitlab/core/inline-comment.ts ...`                                          | `./mr-inline-comment.sh ...`           |

@@ -22,6 +22,7 @@
 ### Three Core Inputs (Golden Triangle)
 
 **1. Product Surface** - What are we building?
+
 ```
 Components: Button, Modal, Form, Card
 Data: User profile, posts list, comments
@@ -29,6 +30,7 @@ Actions: Submit, Delete, Filter, Sort
 ```
 
 **2. Context of Use** - Who, when, and why?
+
 ```
 Used by: E-commerce customers browsing products
 In: Mobile shopping app, during checkout decision
@@ -36,6 +38,7 @@ To: Choose product variant (size/color) and add to cart
 ```
 
 **3. Constraints & Taste** - Visual and technical boundaries
+
 ```
 Constraints:
 - Mobile-first (max 320px width)
@@ -55,12 +58,12 @@ Constraints: [PLATFORM], [VISUAL_STYLE], [FRAMEWORK], [PERFORMANCE], [LAYOUT].
 
 ### Real-World Impact
 
-| Metric | Vague Prompt | Detailed Prompt | Improvement |
-|--------|--------------|-----------------|-------------|
-| **Generation Time** | 38s | 19s | -50% |
-| **Generated LOC** | 232 lines | 80 lines | -65% |
-| **Iterations Needed** | 1-2 rounds | 0 rounds | Immediate |
-| **Mobile Optimized** | 40% | 100% | +150% |
+| Metric                | Vague Prompt | Detailed Prompt | Improvement |
+| --------------------- | ------------ | --------------- | ----------- |
+| **Generation Time**   | 38s          | 19s             | -50%        |
+| **Generated LOC**     | 232 lines    | 80 lines        | -65%        |
+| **Iterations Needed** | 1-2 rounds   | 0 rounds        | Immediate   |
+| **Mobile Optimized**  | 40%          | 100%            | +150%       |
 
 ---
 
@@ -91,6 +94,7 @@ const userDetails = await user; // Only await when needed
 ```
 
 **Checklist:**
+
 - [ ] Independent async operations use `Promise.all()`
 - [ ] Sequential awaits justified (one depends on previous)
 - [ ] Promise initialization moved to where it's actually used
@@ -127,6 +131,7 @@ if (userPreferences.enableAnalytics) {
 ```
 
 **Checklist:**
+
 - [ ] No barrel file imports for single utilities
 - [ ] Heavy components use `React.lazy()` with `Suspense` boundary
 - [ ] Third-party code conditionally loaded
@@ -182,6 +187,7 @@ const initialData = {
 ```
 
 **Checklist:**
+
 - [ ] Data fetching uses TanStack Query for deduplication
 - [ ] Query keys are stable and descriptive
 - [ ] staleTime configured appropriately
@@ -220,6 +226,7 @@ export const UserPosts = () => {
 ```
 
 **Checklist:**
+
 - [ ] Data fetching uses SWR or React Query
 - [ ] Event listeners centralized (not multiple per event)
 - [ ] No fetch duplication across components
@@ -254,6 +261,7 @@ const handleSubmit = useCallback(() => {
 ```
 
 **Checklist:**
+
 - [ ] Expensive computations use useMemo
 - [ ] Memoized components use stable props
 - [ ] State lazy-initialized
@@ -293,6 +301,7 @@ export const Page = () => {
 ```
 
 **Checklist:**
+
 - [ ] Long lists use `content-visibility: auto`
 - [ ] Static JSX hoisted outside component
 - [ ] Conditionals use ternary (not logical AND)
@@ -310,7 +319,7 @@ export const Page = () => {
 element.style.cssText = 'color: red; background: blue;';
 
 // ✅ Good - Use Map for O(1) lookups
-const userMap = new Map(users.map(u => [u.id, u]));
+const userMap = new Map(users.map((u) => [u.id, u]));
 const user = userMap.get(userId); // O(1)
 
 // ❌ Bad - Individual CSS modifications
@@ -318,10 +327,11 @@ element.style.color = 'red';
 element.style.background = 'blue'; // Multiple reflows
 
 // ❌ Bad - Array.find for each lookup
-const user = users.find(u => u.id === userId); // O(n)
+const user = users.find((u) => u.id === userId); // O(n)
 ```
 
 **Checklist:**
+
 - [ ] Batch DOM/CSS modifications
 - [ ] Use Map/Set for lookups (not array.find)
 - [ ] Cache property access in loops
@@ -337,11 +347,16 @@ const user = users.find(u => u.id === userId); // O(n)
 // ✅ Good - Stable callback reference via useRef
 const handlerRef = useRef(null);
 
-useEffect(() => {
-  handlerRef.current = () => {
-    // Latest handler logic
-  };
-}, [/* dependencies */]);
+useEffect(
+  () => {
+    handlerRef.current = () => {
+      // Latest handler logic
+    };
+  },
+  [
+    /* dependencies */
+  ]
+);
 
 const stableHandler = useCallback((e) => {
   handlerRef.current?.(e);
@@ -351,6 +366,7 @@ const stableHandler = useCallback((e) => {
 ```
 
 **Checklist:**
+
 - [ ] Event handler references stable
 - [ ] useRef used for DOM access
 - [ ] No function reference recreation on every render
@@ -364,16 +380,16 @@ const stableHandler = useCallback((e) => {
 **Why:** Prevent unnecessary re-renders when props haven't changed
 
 **Checklist:**
+
 - [ ] List items wrapped with React.memo
 - [ ] Higher-order components wrapped with memo
 - [ ] Callback props to memoized components use useCallback
 
 **Example (Good):**
+
 ```tsx
 const ListItem = React.memo(({ id, name, onClick }) => (
-  <div onClick={() => onClick(id)}>
-    {name} - (expensive render)
-  </div>
+  <div onClick={() => onClick(id)}>{name} - (expensive render)</div>
 ));
 
 export const ListContainer = () => {
@@ -383,12 +399,12 @@ export const ListContainer = () => {
 
   return (
     <div>
-      {items.map(item => (
+      {items.map((item) => (
         <ListItem
           key={item.id}
           id={item.id}
           name={item.name}
-          onClick={handleClick}  // Stable callback
+          onClick={handleClick} // Stable callback
         />
       ))}
     </div>
@@ -397,20 +413,19 @@ export const ListContainer = () => {
 ```
 
 **Example (Bad):**
+
 ```tsx
 // ❌ No memo - re-renders on every parent render
-const ListItem = ({ id, name, onClick }) => (
-  <div onClick={() => onClick(id)}>{name}</div>
-);
+const ListItem = ({ id, name, onClick }) => <div onClick={() => onClick(id)}>{name}</div>;
 
 // ❌ Callback recreated on every render - defeats memo
 export const ListContainer = () => {
   return (
     <div>
-      {items.map(item => (
+      {items.map((item) => (
         <ListItem
           key={item.id}
-          onClick={(id) => console.log(id)}  // New function every render
+          onClick={(id) => console.log(id)} // New function every render
         />
       ))}
     </div>
@@ -425,6 +440,7 @@ export const ListContainer = () => {
 **Why:** Prevents infinite loops, stale data, and memory leaks
 
 **Checklist:**
+
 - [ ] All external variables in dependency array
 - [ ] No missing dependencies
 - [ ] No unnecessary dependencies
@@ -432,6 +448,7 @@ export const ListContainer = () => {
 - [ ] Empty dependency array only for mount-only effects
 
 **Example (Good):**
+
 ```tsx
 export const UserProfile = ({ userId }) => {
   const [user, setUser] = useState(null);
@@ -439,24 +456,25 @@ export const UserProfile = ({ userId }) => {
   useEffect(() => {
     let isMounted = true;
 
-    fetchUser(userId).then(data => {
+    fetchUser(userId).then((data) => {
       if (isMounted) {
         setUser(data);
       }
     });
 
     return () => {
-      isMounted = false;  // Cleanup
+      isMounted = false; // Cleanup
     };
-  }, [userId]);  // Re-run only when userId changes
+  }, [userId]); // Re-run only when userId changes
 };
 ```
 
 **Example (Bad):**
+
 ```tsx
 // ❌ Missing userId dependency - stale data
 useEffect(() => {
-  fetchUser(userId);  // Will use initial userId forever
+  fetchUser(userId); // Will use initial userId forever
 }, []);
 
 // ❌ No cleanup - memory leak
@@ -468,7 +486,7 @@ useEffect(() => {
 // ❌ Unnecessary dependency - causes infinite loops
 useEffect(() => {
   setUser(data);
-}, [data, setUser]);  // setUser is from useState, doesn't need dependency
+}, [data, setUser]); // setUser is from useState, doesn't need dependency
 ```
 
 ---
@@ -478,11 +496,13 @@ useEffect(() => {
 **Why:** Cache expensive computations and prevent unnecessary recalculations
 
 **Checklist:**
+
 - [ ] Used only for genuinely expensive operations (>1ms)
 - [ ] Dependency array includes all external variables
 - [ ] Not used prematurely (premature optimization)
 
 **Example (Good):**
+
 ```tsx
 export const DataAnalyzer = ({ data }) => {
   // Expensive: O(n) calculation
@@ -506,25 +526,34 @@ export const DataAnalyzer = ({ data }) => {
 ### ❌ Anti-pattern: Missing keys in lists
 
 **Problem:** React can't track which item moved, causing:
+
 - Incorrect form state in list items
 - Animation bugs
 - Performance issues
 
 **Checklist:**
+
 - [ ] All lists have `key` prop
 - [ ] Keys are stable identifiers (id, not index)
 - [ ] No string literals as keys
 
 **Example (Bad):**
+
 ```tsx
 // ❌ No key - React confused when list changes
-{items.map(item => <Item data={item} />)}
+{
+  items.map((item) => <Item data={item} />);
+}
 
 // ❌ Index as key - problematic if list reorders
-{items.map((item, index) => <Item key={index} data={item} />)}
+{
+  items.map((item, index) => <Item key={index} data={item} />);
+}
 
 // ✅ Good
-{items.map(item => <Item key={item.id} data={item} />)}
+{
+  items.map((item) => <Item key={item.id} data={item} />);
+}
 ```
 
 ---
@@ -536,11 +565,13 @@ export const DataAnalyzer = ({ data }) => {
 **Solution:** Use Context API when drilling > 3 levels
 
 **Checklist:**
+
 - [ ] Prop drilling depth < 3 levels
 - [ ] If > 3 levels, consider Context API or custom hook
 - [ ] Ant Design components are exception (intended API)
 
 **Example (Bad):**
+
 ```tsx
 // ❌ Drilling 4 levels deep
 <Page user={user}>
@@ -553,6 +584,7 @@ export const DataAnalyzer = ({ data }) => {
 ```
 
 **Example (Good):**
+
 ```tsx
 // ✅ Use Context instead
 const UserContext = createContext();
@@ -580,15 +612,17 @@ export const Profile = () => {
 **Problem:** State lifted or placed inappropriately
 
 **Checklist:**
+
 - [ ] Local component state not lifted to global unnecessarily
 - [ ] Shared state between siblings lives in parent
 - [ ] Global state only for truly global data (auth, theme, etc.)
 
 **Example (Bad):**
+
 ```tsx
 // ❌ Global store for local component state
-const store = create(set => ({
-  buttonColor: 'blue',  // Should be local state
+const store = create((set) => ({
+  buttonColor: 'blue', // Should be local state
   setButtonColor: (color) => set({ buttonColor: color }),
 }));
 
@@ -599,6 +633,7 @@ export const Button = () => {
 ```
 
 **Example (Good):**
+
 ```tsx
 export const Button = () => {
   const [color, setColor] = useState('blue');
@@ -613,26 +648,23 @@ export const Button = () => {
 ### ✅ Rule: Type Props Correctly
 
 **Checklist:**
+
 - [ ] All component props explicitly typed
 - [ ] No `any` types in props
 - [ ] Children properly typed
 - [ ] Optional props marked with `?`
 
 **Example (Good):**
+
 ```tsx
 interface CardProps {
   title: string;
-  description?: string;  // Optional
+  description?: string; // Optional
   children: React.ReactNode;
   onClick: (id: string) => void;
 }
 
-export const Card: React.FC<CardProps> = ({
-  title,
-  description,
-  children,
-  onClick,
-}) => {
+export const Card: React.FC<CardProps> = ({ title, description, children, onClick }) => {
   return <div>{title}</div>;
 };
 ```
@@ -642,11 +674,13 @@ export const Card: React.FC<CardProps> = ({
 ### ✅ Rule: Event Handler Types
 
 **Checklist:**
+
 - [ ] Form event handlers: `React.FormEvent<HTMLFormElement>`
 - [ ] Click handlers: `React.MouseEvent<HTMLButtonElement>`
 - [ ] Input change: `React.ChangeEvent<HTMLInputElement>`
 
 **Example (Good):**
+
 ```tsx
 const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
@@ -671,6 +705,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 ### ✅ Rule: Proper Ant Design Component Usage
 
 **Checklist:**
+
 - [ ] Form uses Ant Design Form component
 - [ ] Table renders with Ant Table for performance
 - [ ] Modal uses Ant Modal (not custom modals)
@@ -678,6 +713,7 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 - [ ] Theme colors use Ant Design tokens
 
 **Example (Good):**
+
 ```tsx
 import { Form, Input, Button, Table } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
@@ -687,11 +723,7 @@ export const UserForm = () => {
 
   return (
     <Form form={form} layout="vertical">
-      <Form.Item
-        name="username"
-        label="Username"
-        rules={[{ required: true }]}
-      >
+      <Form.Item name="username" label="Username" rules={[{ required: true }]}>
         <Input prefix={<UserOutlined />} />
       </Form.Item>
       <Button type="primary" htmlType="submit">
@@ -709,6 +741,7 @@ export const UserForm = () => {
 ### ✅ Rule: Proper useQuery Usage
 
 **Checklist:**
+
 - [ ] Query keys are stable and descriptive
 - [ ] Query functions are pure
 - [ ] Stale time configured appropriately
@@ -716,16 +749,21 @@ export const UserForm = () => {
 - [ ] Loading states rendered
 
 **Example (Good):**
+
 ```tsx
 export const UserProfile = ({ userId }: { userId: string }) => {
-  const { data: user, isLoading, error } = useQuery({
-    queryKey: ['user', userId],  // Stable key
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['user', userId], // Stable key
     queryFn: async () => {
       const response = await fetch(`/api/users/${userId}`);
       if (!response.ok) throw new Error('Failed to fetch');
       return response.json();
     },
-    staleTime: 5 * 60 * 1000,  // 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   if (isLoading) return <div>Loading...</div>;
@@ -742,6 +780,7 @@ export const UserProfile = ({ userId }: { userId: string }) => {
 When reviewing React components, check:
 
 ### Performance
+
 - [ ] List items have stable keys (not indices)
 - [ ] Memoization used appropriately
 - [ ] useCallback used for callback dependencies
@@ -749,23 +788,27 @@ When reviewing React components, check:
 - [ ] useEffect dependencies correct
 
 ### Code Quality
+
 - [ ] Props drilling < 3 levels
 - [ ] State in correct location
 - [ ] No prop mutability
 - [ ] No state mutations
 
 ### TypeScript
+
 - [ ] All props typed
 - [ ] No `any` types
 - [ ] Event handlers typed
 - [ ] Children typed properly
 
 ### Testing
+
 - [ ] Components testable
 - [ ] No hardcoded values
 - [ ] Business logic extractable
 
 ### Ant Design
+
 - [ ] Using Ant Form for forms
 - [ ] Using Ant Table for tables
 - [ ] Icons from @ant-design/icons
@@ -776,24 +819,28 @@ When reviewing React components, check:
 ## Common Issues by Severity
 
 ### 🔴 Critical (Must Fix)
+
 - Missing keys in lists
 - Memory leaks (no cleanup)
 - Infinite loops (useEffect dependencies)
 - Props mutations
 
 ### 🟡 High (Should Fix)
+
 - Props drilling > 3 levels
 - State in wrong place
 - No error handling
 - Missing TypeScript types
 
 ### 🟠 Medium (Nice to Fix)
+
 - Missing useMemo for expensive ops
 - Unnecessary re-renders
 - No loading states
 - Incomplete acceptance criteria
 
 ### 🟢 Low (Consider)
+
 - Code style inconsistencies
 - Comments clarity
 - Naming conventions
@@ -802,7 +849,7 @@ When reviewing React components, check:
 
 ## Resources
 
-- **React Docs:** https://react.dev/
-- **Ant Design:** https://ant.design/components/overview/
-- **TanStack Query:** https://tanstack.com/query/latest
-- **TypeScript Handbook:** https://www.typescriptlang.org/docs/
+- **React Docs:** <https://react.dev/>
+- **Ant Design:** <https://ant.design/components/overview/>
+- **TanStack Query:** <https://tanstack.com/query/latest>
+- **TypeScript Handbook:** <https://www.typescriptlang.org/docs/>

@@ -66,26 +66,26 @@ export const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
-`
+`;
 
 // Flexbox utilities
 export const Flex = styled.div<{
-  direction?: 'row' | 'column'
-  align?: 'start' | 'center' | 'end'
-  justify?: 'start' | 'center' | 'end' | 'space-between'
+  direction?: 'row' | 'column';
+  align?: 'start' | 'center' | 'end';
+  justify?: 'start' | 'center' | 'end' | 'space-between';
 }>`
   display: flex;
   flex-direction: ${({ direction }) => direction || 'row'};
   align-items: ${({ align }) => align || 'stretch'};
   justify-content: ${({ justify }) => justify || 'flex-start'};
-`
+`;
 
 // Grid
 export const Grid = styled.div<{ columns?: number; gap?: string }>`
   display: grid;
   grid-template-columns: repeat(${({ columns }) => columns || 12}, 1fr);
   gap: ${({ gap }) => gap || '1rem'};
-`
+`;
 ```
 
 ## Tailwind CSS Utilities
@@ -151,12 +151,12 @@ export const Card: FC = () => {
 ```typescript
 // Mobile-first approach
 const breakpoints = {
-  'sm': '640px',
-  'md': '768px',
-  'lg': '1024px',
-  'xl': '1280px',
+  sm: '640px',
+  md: '768px',
+  lg: '1024px',
+  xl: '1280px',
   '2xl': '1536px',
-}
+};
 
 export const Responsive = styled.div`
   padding: 1rem;
@@ -168,7 +168,7 @@ export const Responsive = styled.div`
   @media (min-width: ${breakpoints.lg}) {
     padding: 3rem;
   }
-`
+`;
 ```
 
 ### Responsive Component Example
@@ -310,7 +310,7 @@ const colors = {
     800: '#820014',
     900: '#5c0011',
   },
-}
+};
 ```
 
 ### Using Colors
@@ -346,14 +346,14 @@ const spacing = {
   16: '4rem', // 64px
   20: '5rem', // 80px
   24: '6rem', // 96px
-}
+};
 
 // Usage
 export const SpacedComponent = styled.div`
   padding: ${spacing[4]};
   margin: ${spacing[6]} 0;
   gap: ${spacing[3]};
-`
+`;
 ```
 
 ## Dark Mode Support
@@ -406,5 +406,5 @@ const Body = styled.p`
 ## References
 
 - `.cursor/rules/styling.mdc` — Full styling documentation
-- Styled Components: https://styled-components.com/docs
-- Tailwind CSS: https://tailwindcss.com/docs
+- Styled Components: <https://styled-components.com/docs>
+- Tailwind CSS: <https://tailwindcss.com/docs>

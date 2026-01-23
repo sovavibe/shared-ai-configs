@@ -130,46 +130,46 @@ describe('CargoTable', () => {
 ### Hook Test with MSW
 
 ```typescript
-import { renderHook, waitFor } from '@testing-library/react'
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest'
-import { worker } from 'src/mocks/browser'
-import { http, HttpResponse } from 'msw'
-import { useCargoList } from './useCargoList'
-import { createWrapper } from 'test/utils'
+import { renderHook, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import { worker } from 'src/mocks/browser';
+import { http, HttpResponse } from 'msw';
+import { useCargoList } from './useCargoList';
+import { createWrapper } from 'test/utils';
 
 describe('useCargoList', () => {
-  beforeAll(() => worker.listen())
-  afterEach(() => worker.resetHandlers())
-  afterAll(() => worker.close())
+  beforeAll(() => worker.listen());
+  afterEach(() => worker.resetHandlers());
+  afterAll(() => worker.close());
 
   it('fetches cargo list successfully', async () => {
     const { result } = renderHook(() => useCargoList(), {
       wrapper: createWrapper(),
-    })
+    });
 
     await waitFor(() => {
-      expect(result.current.isSuccess).toBe(true)
-    })
+      expect(result.current.isSuccess).toBe(true);
+    });
 
-    expect(result.current.data).toHaveLength(10)
-  })
+    expect(result.current.data).toHaveLength(10);
+  });
 
   it('handles error response', async () => {
     worker.use(
       http.get('/api/cargo', () => {
-        return HttpResponse.json({ error: 'Server error' }, { status: 500 })
-      }),
-    )
+        return HttpResponse.json({ error: 'Server error' }, { status: 500 });
+      })
+    );
 
     const { result } = renderHook(() => useCargoList(), {
       wrapper: createWrapper(),
-    })
+    });
 
     await waitFor(() => {
-      expect(result.current.isError).toBe(true)
-    })
-  })
-})
+      expect(result.current.isError).toBe(true);
+    });
+  });
+});
 ```
 
 ## MSW Handler Validation
@@ -208,7 +208,7 @@ npm run test -- --reporter=verbose -t "test name"
 // Increase timeout for slow tests
 it('handles large dataset', async () => {
   // ...
-}, 10000) // 10 second timeout
+}, 10000); // 10 second timeout
 ```
 
 ### Async State Updates
@@ -216,8 +216,8 @@ it('handles large dataset', async () => {
 ```typescript
 // Always use waitFor for async updates
 await waitFor(() => {
-  expect(result.current.data).toBeDefined()
-})
+  expect(result.current.data).toBeDefined();
+});
 ```
 
 ### Mock Reset Issues
@@ -225,9 +225,9 @@ await waitFor(() => {
 ```typescript
 // Reset mocks between tests
 afterEach(() => {
-  vi.clearAllMocks()
-  worker.resetHandlers()
-})
+  vi.clearAllMocks();
+  worker.resetHandlers();
+});
 ```
 
 ## Constraints

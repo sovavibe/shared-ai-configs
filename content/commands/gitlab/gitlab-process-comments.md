@@ -16,13 +16,13 @@ description: 'Process GitLab MR comments: structure → research → implement �
 services:
   task_tracking:
     type: 'jira'
-    integration_mode: 'cli'  # 'mcp' or 'cli'
+    integration_mode: 'cli' # 'mcp' or 'cli'
 ```
 
-| Mode | Jira Commands | Server |
-|------|---------------|--------|
-| `mcp` | `jira_*` MCP tools | `mcp-atlassian` |
-| `cli` | `jira issue ...` Bash | N/A |
+| Mode  | Jira Commands         | Server          |
+| ----- | --------------------- | --------------- |
+| `mcp` | `jira_*` MCP tools    | `mcp-atlassian` |
+| `cli` | `jira issue ...` Bash | N/A             |
 
 ## Workflow
 
@@ -118,7 +118,7 @@ CallMcpTool({
   server: 'mcp-atlassian',
   toolName: 'jira_search',
   arguments: { jql: 'project = <JIRA_PROJECT> AND labels = mr-xx AND status != Done' },
-})
+});
 // CLI Mode:
 // jira issue list --raw -q "project = <JIRA_PROJECT> AND labels = mr-xx AND status != Done"
 
@@ -127,7 +127,7 @@ CallMcpTool({
   server: 'user-hindsight-alice',
   toolName: 'recall',
   arguments: { bank_id: 'patterns', query: 'MR processing patterns', max_tokens: 4096 },
-})
+});
 ```
 
 **Decision:** No tasks → Round 1 | All Done → Round N+1 | Has Open → Continue
@@ -169,7 +169,7 @@ CallMcpTool({
     issue_type: 'Task',
     labels: ['mr-xx', 'code-review', 'round-N'],
   },
-})
+});
 ```
 
 </details>
@@ -266,7 +266,7 @@ CallMcpTool({
   server: 'user-hindsight-alice',
   toolName: 'recall',
   arguments: { bank_id: 'patterns', query: 'patterns for [area]', max_tokens: 4096 },
-})
+});
 
 // 3. Jira - контекст (если нужно)
 // MCP Mode:
@@ -274,7 +274,7 @@ CallMcpTool({
   server: 'mcp-atlassian',
   toolName: 'jira_get_issue',
   arguments: { issue_key: '{PREFIX}-XXX' },
-})
+});
 // CLI Mode: jira issue view {PREFIX}-XXX --raw
 
 // 4. Context7 - документация (если нужно)
@@ -282,7 +282,7 @@ CallMcpTool({
   server: 'MCP_DOCKER',
   toolName: 'resolve-library-id',
   arguments: { libraryName: 'antd' },
-})
+});
 ```
 
 ### Step 4: Research Before Implementation
@@ -293,14 +293,14 @@ CallMcpTool({
   server: 'user-hindsight-alice',
   toolName: 'recall',
   arguments: { bank_id: 'patterns', query: 'How did we solve [issue type]?', max_tokens: 4096 },
-})
+});
 
 // 2. Context7 - best practices (если применимо)
 CallMcpTool({
   server: 'MCP_DOCKER',
   toolName: 'get-library-docs',
   arguments: { context7CompatibleLibraryID: '/antd/antd', topic: '[topic]' },
-})
+});
 
 // 3. Codebase - существующие паттерны
 // grep/glob: найти похожие реализации
@@ -391,7 +391,7 @@ CallMcpTool({
 ### Ретроспектива
 [Lessons learned]`,
   },
-})
+});
 ```
 
 </details>
@@ -439,7 +439,7 @@ CallMcpTool({
     content: 'MR-xx: Fixed [issue] by [approach]. Pattern: [insight]',
     context: 'mr-review-[area]',
   },
-})
+});
 ```
 
 ### Step 10: Close Task
@@ -501,7 +501,7 @@ CallMcpTool({
 - [Паттерн 1]
 - [Паттерн 2]`,
   },
-})
+});
 ```
 
 </details>
@@ -549,7 +549,7 @@ CallMcpTool({
   server: 'mcp-atlassian',
   toolName: 'jira_transition_issue',
   arguments: { issue_key: '{PREFIX}-XXX', transition_name: 'Done' },
-})
+});
 ```
 
 </details>

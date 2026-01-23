@@ -47,8 +47,8 @@ Rules are `.mdc` files with YAML frontmatter:
 ```markdown
 ---
 description: 'Brief description of the rule'
-globs: ['**/*.ts', '**/*.tsx']  # Optional: file patterns
-alwaysApply: false              # true = always loaded
+globs: ['**/*.ts', '**/*.tsx'] # Optional: file patterns
+alwaysApply: false # true = always loaded
 ---
 
 # Rule Title
@@ -58,11 +58,11 @@ Your rule content here...
 
 **Location by type:**
 
-| Type | Directory |
-|------|-----------|
-| Universal rules | `core/` |
-| Stack-specific | `stacks/<stack>/` |
-| Integrations | `integrations/<tool>/` |
+| Type            | Directory              |
+| --------------- | ---------------------- |
+| Universal rules | `core/`                |
+| Stack-specific  | `stacks/<stack>/`      |
+| Integrations    | `integrations/<tool>/` |
 
 ### Adding Templates
 

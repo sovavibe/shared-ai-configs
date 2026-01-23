@@ -7,18 +7,18 @@
 ## Basic Table with Pagination
 
 ```tsx
-import { useMemo, useState } from 'react'
-import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import { MaterialReactTable, useMaterialReactTable } from 'material-react-table'
-import type { MRT_ColumnDef, MRT_PaginationState, MRT_SortingState } from 'material-react-table'
-import type { RouteDTO } from 'shared/api'
+import { useMemo, useState } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
+import type { MRT_ColumnDef, MRT_PaginationState, MRT_SortingState } from 'material-react-table';
+import type { RouteDTO } from 'shared/api';
 
 export const RoutesTable: FC = () => {
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
-  })
-  const [sorting, setSorting] = useState<MRT_SortingState>([])
+  });
+  const [sorting, setSorting] = useState<MRT_SortingState>([]);
 
   const { data, isFetching } = useQuery({
     queryKey: ['routes', pagination, sorting],
@@ -31,7 +31,7 @@ export const RoutesTable: FC = () => {
         sort: sorting[0],
       }),
     placeholderData: keepPreviousData,
-  })
+  });
 
   const columns = useMemo<MRT_ColumnDef<RouteDTO>[]>(
     () => [
@@ -51,8 +51,8 @@ export const RoutesTable: FC = () => {
         size: 200,
       },
     ],
-    [],
-  )
+    []
+  );
 
   const table = useMaterialReactTable({
     columns,
@@ -69,10 +69,10 @@ export const RoutesTable: FC = () => {
     manualSorting: true,
     enableRowSelection: true,
     enableColumnFilters: false,
-  })
+  });
 
-  return <MaterialReactTable table={table} />
-}
+  return <MaterialReactTable table={table} />;
+};
 ```
 
 ## Table with Row Actions
@@ -95,7 +95,7 @@ const table = useMaterialReactTable({
       </IconButton>
     </Box>
   ),
-})
+});
 ```
 
 ## Table with Custom Cell Rendering
@@ -107,34 +107,34 @@ const columns = useMemo<MRT_ColumnDef<CargoStatusDto>[]>(
       accessorKey: 'status',
       header: 'Status',
       Cell: ({ cell }) => {
-        const status = cell.getValue<string>()
-        const color = status === 'Active' ? 'success' : 'default'
-        return <Tag color={color}>{status}</Tag>
+        const status = cell.getValue<string>();
+        const color = status === 'Active' ? 'success' : 'default';
+        return <Tag color={color}>{status}</Tag>;
       },
     },
     {
       accessorKey: 'laycan',
       header: 'Laycan',
       Cell: ({ row }) => {
-        const from = row.original.laycanFrom
-        const to = row.original.laycanTo
-        return `${dayjs(from).format('DD.MM.YYYY')} - ${dayjs(to).format('DD.MM.YYYY')}`
+        const from = row.original.laycanFrom;
+        const to = row.original.laycanTo;
+        return `${dayjs(from).format('DD.MM.YYYY')} - ${dayjs(to).format('DD.MM.YYYY')}`;
       },
     },
   ],
-  [],
-)
+  []
+);
 ```
 
 ## Table with Export
 
 ```tsx
-import { Download } from '@mui/icons-material'
+import { Download } from '@mui/icons-material';
 
 const handleExport = () => {
-  const csv = generateCsv(csvConfig)(data?.items ?? [])
-  download(csvConfig)(csv)
-}
+  const csv = generateCsv(csvConfig)(data?.items ?? []);
+  download(csvConfig)(csv);
+};
 
 const table = useMaterialReactTable({
   columns,
@@ -144,7 +144,7 @@ const table = useMaterialReactTable({
       Export to CSV
     </Button>
   ),
-})
+});
 ```
 
 ## Related Docs

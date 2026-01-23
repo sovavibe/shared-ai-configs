@@ -49,7 +49,7 @@ schema/            # JSON Schema for .ai-project.yaml
 
 ```
 
-**Stack:** tsc  | Commander.js 12 | TypeScript 5.3 | Vitest
+**Stack:** tsc | Commander.js 12 | TypeScript 5.3 | Vitest
 
 ## Workflow Commands
 
@@ -140,11 +140,11 @@ graph LR
 
 ```yaml
 # .claude/context-handoff/current.md
-phase: "implementation"
-task_id: "SAC-xyz"
+phase: 'implementation'
+task_id: 'SAC-xyz'
 scope: "Only modify src/pages/auth/ - don't touch generated API"
-api_contract: "docs/API-CONTRACT.md"
-test_plan: "docs/TEST-PLAN.md"
+api_contract: 'docs/API-CONTRACT.md'
+test_plan: 'docs/TEST-PLAN.md'
 ```
 
 ## SDLC Workflow
@@ -170,14 +170,14 @@ graph LR
 
 **Full guide:** `docs/guides/mcp-tools-complete.md`
 
-| Server               | Tools                                         | Use For                          |
-| -------------------- | --------------------------------------------- | -------------------------------- |
-| **hindsight-alice**  | `recall`, `reflect`, `retain`                 | Long-term memory                 |
-| **MCP_DOCKER**       | Context7, Jira, Confluence                    | Docs & project mgmt              |
-| **zread**            | `search_doc`, `read_file`                     | GitHub repos                     |
-| **Figma**            | `get_design_context`                          | Design to code                   |
-| **zai-mcp-server**   | `ui_to_artifact`, `diagnose_error_screenshot` | Image analysis                   |
-| **claude-in-chrome** | `navigate`, `computer`, `read_page`           | Browser automation               |
+| Server               | Tools                                         | Use For             |
+| -------------------- | --------------------------------------------- | ------------------- |
+| **hindsight-alice**  | `recall`, `reflect`, `retain`                 | Long-term memory    |
+| **MCP_DOCKER**       | Context7, Jira, Confluence                    | Docs & project mgmt |
+| **zread**            | `search_doc`, `read_file`                     | GitHub repos        |
+| **Figma**            | `get_design_context`                          | Design to code      |
+| **zai-mcp-server**   | `ui_to_artifact`, `diagnose_error_screenshot` | Image analysis      |
+| **claude-in-chrome** | `navigate`, `computer`, `read_page`           | Browser automation  |
 
 ### MCP Priority Order
 
@@ -268,14 +268,14 @@ curl -X DELETE "http://localhost:8888/v1/default/banks/session"
 
 ### Split SDLC Between IDEs
 
-| SDLC Phase | IDE | Model | Use When |
-|-----------|-----|-------|----------|
-| **Analyze** | Claude Code | **Opus** | Breaking down requirements, understanding scope |
-| **Architect** | Claude Code | **Opus** | Design decisions, system architecture, deep analysis |
-| **Plan** | Claude Code | Sonnet | Detailed planning, TodoWrite, task breakdown |
-| **Implement** | **Cursor** | Agent mode | Code generation, fast iterations, automode |
-| **Review** | Claude Code | **Opus** | Code quality, security review, Snyk integration |
-| **Fix Issues** | Claude Code → Cursor | Opus → Agent | Analysis in Opus, implementation in Cursor |
+| SDLC Phase     | IDE                  | Model        | Use When                                             |
+| -------------- | -------------------- | ------------ | ---------------------------------------------------- |
+| **Analyze**    | Claude Code          | **Opus**     | Breaking down requirements, understanding scope      |
+| **Architect**  | Claude Code          | **Opus**     | Design decisions, system architecture, deep analysis |
+| **Plan**       | Claude Code          | Sonnet       | Detailed planning, TodoWrite, task breakdown         |
+| **Implement**  | **Cursor**           | Agent mode   | Code generation, fast iterations, automode           |
+| **Review**     | Claude Code          | **Opus**     | Code quality, security review, Snyk integration      |
+| **Fix Issues** | Claude Code → Cursor | Opus → Agent | Analysis in Opus, implementation in Cursor           |
 
 **Key Principle:**
 

@@ -10,11 +10,11 @@ This document defines what should be committed to git vs ignored when using shar
 
 ## What to Commit
 
-| File/Directory | Purpose | Why Track |
-|----------------|---------|-----------|
-| `.ai-project.yaml` | Project configuration | **Source of truth** for AI setup |
-| `docs/` | Architecture decisions, guides | Team knowledge base |
-| Custom rules in `rules.custom[]` | Project-specific AI rules | Extends shared rules |
+| File/Directory                   | Purpose                        | Why Track                        |
+| -------------------------------- | ------------------------------ | -------------------------------- |
+| `.ai-project.yaml`               | Project configuration          | **Source of truth** for AI setup |
+| `docs/`                          | Architecture decisions, guides | Team knowledge base              |
+| Custom rules in `rules.custom[]` | Project-specific AI rules      | Extends shared rules             |
 
 ### `.ai-project.yaml` — The Only Required File
 
@@ -29,23 +29,23 @@ stack:
 rules:
   custom:
     - path: ./docs/ai-rules/domain-terms.md
-      description: "Project-specific domain terminology"
+      description: 'Project-specific domain terminology'
 ```
 
 ---
 
 ## What to Ignore
 
-| File/Directory | Purpose | Why Ignore |
-|----------------|---------|------------|
-| `.claude/` | Generated Claude Code config | Regenerate with `generate` |
-| `.cursor/` | Generated Cursor config | Regenerate with `generate` |
-| `CLAUDE.md` | Generated instructions | Regenerate with `generate` |
-| `AGENTS.md` | Generated agent docs | Regenerate with `generate` |
-| `.env.aiproject` | API keys, tokens | **Security** |
-| `.memory/` | Memory Bank data | Local MCP state |
-| `.beads/` | Task tracking DB | Local state (synced via `bd sync`) |
-| `.perles/` | Orchestration state | Local TUI state |
+| File/Directory   | Purpose                      | Why Ignore                         |
+| ---------------- | ---------------------------- | ---------------------------------- |
+| `.claude/`       | Generated Claude Code config | Regenerate with `generate`         |
+| `.cursor/`       | Generated Cursor config      | Regenerate with `generate`         |
+| `CLAUDE.md`      | Generated instructions       | Regenerate with `generate`         |
+| `AGENTS.md`      | Generated agent docs         | Regenerate with `generate`         |
+| `.env.aiproject` | API keys, tokens             | **Security**                       |
+| `.memory/`       | Memory Bank data             | Local MCP state                    |
+| `.beads/`        | Task tracking DB             | Local state (synced via `bd sync`) |
+| `.perles/`       | Orchestration state          | Local TUI state                    |
 
 ### Recommended `.gitignore` Additions
 
@@ -177,8 +177,8 @@ If you have project-specific rules, reference them in `.ai-project.yaml`:
 ```yaml
 rules:
   custom:
-    - path: ./docs/ai-rules/domain-terms.md      # Committed
-    - path: ./docs/ai-rules/api-patterns.md      # Committed
+    - path: ./docs/ai-rules/domain-terms.md # Committed
+    - path: ./docs/ai-rules/api-patterns.md # Committed
 ```
 
 The rule files in `docs/ai-rules/` **should be committed** — they're project knowledge.
@@ -206,12 +206,12 @@ Some projects use `CLAUDE.md` as hand-written documentation (not generated). In 
 
 ## Summary
 
-| Category | Track in Git | Ignore |
-|----------|--------------|--------|
-| **Config** | `.ai-project.yaml` | - |
-| **Generated** | - | `.claude/`, `.cursor/`, `CLAUDE.md`, `AGENTS.md` |
-| **Secrets** | - | `.env.aiproject` |
-| **Local State** | - | `.memory/`, `.beads/`, `.perles/` |
-| **Custom Rules** | `docs/ai-rules/*.md` | - |
+| Category         | Track in Git         | Ignore                                           |
+| ---------------- | -------------------- | ------------------------------------------------ |
+| **Config**       | `.ai-project.yaml`   | -                                                |
+| **Generated**    | -                    | `.claude/`, `.cursor/`, `CLAUDE.md`, `AGENTS.md` |
+| **Secrets**      | -                    | `.env.aiproject`                                 |
+| **Local State**  | -                    | `.memory/`, `.beads/`, `.perles/`                |
+| **Custom Rules** | `docs/ai-rules/*.md` | -                                                |
 
 **Remember:** When in doubt, ask "Can this be regenerated?" If yes, ignore it.

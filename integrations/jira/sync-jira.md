@@ -10,14 +10,14 @@
 services:
   task_tracking:
     type: 'jira'
-    integration_mode: 'cli'  # or 'mcp'
+    integration_mode: 'cli' # or 'mcp'
     key_prefix: 'VP-'
 ```
 
-| Mode | Tools | Server |
-|------|-------|--------|
-| `cli` | Bash (`jira issue ...`) | N/A |
-| `mcp` | MCP tools (`jira_*`) | `mcp-atlassian` |
+| Mode  | Tools                   | Server          |
+| ----- | ----------------------- | --------------- |
+| `cli` | Bash (`jira issue ...`) | N/A             |
+| `mcp` | MCP tools (`jira_*`)    | `mcp-atlassian` |
 
 ## Sync Philosophy
 
@@ -47,9 +47,9 @@ CallMcpTool({
   server: 'mcp-atlassian',
   toolName: 'jira_search',
   arguments: {
-    jql: 'project = <JIRA_PROJECT> AND status != Done ORDER BY updated DESC'
-  }
-})
+    jql: 'project = <JIRA_PROJECT> AND status != Done ORDER BY updated DESC',
+  },
+});
 ```
 
 </details>
@@ -100,9 +100,9 @@ CallMcpTool({
     project_key: '<JIRA_PROJECT>',
     summary: 'Task description from bead',
     issue_type: 'Task',
-    labels: ['from-beads']
-  }
-})
+    labels: ['from-beads'],
+  },
+});
 ```
 
 </details>
@@ -130,9 +130,9 @@ CallMcpTool({
   toolName: 'jira_transition_issue',
   arguments: {
     issue_key: '{PREFIX}-XXX',
-    transition_name: 'Done'
-  }
-})
+    transition_name: 'Done',
+  },
+});
 ```
 
 </details>
@@ -157,9 +157,9 @@ CallMcpTool({
   toolName: 'jira_transition_issue',
   arguments: {
     issue_key: '{PREFIX}-XXX',
-    transition_name: 'Blocked'
-  }
-})
+    transition_name: 'Blocked',
+  },
+});
 ```
 
 </details>
@@ -183,12 +183,10 @@ jira issue move {PREFIX}-XXX "Blocked"
 When user runs `/sync-jira`:
 
 1. **Fetch both sources:**
-
    - `bd list --status=open` + `bd blocked`
    - Jira search (MCP or CLI based on integration_mode)
 
 2. **Build comparison table:**
-
    - Match by {PREFIX}-XXX reference or similar title
    - Identify mismatches
 
@@ -229,9 +227,9 @@ CallMcpTool({
   arguments: {
     project_key: '<JIRA_PROJECT>',
     summary: 'Delete GitLab scripts',
-    issue_type: 'Task'
-  }
-})
+    issue_type: 'Task',
+  },
+});
 // Returns: {PREFIX}-503
 
 // Transition to Blocked
@@ -240,9 +238,9 @@ CallMcpTool({
   toolName: 'jira_transition_issue',
   arguments: {
     issue_key: '{PREFIX}-503',
-    transition_name: 'Blocked'
-  }
-})
+    transition_name: 'Blocked',
+  },
+});
 ```
 
 **CLI Mode:**
@@ -272,9 +270,9 @@ CallMcpTool({
   toolName: 'jira_transition_issue',
   arguments: {
     issue_key: '{PREFIX}-123',
-    transition_name: 'Done'
-  }
-})
+    transition_name: 'Done',
+  },
+});
 ```
 
 **CLI Mode:**

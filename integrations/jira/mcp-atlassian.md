@@ -22,7 +22,7 @@ uvx mcp-atlassian --help
 services:
   task_tracking:
     type: 'jira'
-    integration_mode: 'mcp'  # Uses mcp-atlassian
+    integration_mode: 'mcp' # Uses mcp-atlassian
     key_prefix: 'VP-'
     jira:
       instance: 'your-company.atlassian.net'
@@ -67,23 +67,23 @@ Automatically generated in `.claude/mcp.json` when `integration_mode: 'mcp'`:
 
 ### Jira Tools
 
-| Tool | Description |
-|------|-------------|
-| `jira_search` | Search issues using JQL |
-| `jira_get_issue` | Get single issue details |
-| `jira_create_issue` | Create new issue |
-| `jira_update_issue` | Update existing issue |
-| `jira_add_comment` | Add comment to issue |
-| `jira_transition_issue` | Change issue status |
+| Tool                    | Description              |
+| ----------------------- | ------------------------ |
+| `jira_search`           | Search issues using JQL  |
+| `jira_get_issue`        | Get single issue details |
+| `jira_create_issue`     | Create new issue         |
+| `jira_update_issue`     | Update existing issue    |
+| `jira_add_comment`      | Add comment to issue     |
+| `jira_transition_issue` | Change issue status      |
 
 ### Confluence Tools (Bonus)
 
-| Tool | Description |
-|------|-------------|
-| `confluence_search` | Search pages |
-| `confluence_get_page` | Get page content |
-| `confluence_create_page` | Create new page |
-| `confluence_update_page` | Update page |
+| Tool                     | Description      |
+| ------------------------ | ---------------- |
+| `confluence_search`      | Search pages     |
+| `confluence_get_page`    | Get page content |
+| `confluence_create_page` | Create new page  |
+| `confluence_update_page` | Update page      |
 
 ## Tool Usage Examples
 
@@ -95,9 +95,9 @@ CallMcpTool({
   toolName: 'jira_search',
   arguments: {
     jql: 'project = VP AND status != Done ORDER BY updated DESC',
-    limit: 50
-  }
-})
+    limit: 50,
+  },
+});
 ```
 
 ### Get Issue (`jira_get_issue`)
@@ -107,9 +107,9 @@ CallMcpTool({
   server: 'mcp-atlassian',
   toolName: 'jira_get_issue',
   arguments: {
-    issue_key: 'VP-123'
-  }
-})
+    issue_key: 'VP-123',
+  },
+});
 ```
 
 ### Create Issue (`jira_create_issue`)
@@ -130,9 +130,9 @@ Code review task for MR-321
 - Check type safety
 - Verify tests`,
     labels: ['code-review', 'mr-321'],
-    priority: 'High'
-  }
-})
+    priority: 'High',
+  },
+});
 ```
 
 ### Update Issue (`jira_update_issue`)
@@ -144,9 +144,9 @@ CallMcpTool({
   arguments: {
     issue_key: 'VP-123',
     summary: 'Updated summary',
-    description: 'Updated description'
-  }
-})
+    description: 'Updated description',
+  },
+});
 ```
 
 ### Add Comment (`jira_add_comment`)
@@ -165,9 +165,9 @@ Fixed the type safety issues:
 
 Files changed:
 - src/widgets/UserProfile.tsx
-- src/hooks/useUserData.ts`
-  }
-})
+- src/hooks/useUserData.ts`,
+  },
+});
 ```
 
 ### Transition Issue (`jira_transition_issue`)
@@ -178,21 +178,21 @@ CallMcpTool({
   toolName: 'jira_transition_issue',
   arguments: {
     issue_key: 'VP-123',
-    transition_name: 'Done'
-  }
-})
+    transition_name: 'Done',
+  },
+});
 ```
 
 ## Comparison with CLI Mode
 
-| Aspect | MCP (`mcp-atlassian`) | CLI (`jira-cli`) |
-|--------|----------------------|------------------|
-| **Setup** | Requires Python/uv | Simple (`brew install`) |
-| **Speed** | Faster (persistent) | Each command is separate |
-| **Output** | Native JSON | Requires `--raw` flag |
-| **Confluence** | Included | Not included |
-| **IDE Integration** | Native MCP tools | Bash commands |
-| **Best for** | IDE/AI workflows | Scripts, CI/CD |
+| Aspect              | MCP (`mcp-atlassian`) | CLI (`jira-cli`)         |
+| ------------------- | --------------------- | ------------------------ |
+| **Setup**           | Requires Python/uv    | Simple (`brew install`)  |
+| **Speed**           | Faster (persistent)   | Each command is separate |
+| **Output**          | Native JSON           | Requires `--raw` flag    |
+| **Confluence**      | Included              | Not included             |
+| **IDE Integration** | Native MCP tools      | Bash commands            |
+| **Best for**        | IDE/AI workflows      | Scripts, CI/CD           |
 
 ## Troubleshooting
 

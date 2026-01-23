@@ -79,7 +79,7 @@ Server will start on `http://localhost:5173`
 
 ### Step 4: Open in Browser
 
-Open http://localhost:5173 in your browser.
+Open <http://localhost:5173> in your browser.
 
 ## Troubleshooting
 

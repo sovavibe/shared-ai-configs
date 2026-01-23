@@ -474,9 +474,9 @@ const Footer = styled.div`
 ### TanStack Query Hook with Error Handling
 
 ```typescript
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '@/shared/api/generated'
-import { notification } from 'antd'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '@/shared/api/generated';
+import { notification } from 'antd';
 
 // Query Hook
 export const useUserList = (params?: UserListParams) => {
@@ -485,57 +485,60 @@ export const useUserList = (params?: UserListParams) => {
     queryFn: () => api.getUsers(params),
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
-  })
-}
+  });
+};
 
 // Mutation Hook
 export const useCreateUser = () => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: CreateUserRequest) => api.createUser(data),
     onMutate: async (newUser) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['users'] })
+      await queryClient.cancelQueries({ queryKey: ['users'] });
 
       // Snapshot previous value
-      const previousUsers = queryClient.getQueryData(['users'])
+      const previousUsers = queryClient.getQueryData(['users']);
 
       // Optimistically update
-      queryClient.setQueryData(['users'], (old: User[] = []) => [...old, { ...newUser, id: 'temp-id' }])
+      queryClient.setQueryData(['users'], (old: User[] = []) => [
+        ...old,
+        { ...newUser, id: 'temp-id' },
+      ]);
 
-      return { previousUsers }
+      return { previousUsers };
     },
     onError: (error, variables, context) => {
       // Rollback
       if (context?.previousUsers) {
-        queryClient.setQueryData(['users'], context.previousUsers)
+        queryClient.setQueryData(['users'], context.previousUsers);
       }
-      notification.error({ message: 'Failed to create user' })
+      notification.error({ message: 'Failed to create user' });
     },
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ['users'] })
-      notification.success({ message: 'User created successfully' })
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      notification.success({ message: 'User created successfully' });
     },
-  })
-}
+  });
+};
 
 // Delete Mutation
 export const useDeleteUser = () => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: string) => api.deleteUser(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] })
-      notification.success({ message: 'User deleted successfully' })
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      notification.success({ message: 'User deleted successfully' });
     },
     onError: () => {
-      notification.error({ message: 'Failed to delete user' })
+      notification.error({ message: 'Failed to delete user' });
     },
-  })
-}
+  });
+};
 ```
 
 ---

@@ -16,8 +16,6 @@ scripts/
 │   ├── mr-inline-comment.sh  # Add inline comment
 │   ├── mr-update.sh          # Update MR
 │   └── README.md             # Detailed usage guide
-├── cursor/           # Cursor IDE automation
-│   └── metrics/              # Metrics collection
 ├── mcp-doctor/       # MCP server diagnostics
 │   ├── checks/               # Individual health checks
 │   ├── utils/                # Logging utilities
@@ -82,8 +80,8 @@ Scripts auto-detect repository from git remote if not set.
 
 The old TypeScript scripts using GitBeaker API have been replaced with shell scripts using `glab` CLI:
 
-| Old (TypeScript) | New (Shell) |
-|-----------------|-------------|
-| `npx tsx scripts/gitlab/core/get-mr.ts --mr 321` | `./scripts/gitlab-cli/mr-view.sh 321 --json` |
+| Old (TypeScript)                                             | New (Shell)                                               |
+| ------------------------------------------------------------ | --------------------------------------------------------- |
+| `npx tsx scripts/gitlab/core/get-mr.ts --mr 321`             | `./scripts/gitlab-cli/mr-view.sh 321 --json`              |
 | `npx tsx scripts/gitlab/comments/get-unresolved.ts --mr 321` | `./scripts/gitlab-cli/mr-discussions.sh 321 --unresolved` |
-| `npx tsx scripts/gitlab/comments/reply-to-thread.ts ...` | `./scripts/gitlab-cli/mr-reply.sh ...` |
+| `npx tsx scripts/gitlab/comments/reply-to-thread.ts ...`     | `./scripts/gitlab-cli/mr-reply.sh ...`                    |
