@@ -17,9 +17,22 @@ import { logger } from '../utils/logger.js';
 import { loadConfig, validateConfig, CONFIG_DEFAULTS } from '../utils/config.js';
 import { renderTemplate } from '../utils/template.js';
 import { stackItemContains, detectStackType } from '../utils/stack-helpers.js';
-import type { GenerateOptions, Config, ClaudeTargetConfig, CursorTargetConfig } from '../types.js';
+import type {
+  GenerateOptions,
+  Config,
+  ClaudeTargetConfig,
+  CursorTargetConfig,
+  PluginConfig,
+} from '../types.js';
 
 const __filename = fileURLToPath(import.meta.url);
+
+/**
+ * Get plugin configuration from plugins.install array
+ */
+function getPluginConfig(config: Config, pluginName: string): PluginConfig | undefined {
+  return config.plugins?.install?.find((p) => p.name === pluginName);
+}
 const __dirname = dirname(__filename);
 
 // Package root directory
@@ -183,21 +196,26 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
   // COMMON TARGETS (enabled for any active IDE)
   // ============================================================================
 
-  // .beads/ if beads task tracking is enabled AND any IDE is active
+  // .beads/ if beads task tracking is enabled OR bd plugin is configured AND any IDE is active
+  const bdPlugin = getPluginConfig(config, 'bd');
   if (
-    config.services?.task_tracking?.type === 'beads' &&
+    (config.services?.task_tracking?.type === 'beads' || bdPlugin) &&
     (targets.claude.enabled || targets.cursor.enabled)
   ) {
-    const results = await generateBeadsDir(config, outputDir, options);
+    const results = await generateBeadsDir(config, outputDir, options, bdPlugin);
     generatedFiles.push(...results);
 
     // Auto-initialize beads database if not exists
-    await initializeBeadsIfNeeded(config, outputDir, options);
+    await initializeBeadsIfNeeded(config, outputDir, options, bdPlugin);
   }
 
-  // .perles/ if orchestration is enabled AND any IDE is active
-  if (config.options?.orchestration && (targets.claude.enabled || targets.cursor.enabled)) {
-    const results = await generatePerlesDir(config, outputDir, options);
+  // .perles/ if orchestration is enabled OR perles plugin is configured AND any IDE is active
+  const perlesPlugin = getPluginConfig(config, 'perles');
+  if (
+    (config.options?.orchestration || perlesPlugin) &&
+    (targets.claude.enabled || targets.cursor.enabled)
+  ) {
+    const results = await generatePerlesDir(config, outputDir, options, perlesPlugin);
     generatedFiles.push(...results);
   }
 
@@ -820,10 +838,13 @@ async function generateCursorRules(
 async function generateBeadsDir(
   config: Config,
   outputDir: string,
-  options: GenerateOptions
+  options: GenerateOptions,
+  pluginConfig?: PluginConfig
 ): Promise<GeneratedFile[]> {
   const results: GeneratedFile[] = [];
+  // Plugin config takes precedence over services config
   const beadsPath =
+    (pluginConfig?.config?.path as string) ||
     config.services?.task_tracking?.paths?.beads ||
     CONFIG_DEFAULTS.services.task_tracking.paths.beads;
   const beadsDir = join(outputDir, beadsPath);
@@ -843,10 +864,16 @@ async function generateBeadsDir(
   // Generate config.yaml from template
   const templatePath = join(packageRoot, 'templates/beads/config.yaml.ejs');
   if (existsSync(templatePath)) {
+    // Extend config with plugin settings for template rendering
+    const templateConfig = {
+      ...config,
+      _pluginConfig: pluginConfig,
+    } as Config & { _pluginConfig?: PluginConfig };
+
     const result = await generateFromTemplate(
       'beads/config.yaml.ejs',
       join(beadsDir, 'config.yaml'),
-      config,
+      templateConfig,
       options
     );
     if (result) results.push(result);
@@ -866,9 +893,11 @@ async function generateBeadsDir(
 async function initializeBeadsIfNeeded(
   config: Config,
   outputDir: string,
-  options: GenerateOptions
+  options: GenerateOptions,
+  pluginConfig?: PluginConfig
 ): Promise<void> {
   const beadsPath =
+    (pluginConfig?.config?.path as string) ||
     config.services?.task_tracking?.paths?.beads ||
     CONFIG_DEFAULTS.services.task_tracking.paths.beads;
   const beadsDir = join(outputDir, beadsPath);
