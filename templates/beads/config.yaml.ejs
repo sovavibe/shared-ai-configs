@@ -3,7 +3,17 @@
 # All settings can also be set via environment variables (BD_* prefix)
 
 # Issue prefix for this repository
-issue-prefix: '<%= services.task_tracking?.key_prefix?.replace('-', '') || project.short_name || 'VP' %>'
+<%
+// Plugin config takes precedence: plugins.install[name=bd].config.project_prefix
+// Then services.task_tracking.key_prefix
+// Then project.short_name
+// Then default 'VP'
+const prefix = (_pluginConfig?.config?.project_prefix) ||
+  services.task_tracking?.key_prefix?.replace('-', '') ||
+  project.short_name ||
+  'VP';
+-%>
+issue-prefix: '<%= prefix %>'
 
 # Auto-start daemon if not running
 auto-start-daemon: true
