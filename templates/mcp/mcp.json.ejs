@@ -103,12 +103,17 @@ const mcpDefaults = {
     args: ['-y', '@z_ai/mcp-server'],
     env: { Z_AI_API_KEY: '${env:Z_AI_API_KEY}', Z_AI_MODE: 'ZAI' }
   },
-  // MCP_DOCKER replaces Context7 - includes Context7 inside
+  // Context7 - library documentation lookup
+  context7: {
+    command: 'npx',
+    args: ['-y', '@upstash/context7-mcp'],
+    env: { CONTEXT7_API_KEY: '${env:CONTEXT7_API_KEY}' }
+  },
+  // MCP_DOCKER - Docker MCP gateway for containerized tools
   mcp_docker: {
     type: 'stdio',
     command: 'docker',
-    args: ['mcp', 'gateway', 'run'],
-    headers: { CONTEXT7_API_KEY: '${env:CONTEXT7_API_KEY}' }
+    args: ['mcp', 'gateway', 'run']
   },
   // mcp-atlassian - Jira/Confluence integration via MCP
   'mcp-atlassian': {
@@ -127,6 +132,7 @@ const mcpDefaults = {
 const mcpNames = {
   hindsight: 'hindsight-alice',
   snyk: 'Snyk',
+  context7: 'Context7',
   mcp_docker: 'MCP_DOCKER',
   figma: 'Figma',
   memory_bank: 'allpepper-memory-bank',
@@ -144,10 +150,6 @@ const enabledServers = [];
 if (services?.mcp) {
   for (const [key, config] of Object.entries(services.mcp)) {
     if (config?.enabled) {
-      // Skip context7 - it's now part of MCP_DOCKER
-      if (key === 'context7') {
-        continue;
-      }
       // browser key enables multiple z.ai services
       if (key === 'browser') {
         // Add zai-mcp-server (stdio)
