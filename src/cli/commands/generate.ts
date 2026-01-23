@@ -947,10 +947,13 @@ async function initializeBeadsIfNeeded(
 async function generatePerlesDir(
   config: Config,
   outputDir: string,
-  options: GenerateOptions
+  options: GenerateOptions,
+  pluginConfig?: PluginConfig
 ): Promise<GeneratedFile[]> {
   const results: GeneratedFile[] = [];
+  // Plugin config takes precedence over services config
   const perlesPath =
+    (pluginConfig?.config?.path as string) ||
     config.services?.task_tracking?.paths?.perles ||
     CONFIG_DEFAULTS.services.task_tracking.paths.perles;
   const perlesDir = join(outputDir, perlesPath);
@@ -970,10 +973,16 @@ async function generatePerlesDir(
   // Generate config.yaml from template
   const templatePath = join(packageRoot, 'templates/perles/config.yaml.ejs');
   if (existsSync(templatePath)) {
+    // Extend config with plugin settings for template rendering
+    const templateConfig = {
+      ...config,
+      _pluginConfig: pluginConfig,
+    } as Config & { _pluginConfig?: PluginConfig };
+
     const result = await generateFromTemplate(
       'perles/config.yaml.ejs',
       join(perlesDir, 'config.yaml'),
-      config,
+      templateConfig,
       options
     );
     if (result) results.push(result);
